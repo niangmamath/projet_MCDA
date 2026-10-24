@@ -5,7 +5,7 @@ from mcdakit import (WeightScorer, data_scenarios, evaluate, full_analysis, mont
                      to_markdown, value_threshold, weight_profiles, weight_sweep, weight_thresholds)
 
 
-@pytest.mark.parametrize("method", ["wsm", "wpm", "topsis", "promethee"])
+@pytest.mark.parametrize("method", ["wsm", "wpm", "topsis"])
 def test_vectorised_scorer_matches_methods(stratema2, method):
     sc = WeightScorer(stratema2, method)
     rng = np.random.default_rng(0)

@@ -47,7 +47,7 @@ print("Normalisation min-max :", evaluate(p2, "topsis", normalization="minmax").
 mc = monte_carlo(p2, "topsis", n=20000, spread=0.2)
 print(mc.table(p2.labels()).round(3), "\n")
 
-fa = full_analysis(p2, {"topsis": {}, "wsm": {}, "promethee": {}}, scenarios=scen,
+fa = full_analysis(p2, {"topsis": {}, "wsm": {}}, scenarios=scen,
                    profiles={"Financier (C2 × 2)": {"C2": 2}, "Poids égaux": {"__equal__": True}})
 print(fa.diagnosis)
 out = HERE.parent / "docs" / "rapport_exemple_stratema.html"

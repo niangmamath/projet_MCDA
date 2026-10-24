@@ -21,7 +21,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from mcdakit.benchmarks import run_benchmarks  # noqa: E402
-from mcdakit.methods import promethee, topsis, weighted_product, weighted_sum  # noqa: E402
+from mcdakit.methods import topsis, weighted_product, weighted_sum  # noqa: E402
 from mcdakit.weights import ahp  # noqa: E402
 
 
@@ -61,13 +61,6 @@ def cross_validation(n=500, seed=2026):
             upd("TOPSIS, normalisation min-max", topsis(M, ws, d, normalization="minmax").scores, pm.TOPSIS(pn.minmax_normalization)(x, w, t))
             upd("Somme pondérée, normalisation x/max", weighted_sum(M, ws, d, normalization="max").scores, pm.WSM(pn.linear_normalization)(x, w, t, validation=False))
             upd("Produit pondéré, normalisation x/max", weighted_product(M, ws, d, normalization="max").scores, pm.WPM(pn.linear_normalization)(x, w, t, validation=False))
-            span = x.max(0) - x.min(0)
-            q = rng.uniform(0, 0.3, m) * span
-            p = q + rng.uniform(0.1, 0.7, m) * span
-            for kind in ["usual", "ushape", "vshape", "level", "linear"]:
-                prefs = {c: {"type": kind, "q": q[j], "p": p[j]} for j, c in enumerate(cols)}
-                upd(f"PROMETHEE II, fonction {kind}", promethee(M, ws, d, preferences=prefs).scores,
-                    pm.PROMETHEE_II("vshape_2" if kind == "linear" else kind, p=p, q=q)(x, w, t))
             k = int(rng.integers(3, 15))
             a = np.ones((k, k))
             for i in range(k):
@@ -121,7 +114,7 @@ def main():
         doi = f" — DOI {r['doi']}" if r["doi"] and r["doi"] != "—" else ""
         note = f" *{r['note']}*" if r["note"] else ""
         w(f"- `{r['cas']}` : {r['source']}{doi}.{note}")
-    w("\nQuatre de ces cas sont fournis dans la bibliothèque de cas (`examples/bibliotheque/`, section « Bibliothèque "
+    w("\nDeux de ces cas sont fournis dans la bibliothèque de cas (`examples/bibliotheque/`, section « Bibliothèque "
       "de cas » de la page d'accueil) : chacun peut les ouvrir dans l'application et retrouver lui-même les valeurs.\n")
     w("Le projet Stratema (rapports AHP + somme pondérée et TOPSIS du projet) est également reproduit : poids AHP, "
       "RC = 2,34 %, scores des six couples, seuils de basculement, profils et scénarios (`tests/test_methods.py`, "
@@ -148,7 +141,7 @@ def main():
         "**Permutation** : l'ordre de saisie des alternatives ne change aucun score.",
         "**Changement d'unité** : exprimer un critère en k€ plutôt qu'en € ne change pas le résultat.",
         "**Poids** : multiplier tous les poids par une constante ne change rien ; tout le poids sur un critère donne le classement de ce critère.",
-        "**Bornes** : TOPSIS dans [0, 1] ; flux PROMETHEE dans [−1, 1] et de somme nulle ; fonctions de préférence croissantes, nulles pour un écart ≤ 0.",
+        "**Bornes** : TOPSIS dans [0, 1] ; matrices normalisées dans [0, 1].",
         "**AHP** : une matrice parfaitement cohérente redonne exactement les poids et RC = 0 ; inverser les jugements inverse les priorités.",
         "**Delphi** : médiane et quartiles identiques à ceux de numpy.",
         "**Portefeuilles** : avec la moyenne et une somme pondérée, score(XY) = [score(X) + score(Y)] / 2 ; aucune combinaison retenue ne viole une contrainte.",

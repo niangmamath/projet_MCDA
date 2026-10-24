@@ -79,4 +79,4 @@ def test_static_index():
 
 def test_validation_route():
     r = client.get("/api/validation").json()
-    assert r["all_ok"] is True and len(r["cases"]) >= 10
+    assert r["all_ok"] is True and len(r["cases"]) >= 6

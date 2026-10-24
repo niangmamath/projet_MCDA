@@ -13,8 +13,7 @@ Un projet est un dictionnaire (JSON ou YAML). Seuls `criteria` et `alternatives`
       "name": "Charge",              // libellé
       "direction": "min",            // "max" : plus haut = mieux ; "min" : plus bas = mieux
       "unit": "jours-homme",
-      "aggregation": "sum",          // mode portefeuille : sum | mean | min | max | product
-      "preference": {"type": "linear", "q": 2, "p": 10}   // PROMETHEE uniquement
+      "aggregation": "sum"           // mode portefeuille : sum | mean | min | max | product
     }
   ],
 
@@ -40,8 +39,8 @@ Un projet est un dictionnaire (JSON ou YAML). Seuls `criteria` et `alternatives`
   },
 
   "analysis": {                      // facultatif : méthodes cochées à l'ouverture dans l'application
-    "primary": "promethee",
-    "methods": {"promethee": {}, "topsis": {"normalization": "vector"}}
+    "primary": "topsis",
+    "methods": {"topsis": {"normalization": "vector"}, "wsm": {"normalization": "minmax"}}
   }
 }
 ```
@@ -56,21 +55,6 @@ Un projet est un dictionnaire (JSON ou YAML). Seuls `criteria` et `alternatives`
 | AHP — matrice | `{"method": "ahp", "matrix": [["1", "1/3"], ["3", "1"]]}` ; `"variant": "geometric"` possible |
 | AHP — jugements | `{"method": "ahp", "judgements": {"C1>C2": "1/3", "C1>C3": 5, ...}}` (au-dessus de la diagonale) |
 
-## Fonctions de préférence PROMETHEE
-
-`d` = écart orienté entre deux alternatives sur le critère (en unité du critère).
-
-| type | paramètres | P(d) |
-|---|---|---|
-| `usual` | — | 1 si d > 0 |
-| `ushape` | q | 1 si d > q |
-| `vshape` | p | d / p plafonné à 1 |
-| `level` | q, p | 0 si d ≤ q ; ½ si q < d ≤ p ; 1 sinon |
-| `linear` | q, p | 0 si d ≤ q ; (d − q)/(p − q) ; 1 si d > p |
-| `gaussian` | s | 1 − exp(−d² / 2s²) |
-
-Par défaut `p` = étendue du critère et `s` = étendue / 2.
-
 ## Mode portefeuille
 
 Avec `"portfolio": {"size": k}`, les alternatives listées deviennent des **éléments** et le modèle compare
@@ -83,7 +67,7 @@ synergie, Delphi).
 
 `mcdakit template modele.xlsx` génère un classeur à remplir :
 
-- **Critères** : id, nom, sens, unité, poids, agrégation, préférence, q, p, s
+- **Critères** : id, nom, sens, unité, poids, agrégation
 - **Alternatives** : id, nom, puis une colonne par critère/attribut
 - **Attributs**, **Contraintes** (colonne, opérateur, valeur), **Paramètres** (nom, description,
   portefeuille_min, portefeuille_max) — facultatives

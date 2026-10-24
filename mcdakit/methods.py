@@ -117,101 +117,20 @@ def topsis(matrix, weights, directions, normalization: str = "vector") -> Method
                         {"normalization": normalization})
 
 
-# --------------------------------------------------------------------------- PROMETHEE
-PREFERENCE_FUNCTIONS = {
-    "usual": "Usuelle : préférence stricte dès que d > 0",
-    "ushape": "En U : préférence stricte si d > q",
-    "vshape": "En V : linéaire de 0 à p",
-    "level": "Par paliers : 0 si d ≤ q, ½ si q < d ≤ p, 1 sinon",
-    "linear": "Linéaire avec indifférence : 0 si d ≤ q, linéaire jusqu'à p",
-    "gaussian": "Gaussienne de paramètre s",
-}
-
-
-def preference_degree(dvals: np.ndarray, spec: dict, span: float) -> np.ndarray:
-    """Degré de préférence P(d) ∈ [0, 1] pour des écarts orientés d."""
-    kind = spec.get("type", "usual")
-    q = float(spec.get("q", 0.0))
-    p = float(spec.get("p", span if span > 0 else 1.0))
-    s = float(spec.get("s", span / 2 if span > 0 else 1.0))
-    dv = np.asarray(dvals, dtype=float)
-    if kind == "usual":
-        return (dv > 0).astype(float)
-    if kind == "ushape":
-        return (dv > q).astype(float)
-    if kind == "vshape":
-        return np.clip(dv / p, 0, 1) if p > 0 else (dv > 0).astype(float)
-    if kind == "level":
-        return np.where(dv > p, 1.0, np.where(dv > q, 0.5, 0.0))
-    if kind == "linear":
-        if p <= q:
-            return (dv > q).astype(float)
-        return np.clip((dv - q) / (p - q), 0, 1)
-    if kind == "gaussian":
-        return np.where(dv > 0, 1 - np.exp(-(dv ** 2) / (2 * s ** 2)), 0.0)
-    raise ValueError(f"Fonction de préférence inconnue : {kind}")
-
-
-def promethee(matrix, weights, directions, preferences: dict | None = None) -> MethodResult:
-    """PROMETHEE II : flux net φ = φ⁺ − φ⁻ issu des degrés de préférence par paires.
-
-    Méthode de surclassement : un gros écart sur un critère ne compense qu'en partie (selon la
-    fonction de préférence) et les seuils q / p modélisent l'indifférence et la préférence stricte.
-    `preferences` : {critère: {"type": "linear", "q": 0, "p": 10}}, défaut « usuelle ».
-    """
-    x, w, d = _check(matrix, weights, directions)
-    preferences = preferences or {}
-    alts = list(x.index)
-    n = len(alts)
-    pi = np.zeros((n, n))
-    per_criterion = {}
-    for c in x.columns:
-        g = x[c].to_numpy()
-        diff = g[:, None] - g[None, :]
-        if d[c] == "min":
-            diff = -diff
-        span = float(g.max() - g.min())
-        P = preference_degree(diff, preferences.get(c, {"type": "usual"}), span)
-        np.fill_diagonal(P, 0.0)
-        per_criterion[c] = pd.DataFrame(P, index=alts, columns=alts)
-        pi += w[c] * P
-    denom = max(n - 1, 1)
-    phi_plus = pd.Series(pi.sum(axis=1) / denom, index=alts)
-    phi_minus = pd.Series(pi.sum(axis=0) / denom, index=alts)
-    net = phi_plus - phi_minus
-    flows = pd.DataFrame({"φ⁺": phi_plus, "φ⁻": phi_minus, "φ net": net})
-    # PROMETHEE I : paires incomparables (φ⁺ et φ⁻ en désaccord)
-    incomparable = []
-    for i in range(n):
-        for j in range(i + 1, n):
-            a, b = alts[i], alts[j]
-            sp = np.sign(round(phi_plus[a] - phi_plus[b], 12))
-            sm = np.sign(round(phi_minus[b] - phi_minus[a], 12))
-            if sp * sm < 0:
-                incomparable.append((a, b))
-    details = {"Indices de préférence π(a,b)": pd.DataFrame(pi, index=alts, columns=alts),
-               "Flux": flows, "Incomparabilités PROMETHEE I": incomparable}
-    details.update({f"P_{c}(a,b)": m for c, m in per_criterion.items()})
-    return MethodResult("PROMETHEE II", net, "φ net", details, {"preferences": preferences})
-
-
 METHODS = {
     "wsm": weighted_sum,
     "wpm": weighted_product,
     "topsis": topsis,
-    "promethee": promethee,
 }
 
 METHOD_LABELS = {
     "wsm": "Somme pondérée (WSM/SAW)",
     "wpm": "Produit pondéré (WPM)",
     "topsis": "TOPSIS",
-    "promethee": "PROMETHEE II",
 }
 
 METHOD_LOGIC = {
     "wsm": "Agrégation additive totalement compensatoire : une faiblesse se rattrape par une force.",
     "wpm": "Agrégation multiplicative : compensation partielle, pénalise les profils déséquilibrés.",
     "topsis": "Distance à un idéal et à un anti-idéal fictifs ; compensatoire, sensible à la normalisation.",
-    "promethee": "Surclassement par paires avec seuils d'indifférence/préférence ; compensation limitée.",
 }

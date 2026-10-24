@@ -33,11 +33,10 @@ Pour chaque tour : médiane, Q1, Q3 (interpolation linéaire), IQR = Q3 − Q1. 
 | Somme pondérée (WSM) | S(a) = Σ w_j r_aj | totalement compensatoire |
 | Produit pondéré (WPM) | S(a) = Π r_aj^w_j | compensation partielle, pénalise les profils déséquilibrés |
 | TOPSIS | Ci* = D⁻ / (D⁺ + D⁻), distances euclidiennes à l'idéal / anti-idéal de V = w·R | compensatoire, dépend de la normalisation |
-| PROMETHEE II | φ(a) = φ⁺ − φ⁻, φ⁺(a) = Σ_b π(a,b)/(n−1), π(a,b) = Σ w_j P_j(d_j) | surclassement, seuils q/p ; PROMETHEE I signale les incomparabilités |
 
 Toutes respectent la dominance (testé). Les différences de classement entre méthodes viennent de :
-la compensation (additive vs surclassement), la normalisation (étirement des écarts par min-max),
-les seuils de préférence, le traitement cardinal vs ordinal des données.
+la logique de compensation (additive, multiplicative, distance à l'idéal), la normalisation (étirement des écarts par
+min-max) et le traitement cardinal vs ordinal des données.
 
 ## Sensibilité
 

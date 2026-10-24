@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from mcdakit import evaluate, promethee, topsis, weighted_sum
+from mcdakit import evaluate, topsis, weighted_sum
 from mcdakit.problem import DecisionProblem
 
 
@@ -56,7 +56,7 @@ def test_dominance_respected_by_all_methods():
     m = pd.DataFrame({"g1": [5, 3, 1], "g2": [10, 20, 30]}, index=["best", "mid", "worst"])
     d = pd.Series({"g1": "max", "g2": "min"})
     w = pd.Series({"g1": 0.5, "g2": 0.5})
-    for f in (weighted_sum, topsis, promethee):
+    for f in (weighted_sum, topsis):
         assert f(m, w, d).order == ["best", "mid", "worst"]
 
 
@@ -64,13 +64,6 @@ def test_wsm_rejects_unoriented_min():
     m = pd.DataFrame({"g": [1.0, 2.0]}, index=["a", "b"])
     with pytest.raises(ValueError):
         weighted_sum(m, pd.Series({"g": 1.0}), pd.Series({"g": "min"}), normalization="vector")
-
-
-def test_promethee_flows_sum_to_zero(fournisseur):
-    res = evaluate(fournisseur, "promethee")
-    assert res.scores.sum() == pytest.approx(0, abs=1e-12)
-    f = res.details["Flux"]
-    assert np.allclose(f["φ⁺"] - f["φ⁻"], f["φ net"])
 
 
 def test_roundtrip_json_and_excel(tmp_path, stratema2):

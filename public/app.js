@@ -69,8 +69,8 @@ function blankModel() {
   return {
     name: "Nouveau projet", description: "",
     criteria: [
-      { id: "C1", name: "Coût", direction: "min", unit: "€", aggregation: "sum", pref: { type: "usual" } },
-      { id: "C2", name: "Qualité", direction: "max", unit: "/5", aggregation: "mean", pref: { type: "usual" } },
+      { id: "C1", name: "Coût", direction: "min", unit: "€", aggregation: "sum" },
+      { id: "C2", name: "Qualité", direction: "max", unit: "/5", aggregation: "mean" },
     ],
     attributes: [],
     alternatives: [
@@ -88,7 +88,7 @@ function blankModel() {
 function defaultUI() {
   return {
     methods: { wsm: { on: true, normalization: "minmax" }, wpm: { on: false, normalization: "max" },
-      topsis: { on: true, normalization: "vector" }, promethee: { on: true } },
+      topsis: { on: true, normalization: "vector" } },
     primary: "topsis", sweep: null, mc: { n: 10000, spread: 0.2, uniform: false },
     profiles: [], equalProfile: true, scenarios: [], delphi: [{ alternative: "", column: "", r1: "", r2: "", r3: "" }], iqr: 1,
   };
@@ -99,7 +99,7 @@ function fromProblem(d) {
   const m = blankModel();
   m.name = d.name || "Projet"; m.description = d.description || "";
   m.criteria = (d.criteria || []).map((c) => ({ id: c.id, name: c.name || c.id, direction: c.direction || "max", unit: c.unit || "",
-    aggregation: c.aggregation || "mean", pref: { type: "usual", ...(c.preference || {}) } }));
+    aggregation: c.aggregation || "mean" }));
   m.attributes = (d.attributes || []).map((a) => ({ id: a.id, name: a.name || a.id, unit: a.unit || "", aggregation: a.aggregation || "sum" }));
   m.alternatives = (d.alternatives || []).map((a) => ({ id: String(a.id), name: a.name || String(a.id), values: { ...(a.values || {}) } }));
   m.constraints = (d.constraints || []).map((c) => ({ column: c.column, op: c.op, value: c.value }));
@@ -156,9 +156,7 @@ function toProblem() {
   const p = {
     name: S.name || "Projet", description: S.description || "",
     criteria: S.criteria.filter((c) => String(c.id || "").trim()).map((c) => {
-      const pref = { type: c.pref?.type || "usual" };
-      for (const k of ["q", "p", "s"]) if (num(c.pref?.[k]) !== null) pref[k] = num(c.pref[k]);
-      return { id: String(c.id).trim(), name: c.name || c.id, direction: c.direction || "max", unit: c.unit || "", aggregation: c.aggregation || "mean", preference: pref };
+      return { id: String(c.id).trim(), name: c.name || c.id, direction: c.direction || "max", unit: c.unit || "", aggregation: c.aggregation || "mean" };
     }),
     attributes: S.attributes.filter((a) => String(a.id || "").trim()).map((a) => ({ id: String(a.id).trim(), name: a.name || a.id, unit: a.unit || "", aggregation: a.aggregation || "sum" })),
     alternatives: S.alternatives.filter((a) => String(a.id || "").trim()).map((a) => ({
@@ -269,17 +267,14 @@ const shortLabel = (id, labels) => (S.portfolio.on ? id : labels?.[id] ?? id);
 // ============================================================================ onglet Données
 function renderData() {
   $("#p-name").value = S.name; $("#p-desc").value = S.description;
-  const prefs = Object.keys(META.preference_functions);
   editableTable($("#criteria-table"), [
     { key: "id", label: "id", placeholder: "C1" },
     { key: "name", label: "nom" },
     { key: "direction", label: "sens", type: "select", options: [["max", "max"], ["min", "min"]] },
     { key: "unit", label: "unité" },
     { key: "aggregation", label: "agrégation", type: "select", options: META.aggregations },
-    { key: "pref", label: "préférence", type: "select", options: prefs, get: (r) => r.pref?.type, set: (r, v) => ((r.pref ??= {}).type = v) },
-    ...["q", "p", "s"].map((k) => ({ key: k, label: k, type: "number", get: (r) => r.pref?.[k], set: (r, v) => ((r.pref ??= {})[k] = v) })),
   ], S.criteria, { onChange: (s) => { changed({ structure: s }); if (s) renderWeightsInput(); },
-    newRow: () => ({ id: `C${S.criteria.length + 1}`, name: "", direction: "max", unit: "", aggregation: "mean", pref: { type: "usual" } }), structuralKeys: ["id"] });
+    newRow: () => ({ id: `C${S.criteria.length + 1}`, name: "", direction: "max", unit: "", aggregation: "mean" }), structuralKeys: ["id"] });
 
   editableTable($("#attributes-table"), [
     { key: "id", label: "id" }, { key: "name", label: "nom" }, { key: "unit", label: "unité" },
@@ -522,7 +517,7 @@ async function runResults() {
         el("div", {}, el("h3", {}, "Corrélation de rang (τ de Kendall)"), dataTable(c.kendall_tau, { digits: 3 }),
           el("p", { class: "hint" }, "1 = classements identiques, −1 = inversés."))));
       if (c.divergent.length) out.append(el("p", { class: "hint" }, "Rangs divergents pour : " + c.divergent.map((i) => labels[i]).join(", ")
-        + ". Causes typiques : compensation (additive vs surclassement), normalisation, seuils de préférence PROMETHEE, valeurs cardinales vs notes."));
+        + ". Causes typiques : logique de compensation (somme pondérée, produit pondéré, distance à l'idéal), normalisation, valeurs cardinales vs notes."));
     }
 
     const det = el("details", { class: "box" }, el("summary", {}, "Matrice de décision et détail des calculs"));
@@ -686,6 +681,9 @@ function selectTab(t) {
 
 function load(model) {
   S = model; S.ui = { ...defaultUI(), ...(model.ui || {}) };
+  // ne garder que les méthodes proposées par le serveur (ex. anciens projets enregistrés)
+  for (const k of Object.keys(S.ui.methods)) if (!META.methods[k]) delete S.ui.methods[k];
+  if (!META.methods[S.ui.primary]) S.ui.primary = "topsis";
   LAST = { validate: null, analyze: null, sens: null, delphi: null };
   renderData(); renderMethodPicker(); renderWeightsInput(); save(); refreshValidation();
   refreshTab(currentTab());

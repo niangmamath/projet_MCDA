@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>mcdakit — Prendre de meilleures décisions multicritères</title>
-  <meta name="description" content="Comparez plusieurs options sur plusieurs critères, pondérez avec l'AHP, consultez des experts (Delphi), classez avec TOPSIS ou PROMETHEE et vérifiez la robustesse de votre choix. Gratuit, sans inscription.">
+  <meta name="description" content="Comparez plusieurs options sur plusieurs critères, pondérez avec l'AHP, consultez des experts (Delphi), classez par somme pondérée ou TOPSIS et vérifiez la robustesse de votre choix. Gratuit, sans inscription.">
   <meta property="og:title" content="mcdakit — Aide à la décision multicritère">
   <meta property="og:description" content="Structurer une décision, la justifier et tester sa robustesse, en quelques minutes.">
   <meta property="og:image" content="/img/resultats.webp">
@@ -46,8 +46,8 @@
           <a class="btn btn-ghost" href="/app?exemple=stratema_methode2">Voir le cas Stratema</a>
         </div>
         <div class="hero-figures">
-          <div><b>6</b><span>méthodes MCDA</span></div>
-          <div><b>10/10</b><span>cas publiés reproduits</span></div>
+          <div><b>5</b><span>méthodes MCDA</span></div>
+          <div><b>6/6</b><span>cas publiés reproduits</span></div>
           <div><b>0 €</b><span>sans inscription</span></div>
         </div>
       </div>
@@ -75,10 +75,10 @@
     <div class="wrap">
       <p class="eyebrow">mcdakit en chiffres</p>
       <div class="figures-grid">
-        <div><b id="v-cases">10/10</b><span>Cas publiés reproduits</span><small>articles et manuels, à la précision publiée</small></div>
-        <div><b>6 500</b><span>Comparaisons croisées</span><small>avec pymcdm et pyDecision, écart &lt; 10<sup>−15</sup></small></div>
-        <div><b>98</b><span>Tests automatiques</span><small>dont 9 familles de propriétés mathématiques</small></div>
-        <div><b>6</b><span>Méthodes</span><small>AHP, Delphi, somme et produit pondérés, TOPSIS, PROMETHEE</small></div>
+        <div><b id="v-cases">6/6</b><span>Cas publiés reproduits</span><small>articles et manuels, à la précision publiée</small></div>
+        <div><b>4 000</b><span>Comparaisons croisées</span><small>avec pymcdm et pyDecision, écart &lt; 10<sup>−15</sup></small></div>
+        <div><b>76</b><span>Tests automatiques</span><small>dont 9 familles de propriétés mathématiques</small></div>
+        <div><b>5</b><span>Méthodes</span><small>AHP, Delphi, somme pondérée, produit pondéré, TOPSIS</small></div>
       </div>
     </div>
   </section>
@@ -170,8 +170,8 @@
           <div class="step-text">
             <span class="step-num">4</span>
             <h3>Obtenez le classement</h3>
-            <p>Cochez une ou plusieurs méthodes : <b>somme pondérée</b>, <b>produit pondéré</b>, <b>TOPSIS</b>,
-              <b>PROMETHEE II</b>. La recommandation s'affiche avec l'écart au deuxième.</p>
+            <p>Cochez une ou plusieurs méthodes : <b>somme pondérée</b>, <b>produit pondéré</b> ou <b>TOPSIS</b>.
+              La recommandation s'affiche avec l'écart au deuxième.</p>
             <ul class="ticks">
               <li>Les méthodes sont comparées entre elles (rangs, corrélation de Kendall).</li>
               <li>Si elles divergent, l'outil vous le signale et donne les pistes d'explication.</li>
@@ -229,7 +229,7 @@
         <article><h3>Somme pondérée</h3><p class="m-tag">Compensatoire</p><p>La plus intuitive : chaque critère contribue à proportion de son poids. Une faiblesse se rattrape par une force.</p></article>
         <article><h3>Produit pondéré</h3><p class="m-tag">Compensation partielle</p><p>Multiplie au lieu d'additionner : pénalise les options très déséquilibrées.</p></article>
         <article><h3>TOPSIS</h3><p class="m-tag">Distance à l'idéal</p><p>Classe selon la proximité à une option idéale fictive et l'éloignement de la pire.</p></article>
-        <article><h3>PROMETHEE II</h3><p class="m-tag">Surclassement</p><p>Compare les options deux à deux avec des seuils d'indifférence et de préférence : un petit écart ne compte pas.</p></article>
+        <article><h3>Analyse de sensibilité</h3><p class="m-tag">Robustesse</p><p>Seuils de basculement des poids, Monte-Carlo, profils de décideurs et scénarios sur les données : dans quelle mesure faire confiance au choix ?</p></article>
       </div>
       <p class="note center">Toutes les méthodes sont implémentées dans une bibliothèque Python open source et testées sur un cas réel
         dont elles reproduisent les résultats publiés au dix-millième près.</p>
@@ -250,9 +250,8 @@
           <tbody id="v-body"><tr><td colspan="5" class="muted">Recalcul en direct des cas publiés…</td></tr></tbody>
         </table>
       </div>
-      <p class="note center" id="v-note">Essayez vous-même : chargez <a href="/app?exemple=cas_publie_promethee_eolien_ziemba2017">le parc éolien de Ziemba et al. (2017)</a>,
-        <a href="/app?exemple=cas_publie_topsis_ersoy2021">la sélection d'équipement d'Ersoy (2021)</a>,
-        <a href="/app?exemple=cas_publie_promethee_papathanasiou2018">l'exemple PROMETHEE de Papathanasiou &amp; Ploskas</a> ou
+      <p class="note center" id="v-note">Essayez vous-même : chargez
+        <a href="/app?exemple=cas_publie_topsis_ersoy2021">la sélection d'équipement d'Ersoy (2021)</a> ou
         <a href="/app?exemple=cas_publie_saw_rizan2020">l'admission d'élèves de Rizan et al. (2020)</a>, et comparez aux valeurs de l'article.</p>
     </div>
   </section>
@@ -320,9 +319,9 @@
             puis oublié : rien n'est conservé côté serveur. Pensez à exporter le projet (JSON) si vous changez d'ordinateur
             ou videz le cache.</p></details>
         <details><summary>Quelle méthode choisir ?</summary>
-          <p>Commencez par la somme pondérée (la plus lisible) et TOPSIS. Ajoutez PROMETHEE si un petit écart sur un critère
-            ne doit pas compter, ou si une très forte faiblesse ne doit pas être compensée. L'important est de comparer :
-            si toutes les méthodes s'accordent, votre choix est solide.</p></details>
+          <p>Commencez par la somme pondérée (la plus lisible), puis confrontez-la à TOPSIS, qui raisonne en distance à
+            une option idéale. Le produit pondéré pénalise davantage les options déséquilibrées. L'important est de comparer :
+            si les méthodes s'accordent, votre choix est solide ; sinon, l'écart mérite d'être expliqué.</p></details>
         <details><summary>Que signifie le ratio de cohérence AHP ?</summary>
           <p>Il mesure si vos comparaisons se contredisent (A plus important que B, B que C, mais C que A). En dessous de 10 %,
             elles sont jugées cohérentes ; au-delà, l'outil indique quelles comparaisons revoir.</p></details>

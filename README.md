@@ -74,7 +74,7 @@ sont dans la **bibliothèque de cas** de la page d'accueil (`/#bibliotheque`). O
 
 ```bash
 # analyse complète + rapport (HTML, .md ou .xlsx selon l'extension)
-mcdakit run examples/stratema_methode2.json -m topsis -m wsm -m promethee --report rapport.html
+mcdakit run examples/stratema_methode2.json -m topsis -m wsm --report rapport.html
 
 # une seule méthode avec paramètres
 mcdakit rank examples/stratema_methode1.json -m wsm:normalization=none
@@ -96,13 +96,13 @@ from mcdakit import DecisionProblem, evaluate, full_analysis, weight_thresholds,
 
 problem = DecisionProblem.load("examples/bibliotheque/choix_fournisseur.yaml")
 
-res = evaluate(problem, "topsis")                 # ou "wsm", "wpm", "promethee"
+res = evaluate(problem, "topsis")                 # ou "wsm", "wpm"
 print(res.table(problem.labels()))                # scores, rangs, écarts au 1er
 print(res.details["Distances"])                   # calculs intermédiaires
 
 print(weight_thresholds(problem, "topsis"))       # où la décision bascule
 
-fa = full_analysis(problem, {"topsis": {}, "promethee": {}},
+fa = full_analysis(problem, {"topsis": {}, "wsm": {}},
                    scenarios={"Délai F3 + 10 j": [("F3", "DELAI", 17)]})
 print(fa.diagnosis)                               # robuste / modérément robuste / fragile
 open("rapport.html", "w").write(to_html(fa))
@@ -132,15 +132,15 @@ reproduit l'intégralité des calculs des deux rapports Stratema et écrit
 
 Les calculs sont validés de trois façons (détail et chiffres dans [`docs/VALIDATION.md`](docs/VALIDATION.md)) :
 
-- **10 cas publiés** (articles et manuels : Opricovic & Tzeng 2004, Ziemba 2017 et 2019, Papathanasiou & Ploskas 2018,
-  Wang & Chin 2011…) reproduits à la précision de la publication — `mcdakit/benchmarks.py`, `tests/test_literature.py` ;
+- **6 cas publiés** (articles et manuels : Opricovic & Tzeng 2004, Ersoy 2021, Wang & Chin 2011,
+  Papathanasiou & Ploskas 2018, Rizan 2020, Chakraborty 2015) reproduits à la précision de la publication — `mcdakit/benchmarks.py`, `tests/test_literature.py` ;
 - **validation croisée** avec deux bibliothèques indépendantes (pymcdm, pyDecision) sur des centaines de problèmes
   aléatoires : écarts de l'ordre de 10⁻¹⁶ — `tests/test_cross_validation.py` ;
 - **propriétés mathématiques** (dominance, changement d'unité, permutation, bornes, cohérence AHP, seuils de
   basculement…) — `tests/test_properties.py`.
 
 `python examples/validation.py` régénère le rapport ; l'API recalcule les cas publiés à la demande (`GET /api/validation`).
-Quatre de ces cas sont dans la bibliothèque de cas (`examples/bibliotheque/`), ouvrable depuis la page d'accueil.
+Deux de ces cas sont dans la bibliothèque de cas (`examples/bibliotheque/`), ouvrable depuis la page d'accueil.
 
 ## 4. Format d'un projet
 
@@ -166,7 +166,7 @@ mcdakit/
 ├── weights.py        poids égaux / directs / ROC / rank-sum / AHP (vecteur propre ou moyenne géométrique, RC)
 ├── delphi.py         médiane, quartiles, consensus (IQR) et stabilité entre tours
 ├── normalization.py  none, vector, minmax, max, sum (avec ou sans réorientation des critères à minimiser)
-├── methods.py        WSM, WPM, TOPSIS, PROMETHEE II (+ incomparabilités PROMETHEE I) — signature commune
+├── methods.py        somme pondérée (WSM), produit pondéré (WPM), TOPSIS — signature commune
 ├── analysis.py       evaluate, run_methods, compare_methods (τ de Kendall, ρ de Spearman)
 ├── sensitivity.py    moteur vectorisé, balayage, seuils, profils, Monte-Carlo, scénarios, diagnostic
 ├── report.py         analyse complète + rendu Markdown / HTML / Excel
@@ -187,7 +187,7 @@ les rapports (et apparaît dans l'interface web via `/api/meta`). Pour la rendre
 pytest
 ```
 
-Tests (98) : propriétés mathématiques (cohérence AHP, flux PROMETHEE de somme nulle, respect de la dominance par
+Tests (76) : propriétés mathématiques (cohérence AHP, bornes TOPSIS, respect de la dominance par
 toutes les méthodes), aller-retour JSON/Excel, égalité moteur vectorisé ↔ méthodes, et reproduction des
 résultats publiés dans les deux rapports Stratema, et appels de toutes les routes de l'API.
 
@@ -209,7 +209,7 @@ Chaque `git push` sur `main` redéploie automatiquement. La documentation intera
 | Route | Rôle |
 |---|---|
 | `GET /api/validation` | recalcule les cas publiés et les compare aux résultats imprimés |
-| `GET /api/meta` | méthodes, normalisations, fonctions de préférence disponibles |
+| `GET /api/meta` | méthodes et normalisations disponibles |
 | `GET /api/examples` | cas Stratema du menu « Charger un exemple » |
 | `GET /api/library` | bibliothèque de cas (cas publiés, exemple générique) |
 | `GET /api/examples/{id}` | contenu d'un exemple (menu ou bibliothèque) |

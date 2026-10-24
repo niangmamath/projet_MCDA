@@ -33,7 +33,7 @@ def _method_spec(text: str) -> tuple[str, dict]:
 
 def cmd_run(args) -> int:
     problem = DecisionProblem.load(args.problem)
-    methods = dict(args.method or [("wsm", {}), ("topsis", {}), ("promethee", {})])
+    methods = dict(args.method or [("wsm", {}), ("topsis", {})])
     scenarios = json.loads(Path(args.scenarios).read_text(encoding="utf-8")) if args.scenarios else None
     profiles = json.loads(Path(args.profiles).read_text(encoding="utf-8")) if args.profiles else None
     fa = full_analysis(problem, methods, primary=args.primary, mc_runs=args.mc, mc_spread=args.spread,
@@ -98,7 +98,7 @@ def main(argv=None) -> int:
     r = sub.add_parser("run", help="analyse complète (méthodes, comparaison, sensibilité, rapport)")
     r.add_argument("problem", help="fichier .json, .yaml ou .xlsx")
     r.add_argument("-m", "--method", action="append", type=_method_spec,
-                   help="méthode[:param=valeur,...] (répétable). Défaut : wsm, topsis, promethee")
+                   help="méthode[:param=valeur,...] (répétable). Défaut : wsm, topsis")
     r.add_argument("--primary", help="méthode de référence pour la sensibilité (défaut : la première)")
     r.add_argument("--mc", type=int, default=5000, help="nombre de tirages Monte-Carlo (0 pour désactiver)")
     r.add_argument("--spread", type=float, default=0.2, help="dispersion relative des poids tirés")

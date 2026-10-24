@@ -49,7 +49,7 @@ def full_analysis(problem: DecisionProblem, methods: dict[str, dict] | list[str]
                   primary: str | None = None, mc_runs: int = 5000, mc_spread: float | None = 0.2,
                   scenarios: dict[str, list] | None = None, profiles: dict[str, dict] | None = None,
                   seed: int = 42) -> FullAnalysis:
-    methods = methods or ["wsm", "topsis", "promethee"]
+    methods = methods or ["wsm", "topsis"]
     if isinstance(methods, (list, tuple)):
         methods = {m: {} for m in methods}
     primary = primary or next(iter(methods))
@@ -241,11 +241,7 @@ def build_document(fa: FullAnalysis) -> _Doc:
         doc.h(3, f"4.{k}. {METHOD_LABELS.get(key, key)}")
         doc.p(METHOD_LOGIC.get(key, ""))
         if r.params:
-            doc.p("Paramètres : " + "; ".join(f"{a} = {b}" for a, b in r.params.items() if a != "preferences"))
-        if key == "promethee":
-            prefs = r.params.get("preferences", {})
-            doc.table(pd.DataFrame({c: {"type": v.get("type", "usual"), "q": v.get("q", ""), "p": v.get("p", ""), "s": v.get("s", "")}
-                                    for c, v in prefs.items()}).T, caption="Fonctions de préférence")
+            doc.p("Paramètres : " + "; ".join(f"{a} = {b}" for a, b in r.params.items()))
         for name, d in r.details.items():
             if name.startswith("P_"):
                 continue
@@ -265,7 +261,7 @@ def build_document(fa: FullAnalysis) -> _Doc:
               "Les méthodes ne désignent pas la même alternative : " + ", ".join(f"{k} → {lab[v]}" for k, v in c["winners"].items()) + ".")
         if c["divergent"]:
             doc.p("Alternatives dont le rang diffère selon la méthode : " + ", ".join(lab[i] for i in c["divergent"]) +
-                  ". Pistes d'explication : compensation (additive vs surclassement), normalisation, seuils de préférence, échelles des données.")
+                  ". Pistes d'explication : logique de compensation (additive, multiplicative, distance à l'idéal), normalisation, échelles des données.")
 
     # --- sensibilité
     doc.h(2, "6. Analyse de sensibilité et robustesse")

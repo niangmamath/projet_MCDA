@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "mcdakit"
 version = "1.0.0"
-description = "Boîte à outils générique d'aide à la décision multicritère : AHP, Delphi, somme pondérée, produit pondéré, TOPSIS, PROMETHEE, portefeuilles sous contraintes et analyse de sensibilité."
+description = "Boîte à outils générique d'aide à la décision multicritère : AHP, Delphi, somme pondérée, produit pondéré, TOPSIS, portefeuilles sous contraintes et analyse de sensibilité."
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}

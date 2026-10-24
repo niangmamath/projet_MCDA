@@ -12,11 +12,8 @@ from .weights import resolve_weights
 
 
 def method_params(problem: DecisionProblem, method: str, params: dict | None = None) -> dict:
-    """Paramètres effectifs d'une méthode (les préférences PROMETHEE viennent des critères par défaut)."""
-    params = dict(params or {})
-    if method == "promethee" and "preferences" not in params:
-        params["preferences"] = {c.id: c.preference for c in problem.criteria}
-    return params
+    """Paramètres effectifs d'une méthode (copie des paramètres fournis)."""
+    return dict(params or {})
 
 
 def evaluate(problem: DecisionProblem, method: str = "topsis", weights: pd.Series | dict | None = None,

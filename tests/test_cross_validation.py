@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from mcdakit.methods import promethee, topsis, weighted_product, weighted_sum
+from mcdakit.methods import topsis, weighted_product, weighted_sum
 from mcdakit.weights import ahp
 
 pm = pytest.importorskip("pymcdm.methods")
@@ -47,17 +47,6 @@ def test_topsis_wsm_wpm_match_pymcdm():
         _close(topsis(m, ws, d, normalization="minmax").scores, pm.TOPSIS(pn.minmax_normalization)(x, w, t))
         _close(weighted_sum(m, ws, d, normalization="max").scores, pm.WSM(pn.linear_normalization)(x, w, t, validation=False))
         _close(weighted_product(m, ws, d, normalization="max").scores, pm.WPM(pn.linear_normalization)(x, w, t, validation=False))
-
-
-@pytest.mark.parametrize("kind", ["usual", "ushape", "vshape", "level", "linear"])
-def test_promethee_matches_pymcdm(kind):
-    for rng, x, w, t, m, ws, d in _problems(2):
-        span = x.max(0) - x.min(0)
-        q = rng.uniform(0, 0.3, len(w)) * span
-        p = q + rng.uniform(0.1, 0.7, len(w)) * span
-        prefs = {c: {"type": kind, "q": q[j], "p": p[j]} for j, c in enumerate(m.columns)}
-        ref = pm.PROMETHEE_II("vshape_2" if kind == "linear" else kind, p=p, q=q)(x, w, t)
-        _close(promethee(m, ws, d, preferences=prefs).scores, ref)
 
 
 def _random_reciprocal(rng, k):

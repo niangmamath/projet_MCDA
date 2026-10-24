@@ -14,7 +14,7 @@ from typing import Callable
 import numpy as np
 import pandas as pd
 
-from .methods import promethee, topsis, weighted_product, weighted_sum
+from .methods import topsis, weighted_product, weighted_sum
 from .weights import ahp
 
 
@@ -52,31 +52,6 @@ def _run(fn, matrix, weights, types, **kw) -> np.ndarray:
 # --------------------------------------------------------------------------- données publiées
 ERSOY_2021 = [[256, 8, 41, 1.6, 1.77, 7347.16], [256, 8, 32, 1.0, 1.8, 6919.99], [256, 8, 53, 1.6, 1.9, 8400],
               [256, 8, 41, 1.0, 1.75, 6808.9], [512, 8, 35, 1.6, 1.7, 8479.99], [256, 4, 35, 1.6, 1.7, 7499.99]]
-PAPATHANASIOU_PROMETHEE = [[8, 7, 2, 1], [5, 3, 7, 5], [7, 5, 6, 4], [9, 9, 7, 3], [11, 10, 3, 7], [6, 9, 5, 4]]
-ZIEMBA_2019 = np.array([
-    [38723, 34913, 25596, 34842, 22570, 39773, 19500, 34525, 16486],
-    [33207, 32085, 2123, 32095, 1445, 17485, 868, 16958, 958],
-    [0, 0.2, 5, 0.2, 0.2, 0.2, 99, 99, 99],
-    [3375, 3127, 3547, 3115, 3090, 4135, 3160, 4295, 3653],
-    [11.36, 12.78, 12.78, 12.86, 12.86, 17, 12.86, 17, 12.86],
-    [-320.9, -148.4, -148.4, -9.9, -9.9, 0, -9.9, 0, -9.9],
-    [203.7, 463, 356.2, 552.5, 295, 383, 264, 352, 264],
-    [0, 11.7, 44.8, 11.7, 95.9, 95.9, 116.8, 116.8, 164.9],
-    [0, 4.9, 10.7, 5.4, 11.2, 11.2, 11.2, 11.2, 11.2],
-    [1, 1, 1, 3.5, 4, 4, 4, 4, 4],
-    [21.5, 47.9, 27.7, 39.7, 1.5, 22.7, 2.7, 23.9, 1],
-    [0, 3.7, 4.5, 10.3, 11.5, 11.5, 11.3, 11.3, 11.4]]).T
-ZIEMBA_2019_W = [0.3333, 0.1667, 0.1667, 0.3333, 0.25, 0.75, 1, 1, 0.4, 0.20, 0.40, 1]
-ZIEMBA_2019_T = [-1, -1, 1, -1, 1, 1, -1, 1, 1, -1, -1, 1]
-ZIEMBA_2019_P = [2100, 5000, 50, 200, 5, 20, 100, 80, 4, 2, 23, 3]
-ZIEMBA_2019_Q = [420, 1000, 10, 40, 1, 7, 50, 20, 1, 1, 4.6, 1]
-ZIEMBA_2017 = np.array([
-    [16347, 14219, 8160, 8160], [9, 8.5, 9, 8.5], [73.8, 55, 64.8, 62.5], [36.7, 36, 28.5, 29.5],
-    [1.5, 2, 2, 1.5], [3730, 3240, 1860, 1860], [2, 1, 2, 1], [1, 1, 2, 3], [38.8, 33.1, 45.8, 27.3],
-    [4, 2, 4, 3], [1720524, 1496512, 858830, 858830], [40012, 34803, 19973, 19973]]).T
-ZIEMBA_2017_W = [20, 5, 5, 1.67, 1.67, 11.67, 11.67, 5, 5, 16.67, 8.33, 8.33]
-ZIEMBA_2017_T = [-1, -1, -1, -1, -1, 1, -1, -1, 1, -1, 1, 1]
-ZIEMBA_2017_P = [7280, 4, 13.4, 7.4, 3, 1662, 3, 3, 13.8, 3, 766240, 17820]
 WANG_CHIN_2011 = [[1, 4, 3, 1, 3, 4], [1 / 4, 1, 7, 3, 1 / 5, 1], [1 / 3, 1 / 7, 1, 1 / 5, 1 / 5, 1 / 6],
                   [1, 1 / 3, 5, 1, 1, 1 / 3], [1 / 3, 5, 5, 1, 1, 3], [1 / 4, 1, 6, 3, 1 / 3, 1]]
 PAPATHANASIOU_AHP_CRIT = [[1, 1, 5, 3], [1, 1, 5, 3], [1 / 5, 1 / 5, 1, 1 / 3], [1 / 3, 1 / 3, 3, 1]]
@@ -126,25 +101,6 @@ BENCHMARKS: list[Benchmark] = [
               "—", [0.308, 0.254, 0.327, 0.263, 0.857, 0.192], 3,
               lambda: _run(topsis, ERSOY_2021, [0.405, 0.221, 0.134, 0.199, 0.007, 0.034], [1, 1, 1, 1, -1, -1]),
               "Tolérance 0,001 : les poids entropiques sont publiés arrondis à 3 décimales.", tolerance=0.001),
-    Benchmark("zhao2013", "PROMETHEE II (fonction usuelle)",
-              "Zhao, Peng & Li (2013), Revised PROMETHEE II for improving efficiency in emergency response. Procedia Computer Science 17",
-              "—", [0.1, -0.3, 0.2], 2,
-              lambda: _run(promethee, [[4, 3, 2], [3, 2, 4], [5, 1, 3]], [0.5, 0.3, 0.2], [1, 1, 1])),
-    Benchmark("papathanasiou2018_promethee", "PROMETHEE II (fonction linéaire q = 1, p = 2)",
-              "Papathanasiou & Ploskas (2018), PROMETHEE. In Multiple Criteria Decision Aid, Springer",
-              "10.1007/978-3-319-91648-4_3", [-0.26, -0.52, -0.22, 0.36, 0.70, -0.06], 2,
-              lambda: _run(promethee, PAPATHANASIOU_PROMETHEE, [0.4, 0.3, 0.1, 0.2], [1] * 4,
-                           preferences={f"C{j + 1}": {"type": "linear", "q": 1, "p": 2} for j in range(4)})),
-    Benchmark("ziemba2019", "PROMETHEE II (fonction linéaire, seuils par critère)",
-              "Ziemba (2019), Towards strong sustainability management — a generalized PROSA method. Sustainability 11(6)",
-              "10.3390/su11061555", [-0.4143, -0.5056, -0.2317, -0.2892, 0.3313, 0.0619, 0.4296, 0.1626, 0.4554], 4,
-              lambda: _run(promethee, ZIEMBA_2019, ZIEMBA_2019_W, ZIEMBA_2019_T,
-                           preferences={f"C{j + 1}": {"type": "linear", "q": ZIEMBA_2019_Q[j], "p": ZIEMBA_2019_P[j]} for j in range(12)})),
-    Benchmark("ziemba2017", "PROMETHEE II (fonction en V)",
-              "Ziemba, Wątróbski, Zioło & Karczmarczyk (2017), Using the PROSA method in offshore wind farm location problems. Energies 10(11)",
-              "10.3390/en10111755", [-0.0445, 0.1884, -0.0954, -0.0485], 4,
-              lambda: _run(promethee, ZIEMBA_2017, ZIEMBA_2017_W, ZIEMBA_2017_T,
-                           preferences={f"C{j + 1}": {"type": "vshape", "p": ZIEMBA_2017_P[j]} for j in range(12)})),
     Benchmark("wangchin2011", "AHP — poids par vecteur propre",
               "Wang & Chin (2011), A linear programming approximation to the eigenvector method in the analytic hierarchy process. Information Sciences 181(23)",
               "—", [0.3208, 0.1395, 0.0348, 0.1285, 0.2374, 0.1391], 4,

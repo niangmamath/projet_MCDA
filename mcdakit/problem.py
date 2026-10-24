@@ -1,7 +1,7 @@
 """Modèle de données d'un problème de décision multicritère.
 
 Un problème est décrit par :
-  * des critères (sens max/min, règle d'agrégation pour les portefeuilles, fonction de préférence PROMETHEE) ;
+  * des critères (sens max/min, règle d'agrégation pour les portefeuilles) ;
   * des attributs optionnels (colonnes qui ne sont pas des critères mais servent aux contraintes, ex. budget) ;
   * des alternatives avec leurs valeurs ;
   * une spécification de poids (directs, égaux, rangs, AHP) ;
@@ -59,7 +59,6 @@ class Criterion:
     direction: str = "max"          # "max" (plus c'est haut mieux c'est) ou "min"
     unit: str = ""
     aggregation: str = "mean"       # utilisée seulement en mode portefeuille
-    preference: dict = field(default_factory=lambda: {"type": "usual"})  # PROMETHEE
 
     def __post_init__(self):
         self.name = self.name or self.id
@@ -140,7 +139,8 @@ class DecisionProblem:
     # ------------------------------------------------------------------ construction
     @classmethod
     def from_dict(cls, data: dict) -> "DecisionProblem":
-        criteria = [Criterion(**c) for c in data["criteria"]]
+        crit_keys = {"id", "name", "direction", "unit", "aggregation"}
+        criteria = [Criterion(**{k: v for k, v in c.items() if k in crit_keys}) for c in data["criteria"]]
         attributes = [Attribute(**a) for a in data.get("attributes", [])]
         rows = []
         for alt in data["alternatives"]:

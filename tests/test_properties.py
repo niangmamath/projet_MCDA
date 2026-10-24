@@ -4,13 +4,12 @@ import pandas as pd
 import pytest
 
 from mcdakit import DecisionProblem, delphi, evaluate, monte_carlo, weight_thresholds
-from mcdakit.methods import METHODS, preference_degree
+from mcdakit.methods import METHODS
 from mcdakit.sensitivity import WeightScorer, set_weight
 from mcdakit.weights import ahp
 
 CONFIGS = [("wsm", {"normalization": "minmax"}), ("wsm", {"normalization": "max"}), ("wpm", {"normalization": "max"}),
-           ("topsis", {"normalization": "vector"}), ("topsis", {"normalization": "minmax"}),
-           ("promethee", {}), ("promethee", {"preferences": "linear"})]
+           ("topsis", {"normalization": "vector"}), ("topsis", {"normalization": "minmax"})]
 
 
 def _random(seed, n=None, m=None):
@@ -25,10 +24,6 @@ def _random(seed, n=None, m=None):
 
 
 def _call(key, params, x, w, d):
-    params = dict(params)
-    if params.get("preferences") == "linear":
-        span = (x.max() - x.min())
-        params["preferences"] = {c: {"type": "linear", "q": 0.1 * span[c], "p": 0.6 * span[c]} for c in x.columns}
     return METHODS[key](x, w, d, **params).scores
 
 
@@ -58,7 +53,7 @@ def test_permutation_of_alternatives(key, params):
 
 @pytest.mark.parametrize("key,params", CONFIGS)
 def test_change_of_unit(key, params):
-    """Changer d'unité (×k sur un critère) ne change pas le classement (seuils PROMETHEE mis à l'échelle)."""
+    """Changer d'unité (×k sur un critère) ne change pas le classement."""
     for seed in range(30):
         rng, x, w, d = _random(seed)
         s1 = _call(key, params, x, w, d)
@@ -94,21 +89,8 @@ def test_bounds():
         _, x, w, d = _random(seed)
         ci = METHODS["topsis"](x, w, d).scores
         assert ((ci >= 0) & (ci <= 1)).all()
-        phi = METHODS["promethee"](x, w, d).scores
-        assert ((phi >= -1) & (phi <= 1)).all() and abs(phi.sum()) < 1e-12
         r = METHODS["wsm"](x, w, d).details["Matrice normalisée"]
         assert (r.min().min() >= -1e-12) and (r.max().max() <= 1 + 1e-12)
-
-
-def test_preference_functions_shape():
-    d = np.linspace(-5, 10, 301)
-    for kind in ["usual", "ushape", "vshape", "level", "linear", "gaussian"]:
-        p = preference_degree(d, {"type": kind, "q": 1, "p": 4, "s": 2}, 10)
-        assert (p >= 0).all() and (p <= 1).all()
-        assert (p[d <= 0] == 0).all()
-        assert (np.diff(p) >= -1e-12).all()          # non décroissante
-    g = preference_degree(np.array([2.0]), {"type": "gaussian", "s": 2}, 10)
-    assert g[0] == pytest.approx(1 - np.exp(-0.5))
 
 
 def test_ahp_consistent_matrix_and_transpose():

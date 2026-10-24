@@ -1,7 +1,7 @@
 """Import / export d'un problème au format Excel (modèle à remplir sans écrire de JSON).
 
 Feuilles attendues :
-  * « Critères »     : id | nom | sens (max/min) | unité | poids | agrégation | préférence | q | p | s
+  * « Critères »     : id | nom | sens (max/min) | unité | poids | agrégation
   * « Alternatives » : id | nom | une colonne par critère et par attribut
   * « Attributs »    : id | nom | unité | agrégation                       (optionnelle)
   * « Contraintes »  : colonne | opérateur | valeur                         (optionnelle)
@@ -35,13 +35,8 @@ def read_excel(source) -> DecisionProblem:
         cid = _str(r.get("id"))
         if not cid:
             continue
-        pref = {"type": _str(r.get("préférence"), "usual") or "usual"}
-        for k in ("q", "p", "s"):
-            if k in r and pd.notna(r[k]):
-                pref[k] = float(r[k])
         criteria.append({"id": cid, "name": _str(r.get("nom"), cid), "direction": _str(r.get("sens"), "max").lower(),
-                         "unit": _str(r.get("unité")), "aggregation": _str(r.get("agrégation"), "mean") or "mean",
-                         "preference": pref})
+                         "unit": _str(r.get("unité")), "aggregation": _str(r.get("agrégation"), "mean") or "mean"})
         if "poids" in r and pd.notna(r["poids"]):
             weights[cid] = float(r["poids"])
     attributes = []
@@ -88,8 +83,7 @@ def write_excel(problem: DecisionProblem, target: str | Path | None = None) -> b
     from .weights import resolve_weights
     w, ahp_res = resolve_weights(problem)
     crit = pd.DataFrame([{"id": c.id, "nom": c.name, "sens": c.direction, "unité": c.unit, "poids": w[c.id],
-                          "agrégation": c.aggregation, "préférence": c.preference.get("type", "usual"),
-                          "q": c.preference.get("q"), "p": c.preference.get("p"), "s": c.preference.get("s")}
+                          "agrégation": c.aggregation}
                          for c in problem.criteria])
     cols = [c for c in problem.criterion_ids + problem.attribute_ids if c in problem.alternatives.columns]
     alts = problem.alternatives[["name"] + cols].rename(columns={"name": "nom"}).reset_index()

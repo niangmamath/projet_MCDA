@@ -8,7 +8,7 @@ Un logiciel d'aide à la décision doit produire des résultats exacts et vérif
 2. **Validation croisée** : sur des centaines de problèmes générés aléatoirement, mcdakit donne les mêmes nombres que deux bibliothèques développées par d'autres équipes (pymcdm, pyDecision).
 3. **Propriétés mathématiques** : la suite de tests vérifie les propriétés que toute méthode correcte doit respecter (dominance, changement d'unité, permutation, bornes, cohérence AHP…).
 
-**Bilan : 10 cas publiés reproduits sur 10 — tous conformes.**
+**Bilan : 6 cas publiés reproduits sur 6 — tous conformes.**
 
 ## 1. Reproduction de résultats publiés
 
@@ -18,10 +18,6 @@ Les données et résultats viennent des sources citées. Ces cas sont repris des
 |---|---|---|---|---|---|---|
 | opricovic2004 | TOPSIS (normalisation min-max) | 0,500 ; 0,617 ; 0,500 | 0,500 ; 0,617 ; 0,500 | 2.2e-04 | identique | conforme |
 | ersoy2021 | TOPSIS (normalisation vectorielle) | 0,308 ; 0,254 ; 0,327 ; 0,263 ; 0,857 ; 0,192 | 0,307 ; 0,254 ; 0,327 ; 0,262 ; 0,856 ; 0,191 | 7.5e-04 | identique | conforme |
-| zhao2013 | PROMETHEE II (fonction usuelle) | 0,10 ; -0,30 ; 0,20 | 0,10 ; -0,30 ; 0,20 | 8.3e-17 | identique | conforme |
-| papathanasiou2018_promethee | PROMETHEE II (fonction linéaire q = 1, p = 2) | -0,26 ; -0,52 ; -0,22 ; 0,36 ; 0,70 ; -0,06 | -0,26 ; -0,52 ; -0,22 ; 0,36 ; 0,70 ; -0,06 | 1.1e-16 | identique | conforme |
-| ziemba2019 | PROMETHEE II (fonction linéaire, seuils par critère) | -0,4143 ; -0,5056 ; -0,2317 ; -0,2892 ; 0,3313 ; 0,0619 ; 0,4296 ; 0,1626 ; 0,4554 | -0,4143 ; -0,5056 ; -0,2317 ; -0,2892 ; 0,3313 ; 0,0619 ; 0,4296 ; 0,1626 ; 0,4554 | 4.7e-05 | identique | conforme |
-| ziemba2017 | PROMETHEE II (fonction en V) | -0,0445 ; 0,1884 ; -0,0954 ; -0,0485 | -0,0445 ; 0,1884 ; -0,0954 ; -0,0485 | 2.4e-05 | identique | conforme |
 | wangchin2011 | AHP — poids par vecteur propre | 0,3208 ; 0,1395 ; 0,0348 ; 0,1285 ; 0,2374 ; 0,1391 | 0,3208 ; 0,1395 ; 0,0348 ; 0,1285 ; 0,2374 ; 0,1391 | 3.2e-05 | identique | conforme |
 | papathanasiou2018_ahp | AHP complet (critères et alternatives par paires) | 0,117 ; 0,071 ; 0,095 ; 0,212 ; 0,350 ; 0,155 | 0,117 ; 0,071 ; 0,095 ; 0,212 ; 0,350 ; 0,155 | 3.8e-04 | identique | conforme |
 | rizan2020 | Somme pondérée (SAW, normalisation x/max) | 0,350 ; 0,375 ; 0,825 ; 0,642 | 0,350 ; 0,375 ; 0,825 ; 0,642 | 3.3e-04 | identique | conforme |
@@ -31,16 +27,12 @@ Les données et résultats viennent des sources citées. Ces cas sont repris des
 
 - `opricovic2004` : Opricovic & Tzeng (2004), Compromise solution by MCDM methods: a comparative analysis of VIKOR and TOPSIS. European Journal of Operational Research 156(2). *Les valeurs publiées sont obtenues avec la normalisation min-max.*
 - `ersoy2021` : Ersoy (2021), Equipment selection for an e-commerce company using entropy-based TOPSIS, EDAS and CODAS methods during the COVID-19. LogForum 17(3). *Tolérance 0,001 : les poids entropiques sont publiés arrondis à 3 décimales.*
-- `zhao2013` : Zhao, Peng & Li (2013), Revised PROMETHEE II for improving efficiency in emergency response. Procedia Computer Science 17.
-- `papathanasiou2018_promethee` : Papathanasiou & Ploskas (2018), PROMETHEE. In Multiple Criteria Decision Aid, Springer — DOI 10.1007/978-3-319-91648-4_3.
-- `ziemba2019` : Ziemba (2019), Towards strong sustainability management — a generalized PROSA method. Sustainability 11(6) — DOI 10.3390/su11061555.
-- `ziemba2017` : Ziemba, Wątróbski, Zioło & Karczmarczyk (2017), Using the PROSA method in offshore wind farm location problems. Energies 10(11) — DOI 10.3390/en10111755.
 - `wangchin2011` : Wang & Chin (2011), A linear programming approximation to the eigenvector method in the analytic hierarchy process. Information Sciences 181(23).
 - `papathanasiou2018_ahp` : Papathanasiou & Ploskas (2018), AHP. In Multiple Criteria Decision Aid, Springer — DOI 10.1007/978-3-319-91648-4_5. *Priorités locales et poids par mcdakit.ahp, synthèse par somme pondérée sans normalisation.*
 - `rizan2020` : Rizan, Wahyuningsih, Pradana & Ramadella (2020), SAW method in supporting the process of admission of new junior high school students. CITSM 2020, IEEE — DOI 10.1109/CITSM50537.2020.9268874.
 - `chakraborty2015` : Chakraborty, Zavadskas & Antucheviciene (2015), Applications of WASPAS method as a multi-criteria decision-making tool. Economic Computation and Economic Cybernetics Studies and Research 49(1). *Les poids publiés somment à 1,0155 ; mcdakit renormalise à 1, le facteur est réappliqué pour la comparaison.*
 
-Quatre de ces cas sont fournis dans la bibliothèque de cas (`examples/bibliotheque/`, section « Bibliothèque de cas » de la page d'accueil) : chacun peut les ouvrir dans l'application et retrouver lui-même les valeurs.
+Deux de ces cas sont fournis dans la bibliothèque de cas (`examples/bibliotheque/`, section « Bibliothèque de cas » de la page d'accueil) : chacun peut les ouvrir dans l'application et retrouver lui-même les valeurs.
 
 Le projet Stratema (rapports AHP + somme pondérée et TOPSIS du projet) est également reproduit : poids AHP, RC = 2,34 %, scores des six couples, seuils de basculement, profils et scénarios (`tests/test_methods.py`, `tests/test_sensitivity.py`).
 
@@ -50,19 +42,14 @@ Le projet Stratema (rapports AHP + somme pondérée et TOPSIS du projet) est ég
 
 | Calcul | Comparaisons | Écart maximal |
 |---|---|---|
-| TOPSIS, normalisation vectorielle | 500 | 5.6e-16 |
+| TOPSIS, normalisation vectorielle | 500 | 4.4e-16 |
 | TOPSIS, normalisation min-max | 500 | 2.2e-16 |
 | Somme pondérée, normalisation x/max | 500 | 4.4e-16 |
 | Produit pondéré, normalisation x/max | 500 | 3.3e-16 |
-| PROMETHEE II, fonction usual | 500 | 4.4e-16 |
-| PROMETHEE II, fonction ushape | 500 | 3.9e-16 |
-| PROMETHEE II, fonction vshape | 500 | 4.4e-16 |
-| PROMETHEE II, fonction level | 500 | 3.3e-16 |
-| PROMETHEE II, fonction linear | 500 | 3.3e-16 |
 | AHP, poids (vecteur propre) — pymcdm | 500 | 0.0e+00 |
 | AHP, poids (vecteur propre) — pyDecision | 500 | 0.0e+00 |
 | AHP, ratio de cohérence — pyDecision | 500 | 0.0e+00 |
-| AHP, moyenne géométrique et RC — pyDecision | 500 | 8.9e-16 |
+| AHP, moyenne géométrique et RC — pyDecision | 500 | 1.6e-15 |
 
 Les écarts sont de l'ordre de 10⁻¹⁶, c'est-à-dire la précision des nombres en machine : les calculs sont identiques.
 
@@ -74,7 +61,7 @@ Les écarts sont de l'ordre de 10⁻¹⁶, c'est-à-dire la précision des nombr
 - **Permutation** : l'ordre de saisie des alternatives ne change aucun score.
 - **Changement d'unité** : exprimer un critère en k€ plutôt qu'en € ne change pas le résultat.
 - **Poids** : multiplier tous les poids par une constante ne change rien ; tout le poids sur un critère donne le classement de ce critère.
-- **Bornes** : TOPSIS dans [0, 1] ; flux PROMETHEE dans [−1, 1] et de somme nulle ; fonctions de préférence croissantes, nulles pour un écart ≤ 0.
+- **Bornes** : TOPSIS dans [0, 1] ; matrices normalisées dans [0, 1].
 - **AHP** : une matrice parfaitement cohérente redonne exactement les poids et RC = 0 ; inverser les jugements inverse les priorités.
 - **Delphi** : médiane et quartiles identiques à ceux de numpy.
 - **Portefeuilles** : avec la moyenne et une somme pondérée, score(XY) = [score(X) + score(Y)] / 2 ; aucune combinaison retenue ne viole une contrainte.

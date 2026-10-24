@@ -26,7 +26,7 @@ from mcdakit import (DecisionProblem, compare_methods, data_scenarios, delphi, d
                      monte_carlo, resolve_weights, run_methods, to_excel, to_html, to_markdown, value_threshold,
                      weight_profiles, weight_sweep, weight_thresholds)
 from mcdakit.io_excel import read_excel, write_excel  # noqa: E402
-from mcdakit.methods import METHOD_LABELS, METHOD_LOGIC, METHODS, PREFERENCE_FUNCTIONS  # noqa: E402
+from mcdakit.methods import METHOD_LABELS, METHOD_LOGIC, METHODS  # noqa: E402
 from mcdakit.normalization import NORMALIZATIONS  # noqa: E402
 from mcdakit.problem import AGGREGATIONS, OPERATORS  # noqa: E402
 
@@ -80,7 +80,7 @@ def method_result(key: str, r, labels: pd.Series) -> dict:
             details[name] = table(d)
         elif isinstance(d, list):
             details[name] = [list(x) for x in d]
-    params = {k: v for k, v in r.params.items() if k != "preferences"}
+    params = dict(r.params)
     return {"key": key, "label": METHOD_LABELS.get(key, key), "logic": METHOD_LOGIC.get(key, ""),
             "score_label": r.score_label, "scores": series(r.scores), "ranking": series(r.ranking),
             "order": r.order, "best": r.best, "table": table(r.table(labels)), "details": details, "params": params}
@@ -92,7 +92,7 @@ class ProblemBody(BaseModel):
 
 
 class AnalyzeBody(ProblemBody):
-    methods: dict[str, dict] = Field(default_factory=lambda: {"wsm": {}, "topsis": {}, "promethee": {}})
+    methods: dict[str, dict] = Field(default_factory=lambda: {"wsm": {}, "topsis": {}})
 
 
 class SensitivityBody(ProblemBody):
@@ -155,7 +155,7 @@ def health():
 def meta():
     """Listes de choix pour l'interface."""
     return {"methods": METHOD_LABELS, "logic": METHOD_LOGIC, "normalizations": NORMALIZATIONS,
-            "preference_functions": PREFERENCE_FUNCTIONS, "aggregations": list(AGGREGATIONS),
+            "aggregations": list(AGGREGATIONS),
             "operators": list(OPERATORS),
             "default_normalization": {"wsm": "minmax", "wpm": "max", "topsis": "vector"}}
 

@@ -17,7 +17,7 @@ import numpy as np
 import pandas as pd
 
 from .analysis import evaluate, method_params
-from .methods import METHODS, preference_degree
+from .methods import METHODS
 from .normalization import normalize
 from .problem import DecisionProblem
 from .weights import resolve_weights
@@ -41,22 +41,9 @@ class WeightScorer:
         self._is_min = (d == "min").to_numpy()
         # validation + pré-calculs via la méthode de référence
         METHODS[method](self.matrix, self.base_weights, d, **self.params)
-        if method in ("wsm", "wpm", "topsis"):
-            default = {"wsm": "minmax", "wpm": "max", "topsis": "vector"}[method]
-            r, self._oriented = normalize(self.matrix, d, self.params.get("normalization", default))
-            self._r = r.to_numpy()
-        if method == "promethee":
-            prefs = self.params.get("preferences") or {}
-            mats = []
-            for c in self.criteria:
-                g = self.matrix[c].to_numpy()
-                diff = g[:, None] - g[None, :]
-                if d[c] == "min":
-                    diff = -diff
-                P = preference_degree(diff, prefs.get(c, {"type": "usual"}), float(g.max() - g.min()))
-                np.fill_diagonal(P, 0.0)
-                mats.append(P)
-            self._p = np.stack(mats)   # m × n × n
+        default = {"wsm": "minmax", "wpm": "max", "topsis": "vector"}[method]
+        r, self._oriented = normalize(self.matrix, d, self.params.get("normalization", default))
+        self._r = r.to_numpy()
 
     def scores(self, weights) -> np.ndarray:
         """weights : (m,) ou (K, m). Retourne (n,) ou (K, n)."""
@@ -67,7 +54,7 @@ class WeightScorer:
         elif self.method == "wpm":
             sign = np.where(self._is_min & (not self._oriented), -1.0, 1.0)
             S = np.exp((W * sign) @ np.log(self._r).T)
-        elif self.method == "topsis":
+        else:  # topsis
             V = W[:, None, :] * self._r[None, :, :]
             vmax, vmin = V.max(axis=1), V.min(axis=1)
             if self._oriented:
@@ -79,10 +66,6 @@ class WeightScorer:
             dm = np.sqrt(((V - anti[:, None, :]) ** 2).sum(axis=2))
             denom = dp + dm
             S = np.divide(dm, denom, out=np.full_like(dm, 0.5), where=denom > 0)
-        else:
-            n = self._p.shape[1]
-            pi = np.tensordot(W, self._p, axes=(1, 0))      # K × n × n
-            S = (pi.sum(axis=2) - pi.sum(axis=1)) / max(n - 1, 1)
         return S[0] if np.ndim(weights) == 1 else S
 
     def winner(self, weights) -> str:

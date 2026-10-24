@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>mcdakit — Application</title>
-  <meta name="description" content="Structurer une décision multicritère : AHP, Delphi, somme pondérée, TOPSIS, PROMETHEE, analyse de sensibilité et rapport.">
+  <meta name="description" content="Structurer une décision multicritère : AHP, Delphi, somme pondérée, produit pondéré, TOPSIS, analyse de sensibilité et rapport.">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='11' fill='%23f5922f'/%3E%3Cpath d='M20 9v20M11 14h18M13 14l-4 9h8zM27 14l-4 9h8z' fill='none' stroke='white' stroke-width='2.4' stroke-linejoin='round'/%3E%3Cpath d='M14 31h12' stroke='white' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -46,7 +46,7 @@
   <section class="panel active" id="tab-data">
     <h2>Critères</h2>
     <p class="hint">Sens <b>max</b> : une valeur plus élevée est meilleure ; <b>min</b> : plus basse est meilleure (coût, délai…).
-      Les colonnes préférence / q / p / s ne servent qu'à PROMETHEE (q : seuil d'indifférence, p : seuil de préférence stricte).</p>
+      L'agrégation indique comment combiner les valeurs des éléments en mode portefeuille (somme, moyenne…).</p>
     <div id="criteria-table"></div>
 
     <details class="box">
