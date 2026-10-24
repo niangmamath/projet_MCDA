@@ -23,7 +23,6 @@
       <a href="#fonctionnement">Fonctionnement</a>
       <a href="#methodes">Méthodes</a>
       <a href="#validation">Validation</a>
-      <a href="#bibliotheque">Bibliothèque</a>
       <a href="#demarrer">Démarrer</a>
       <a href="#faq">FAQ</a>
     </nav>
@@ -46,8 +45,8 @@
           <a class="btn btn-ghost" href="/app?exemple=stratema_methode2">Voir le cas Stratema</a>
         </div>
         <div class="hero-figures">
-          <div><b>5</b><span>méthodes MCDA</span></div>
-          <div><b>6/6</b><span>cas publiés reproduits</span></div>
+          <div><b>4</b><span>méthodes MCDA</span></div>
+          <div><b>5/5</b><span>cas publiés reproduits</span></div>
           <div><b>0 €</b><span>sans inscription</span></div>
         </div>
       </div>
@@ -75,10 +74,10 @@
     <div class="wrap">
       <p class="eyebrow">mcdakit en chiffres</p>
       <div class="figures-grid">
-        <div><b id="v-cases">6/6</b><span>Cas publiés reproduits</span><small>articles et manuels, à la précision publiée</small></div>
-        <div><b>4 000</b><span>Comparaisons croisées</span><small>avec pymcdm et pyDecision, écart &lt; 10<sup>−15</sup></small></div>
-        <div><b>76</b><span>Tests automatiques</span><small>dont 9 familles de propriétés mathématiques</small></div>
-        <div><b>5</b><span>Méthodes</span><small>AHP, Delphi, somme pondérée, produit pondéré, TOPSIS</small></div>
+        <div><b id="v-cases">5/5</b><span>Cas publiés reproduits</span><small>articles et manuels, à la précision publiée</small></div>
+        <div><b>3 500</b><span>Comparaisons croisées</span><small>avec pymcdm et pyDecision, écart &lt; 10<sup>−15</sup></small></div>
+        <div><b>70</b><span>Tests automatiques</span><small>dont 9 familles de propriétés mathématiques</small></div>
+        <div><b>4</b><span>Méthodes</span><small>AHP, Delphi, somme pondérée, TOPSIS</small></div>
       </div>
     </div>
   </section>
@@ -170,7 +169,7 @@
           <div class="step-text">
             <span class="step-num">4</span>
             <h3>Obtenez le classement</h3>
-            <p>Cochez une ou plusieurs méthodes : <b>somme pondérée</b>, <b>produit pondéré</b> ou <b>TOPSIS</b>.
+            <p>Cochez une ou deux méthodes : <b>somme pondérée</b> et <b>TOPSIS</b>.
               La recommandation s'affiche avec l'écart au deuxième.</p>
             <ul class="ticks">
               <li>Les méthodes sont comparées entre elles (rangs, corrélation de Kendall).</li>
@@ -227,7 +226,6 @@
         <article><h3>AHP</h3><p class="m-tag">Pondération</p><p>Comparaisons par paires sur l'échelle de Saaty (1 à 9) ; poids issus du vecteur propre et contrôle de cohérence.</p></article>
         <article><h3>Delphi</h3><p class="m-tag">Évaluation</p><p>Consultation anonyme d'experts en plusieurs tours jusqu'au consensus (écart interquartile faible).</p></article>
         <article><h3>Somme pondérée</h3><p class="m-tag">Compensatoire</p><p>La plus intuitive : chaque critère contribue à proportion de son poids. Une faiblesse se rattrape par une force.</p></article>
-        <article><h3>Produit pondéré</h3><p class="m-tag">Compensation partielle</p><p>Multiplie au lieu d'additionner : pénalise les options très déséquilibrées.</p></article>
         <article><h3>TOPSIS</h3><p class="m-tag">Distance à l'idéal</p><p>Classe selon la proximité à une option idéale fictive et l'éloignement de la pire.</p></article>
         <article><h3>Analyse de sensibilité</h3><p class="m-tag">Robustesse</p><p>Seuils de basculement des poids, Monte-Carlo, profils de décideurs et scénarios sur les données : dans quelle mesure faire confiance au choix ?</p></article>
       </div>
@@ -250,22 +248,8 @@
           <tbody id="v-body"><tr><td colspan="5" class="muted">Recalcul en direct des cas publiés…</td></tr></tbody>
         </table>
       </div>
-      <p class="note center" id="v-note">Essayez vous-même : chargez
-        <a href="/app?exemple=cas_publie_topsis_ersoy2021">la sélection d'équipement d'Ersoy (2021)</a> ou
-        <a href="/app?exemple=cas_publie_saw_rizan2020">l'admission d'élèves de Rizan et al. (2020)</a>, et comparez aux valeurs de l'article.</p>
-    </div>
-  </section>
-
-  <!-- ======================================================== BIBLIOTHÈQUE -->
-  <section class="section alt" id="bibliotheque">
-    <div class="wrap">
-      <div class="sec-head">
-        <div><p class="eyebrow">Bibliothèque de cas</p><h2>Des cas prêts à ouvrir</h2></div>
-        <p class="sub">Le menu de l'application est réservé au projet Stratema. Retrouvez ici les autres cas : des études publiées, dont vous pouvez comparer les résultats à ceux de l'article, et un exemple simple pour débuter.</p>
-      </div>
-      <div class="library" id="library">
-        <p class="note center">Chargement de la bibliothèque…</p>
-      </div>
+      <p class="note center" id="v-note">Ces études servent uniquement à vérifier les calculs du moteur ; le seul cas
+        proposé dans l'application est celui du projet Stratema.</p>
     </div>
   </section>
 
@@ -292,9 +276,9 @@
     <div class="wrap narrow">
       <div class="sec-head solo"><div><p class="eyebrow">Guide de démarrage</p><h2>Votre première décision en <em>10 minutes</em></h2></div></div>
       <ol class="guide">
-        <li><b>Partez d'un cas existant</b> pour vous repérer : le cas <a href="/app?exemple=stratema_methode2">Stratema</a>
-          (menu « Charger un cas Stratema » : portefeuille, AHP et Delphi) ou un cas de la <a href="#bibliotheque">bibliothèque</a>,
-          comme le <a href="/app?exemple=choix_fournisseur">choix d'un fournisseur</a> (simple).</li>
+        <li><b>Partez du cas Stratema</b> pour vous repérer : menu « Charger un cas Stratema », méthode
+          <a href="/app?exemple=stratema_methode1">1 (AHP + somme pondérée)</a> ou
+          <a href="/app?exemple=stratema_methode2">2 (TOPSIS)</a>, avec portefeuille, AHP et Delphi.</li>
         <li><b>Créez votre projet</b> avec « Nouveau » : remplacez les 2 critères et 3 options de départ par les vôtres.
           Donnez à chaque critère un identifiant court (C1, PRIX…) et son sens.</li>
         <li><b>Remplissez les valeurs.</b> Le cadre vert sous les tableaux confirme que le modèle est valide et indique les options exclues.</li>
@@ -320,7 +304,7 @@
             ou videz le cache.</p></details>
         <details><summary>Quelle méthode choisir ?</summary>
           <p>Commencez par la somme pondérée (la plus lisible), puis confrontez-la à TOPSIS, qui raisonne en distance à
-            une option idéale. Le produit pondéré pénalise davantage les options déséquilibrées. L'important est de comparer :
+            une option idéale. L'important est de comparer :
             si les méthodes s'accordent, votre choix est solide ; sinon, l'écart mérite d'être expliqué.</p></details>
         <details><summary>Que signifie le ratio de cohérence AHP ?</summary>
           <p>Il mesure si vos comparaisons se contredisent (A plus important que B, B que C, mais C que A). En dessous de 10 %,
@@ -371,26 +355,6 @@
     im.addEventListener("keydown", (e) => { if (e.key === "Enter") open(); });
   });
   dlg.addEventListener("click", () => dlg.close());
-
-  // Bibliothèque de cas
-  (async () => {
-    const box = document.getElementById("library");
-    const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-    try {
-      const cases = await (await fetch("/api/library")).json();
-      cases.sort((a, b) => a.published - b.published);       // l'exemple simple d'abord, puis les cas publiés
-      box.innerHTML = cases.map((c) => `
-        <article class="case">
-          <div class="case-top"><span class="pill ${c.published ? "ok" : "warn"}">${c.published ? "Cas publié" : "Exemple pour débuter"}</span>
-            <span class="case-size">${esc(c.size)}</span></div>
-          <h3>${esc(c.name.replace(/^Cas publié — /, ""))}</h3>
-          <p>${esc(c.description)}</p>
-          <a class="btn btn-ghost btn-sm" href="/app?exemple=${encodeURIComponent(c.id)}">Ouvrir dans l'application →</a>
-        </article>`).join("");
-    } catch {
-      box.innerHTML = '<p class="note center">Bibliothèque indisponible pour le moment.</p>';
-    }
-  })();
 
   // Validation : recalcul en direct des cas publiés
   (async () => {

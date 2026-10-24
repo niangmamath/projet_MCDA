@@ -21,7 +21,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from mcdakit.benchmarks import run_benchmarks  # noqa: E402
-from mcdakit.methods import topsis, weighted_product, weighted_sum  # noqa: E402
+from mcdakit.methods import topsis, weighted_sum  # noqa: E402
 from mcdakit.weights import ahp  # noqa: E402
 
 
@@ -60,7 +60,6 @@ def cross_validation(n=500, seed=2026):
             upd("TOPSIS, normalisation vectorielle", topsis(M, ws, d, normalization="vector").scores, pm.TOPSIS(pn.vector_normalization)(x, w, t))
             upd("TOPSIS, normalisation min-max", topsis(M, ws, d, normalization="minmax").scores, pm.TOPSIS(pn.minmax_normalization)(x, w, t))
             upd("Somme pondérée, normalisation x/max", weighted_sum(M, ws, d, normalization="max").scores, pm.WSM(pn.linear_normalization)(x, w, t, validation=False))
-            upd("Produit pondéré, normalisation x/max", weighted_product(M, ws, d, normalization="max").scores, pm.WPM(pn.linear_normalization)(x, w, t, validation=False))
             k = int(rng.integers(3, 15))
             a = np.ones((k, k))
             for i in range(k):
@@ -114,8 +113,8 @@ def main():
         doi = f" — DOI {r['doi']}" if r["doi"] and r["doi"] != "—" else ""
         note = f" *{r['note']}*" if r["note"] else ""
         w(f"- `{r['cas']}` : {r['source']}{doi}.{note}")
-    w("\nDeux de ces cas sont fournis dans la bibliothèque de cas (`examples/bibliotheque/`, section « Bibliothèque "
-      "de cas » de la page d'accueil) : chacun peut les ouvrir dans l'application et retrouver lui-même les valeurs.\n")
+    w("\nCes études servent uniquement à vérifier le moteur de calcul : elles ne sont pas proposées comme cas dans "
+      "l'application, qui ne contient que le projet Stratema.\n")
     w("Le projet Stratema (rapports AHP + somme pondérée et TOPSIS du projet) est également reproduit : poids AHP, "
       "RC = 2,34 %, scores des six couples, seuils de basculement, profils et scénarios (`tests/test_methods.py`, "
       "`tests/test_sensitivity.py`).\n")

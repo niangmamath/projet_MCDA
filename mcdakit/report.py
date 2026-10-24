@@ -261,7 +261,7 @@ def build_document(fa: FullAnalysis) -> _Doc:
               "Les méthodes ne désignent pas la même alternative : " + ", ".join(f"{k} → {lab[v]}" for k, v in c["winners"].items()) + ".")
         if c["divergent"]:
             doc.p("Alternatives dont le rang diffère selon la méthode : " + ", ".join(lab[i] for i in c["divergent"]) +
-                  ". Pistes d'explication : logique de compensation (additive, multiplicative, distance à l'idéal), normalisation, échelles des données.")
+                  ". Pistes d'explication : logique d'agrégation (somme compensatoire vs distance à l'idéal), normalisation, échelles des données.")
 
     # --- sensibilité
     doc.h(2, "6. Analyse de sensibilité et robustesse")

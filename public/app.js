@@ -87,7 +87,7 @@ function blankModel() {
 
 function defaultUI() {
   return {
-    methods: { wsm: { on: true, normalization: "minmax" }, wpm: { on: false, normalization: "max" },
+    methods: { wsm: { on: true, normalization: "minmax" },
       topsis: { on: true, normalization: "vector" } },
     primary: "topsis", sweep: null, mc: { n: 10000, spread: 0.2, uniform: false },
     profiles: [], equalProfile: true, scenarios: [], delphi: [{ alternative: "", column: "", r1: "", r2: "", r3: "" }], iqr: 1,
@@ -517,7 +517,7 @@ async function runResults() {
         el("div", {}, el("h3", {}, "Corrélation de rang (τ de Kendall)"), dataTable(c.kendall_tau, { digits: 3 }),
           el("p", { class: "hint" }, "1 = classements identiques, −1 = inversés."))));
       if (c.divergent.length) out.append(el("p", { class: "hint" }, "Rangs divergents pour : " + c.divergent.map((i) => labels[i]).join(", ")
-        + ". Causes typiques : logique de compensation (somme pondérée, produit pondéré, distance à l'idéal), normalisation, valeurs cardinales vs notes."));
+        + ". Causes typiques : logique d'agrégation (somme compensatoire vs distance à l'idéal), normalisation, valeurs cardinales vs notes."));
     }
 
     const det = el("details", { class: "box" }, el("summary", {}, "Matrice de décision et détail des calculs"));

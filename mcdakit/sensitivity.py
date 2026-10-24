@@ -41,7 +41,7 @@ class WeightScorer:
         self._is_min = (d == "min").to_numpy()
         # validation + pré-calculs via la méthode de référence
         METHODS[method](self.matrix, self.base_weights, d, **self.params)
-        default = {"wsm": "minmax", "wpm": "max", "topsis": "vector"}[method]
+        default = {"wsm": "minmax", "topsis": "vector"}[method]
         r, self._oriented = normalize(self.matrix, d, self.params.get("normalization", default))
         self._r = r.to_numpy()
 
@@ -51,9 +51,6 @@ class WeightScorer:
         W = W / W.sum(axis=1, keepdims=True)
         if self.method == "wsm":
             S = W @ self._r.T
-        elif self.method == "wpm":
-            sign = np.where(self._is_min & (not self._oriented), -1.0, 1.0)
-            S = np.exp((W * sign) @ np.log(self._r).T)
         else:  # topsis
             V = W[:, None, :] * self._r[None, :, :]
             vmax, vmin = V.max(axis=1), V.min(axis=1)

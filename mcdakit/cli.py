@@ -83,9 +83,8 @@ def cmd_delphi(args) -> int:
 
 
 def cmd_template(args) -> int:
-    from .io_excel import write_excel
-    src = Path(__file__).resolve().parent.parent / "examples" / "bibliotheque" / "choix_fournisseur.yaml"
-    problem = DecisionProblem.load(args.source or src)
+    from .io_excel import template_problem, write_excel
+    problem = DecisionProblem.load(args.source) if args.source else template_problem()
     write_excel(problem, args.output)
     print(f"Modèle Excel écrit : {args.output}")
     return 0
@@ -124,7 +123,7 @@ def main(argv=None) -> int:
 
     t = sub.add_parser("template", help="génère un modèle Excel à remplir")
     t.add_argument("output")
-    t.add_argument("--source", help="problème à convertir (défaut : exemple fournisseur)")
+    t.add_argument("--source", help="problème à convertir (défaut : projet vierge à 2 critères)")
     t.set_defaults(func=cmd_template)
 
     args = ap.parse_args(argv)

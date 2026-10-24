@@ -19,10 +19,8 @@ def test_meta_and_examples():
     assert "topsis" in client.get("/api/meta").json()["methods"]
     ids = [e["id"] for e in client.get("/api/examples").json()]
     assert ids == ["stratema_methode1", "stratema_methode2"]      # seuls les cas Stratema dans le menu
-    lib = {e["id"] for e in client.get("/api/library").json()}
-    assert "choix_fournisseur" in lib and "cas_publie_topsis_ersoy2021" in lib
-    assert client.get("/api/examples/choix_fournisseur").json()["criteria"]
-    assert client.get("/api/examples/cas_publie_saw_rizan2020").json()["analysis"]["primary"] == "wsm"
+    assert client.get("/api/examples/stratema_methode1").json()["criteria"]
+    assert client.get("/api/examples/choix_fournisseur").status_code == 404     # plus de cas hors Stratema
 
 
 def test_validate(strat):
@@ -79,4 +77,4 @@ def test_static_index():
 
 def test_validation_route():
     r = client.get("/api/validation").json()
-    assert r["all_ok"] is True and len(r["cases"]) >= 6
+    assert r["all_ok"] is True and len(r["cases"]) >= 5

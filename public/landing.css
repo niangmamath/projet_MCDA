@@ -174,17 +174,6 @@ h3 { font-size: 1.25rem; letter-spacing: -.01em; line-height: 1.25; margin: 0 0 
 .vtable td.num { font-variant-numeric: tabular-nums; color: var(--text); min-width: 170px; }
 .vtable .muted { color: var(--muted); font-style: italic; }
 
-/* ---------- bibliothèque */
-.library { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 22px; }
-.case { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px;
-  display: flex; flex-direction: column; gap: 12px; transition: box-shadow .2s ease, transform .2s ease; }
-.case:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
-.case-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-.case-size { color: var(--muted); font-size: .82rem; text-align: right; }
-.case h3 { margin: 0; font-size: 1.2rem; }
-.case p { margin: 0; color: var(--muted); font-size: .92rem; flex: 1; }
-.case .btn { align-self: flex-start; margin-top: 6px; }
-
 /* ---------- usages */
 .uses { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 .uses div { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; display: grid; gap: 6px; align-content: start; }

@@ -76,24 +76,6 @@ def weighted_sum(matrix, weights, directions, normalization: str = "minmax") -> 
                         {"normalization": normalization})
 
 
-# --------------------------------------------------------------------------- produit pondéré
-def weighted_product(matrix, weights, directions, normalization: str = "max") -> MethodResult:
-    """Produit pondéré (WPM) : S(a) = Π r_j(a)^w_j. Compensation plus faible qu'en somme."""
-    x, w, d = _check(matrix, weights, directions)
-    r, oriented = normalize(x, d, normalization)
-    if (r <= 0).any().any():
-        raise ValueError("Produit pondéré : valeurs normalisées strictement positives requises "
-                         "(évitez 'minmax' qui produit des zéros ; préférez 'max').")
-    exps = w.copy()
-    if not oriented:
-        exps[d == "min"] *= -1
-    factors = r ** exps
-    scores = factors.prod(axis=1)
-    return MethodResult("Produit pondéré", scores, "score",
-                        {"Matrice normalisée": r, "Facteurs r^w": factors},
-                        {"normalization": normalization})
-
-
 # --------------------------------------------------------------------------- TOPSIS
 def topsis(matrix, weights, directions, normalization: str = "vector") -> MethodResult:
     """TOPSIS : proximité relative à la solution idéale, Ci* = D⁻ / (D⁺ + D⁻)."""
@@ -119,18 +101,15 @@ def topsis(matrix, weights, directions, normalization: str = "vector") -> Method
 
 METHODS = {
     "wsm": weighted_sum,
-    "wpm": weighted_product,
     "topsis": topsis,
 }
 
 METHOD_LABELS = {
     "wsm": "Somme pondérée (WSM/SAW)",
-    "wpm": "Produit pondéré (WPM)",
     "topsis": "TOPSIS",
 }
 
 METHOD_LOGIC = {
     "wsm": "Agrégation additive totalement compensatoire : une faiblesse se rattrape par une force.",
-    "wpm": "Agrégation multiplicative : compensation partielle, pénalise les profils déséquilibrés.",
     "topsis": "Distance à un idéal et à un anti-idéal fictifs ; compensatoire, sensible à la normalisation.",
 }

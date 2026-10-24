@@ -14,7 +14,7 @@ from typing import Callable
 import numpy as np
 import pandas as pd
 
-from .methods import topsis, weighted_product, weighted_sum
+from .methods import topsis, weighted_sum
 from .weights import ahp
 
 
@@ -64,11 +64,6 @@ PAPATHANASIOU_AHP_ALT = [
      [1, 1 / 5, 1 / 5, 1 / 7, 1, 1 / 3], [5, 1 / 3, 1, 1 / 3, 3, 1]],
     [[1, 1 / 5, 1 / 5, 1 / 3, 1 / 7, 1 / 5], [5, 1, 1, 3, 1 / 3, 1], [5, 1, 1, 1, 1 / 3, 1],
      [3, 1 / 3, 1, 1, 1 / 7, 1], [7, 3, 3, 7, 1, 5], [5, 1, 1, 1, 1 / 5, 1]]]
-CHAKRABORTY_2015 = [[30, 23, 5, 0.745, 0.745, 1500, 5000], [18, 13, 15, 0.745, 0.745, 1300, 6000],
-                    [15, 12, 10, 0.500, 0.500, 950, 7000], [25, 20, 13, 0.745, 0.745, 1200, 4000],
-                    [14, 18, 14, 0.255, 0.745, 950, 3500], [17, 15, 9, 0.745, 0.500, 1250, 5250],
-                    [23, 18, 20, 0.500, 0.745, 1100, 3000], [16, 8, 14, 0.255, 0.500, 1500, 3000]]
-CHAKRABORTY_2015_W = [0.1181, 0.1181, 0.0445, 0.1181, 0.2861, 0.2861, 0.0445]
 RIZAN_2020 = [[0.75, 0.50, 0.75, 0, 0, 0, 1], [0.75, 1, 0.75, 0, 0, 0, 0.75],
               [0.75, 0.75, 0.75, 0, 0.50, 0.25, 1], [0.50, 0.50, 0.75, 1, 0.50, 0, 0.75]]
 
@@ -77,17 +72,6 @@ def _papathanasiou_ahp():
     crit = ahp(PAPATHANASIOU_AHP_CRIT).weights.to_numpy()
     local = np.column_stack([ahp(m).weights.to_numpy() for m in PAPATHANASIOU_AHP_ALT])
     return _run(weighted_sum, local, crit, [1] * 4, normalization="none")
-
-
-def _waspas():
-    # WASPAS (λ = 0,5) = ½ somme pondérée + ½ produit pondéré, normalisation linéaire x/max (min/x).
-    # Les poids publiés somment à 1,0155 (arrondis) ; mcdakit les ramène à 1. On réapplique ce facteur
-    # k pour comparer à l'identique : WSM_publié = k·WSM, WPM_publié = WPM^k.
-    k = float(np.sum(CHAKRABORTY_2015_W))
-    t = [1, 1, 1, 1, 1, -1, -1]
-    s = _run(weighted_sum, CHAKRABORTY_2015, CHAKRABORTY_2015_W, t, normalization="max")
-    p = _run(weighted_product, CHAKRABORTY_2015, CHAKRABORTY_2015_W, t, normalization="max")
-    return 0.5 * k * s + 0.5 * p ** k
 
 
 BENCHMARKS: list[Benchmark] = [
@@ -113,10 +97,6 @@ BENCHMARKS: list[Benchmark] = [
               "Rizan, Wahyuningsih, Pradana & Ramadella (2020), SAW method in supporting the process of admission of new junior high school students. CITSM 2020, IEEE",
               "10.1109/CITSM50537.2020.9268874", [0.350, 0.375, 0.825, 0.642], 3,
               lambda: _run(weighted_sum, RIZAN_2020, [0.1, 0.1, 0.1, 0.15, 0.2, 0.25, 0.1], [1] * 7, normalization="max")),
-    Benchmark("chakraborty2015", "Somme et produit pondérés (WASPAS, λ = 0,5)",
-              "Chakraborty, Zavadskas & Antucheviciene (2015), Applications of WASPAS method as a multi-criteria decision-making tool. Economic Computation and Economic Cybernetics Studies and Research 49(1)",
-              "—", [0.8329, 0.7884, 0.6987, 0.8831, 0.7971, 0.7036, 0.8728, 0.5749], 4, _waspas,
-              "Les poids publiés somment à 1,0155 ; mcdakit renormalise à 1, le facteur est réappliqué pour la comparaison."),
 ]
 
 

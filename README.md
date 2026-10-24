@@ -22,7 +22,7 @@ ou de l'interface web.
 | `api/index.py` | API HTTP (FastAPI) qui expose la bibliothèque — fonction Python Vercel |
 | `public/` | site web : page d'accueil (`index.html`) et application (`app.html`, servie sur `/app`) en HTML/CSS/JS sans build |
 | `mcdakit` (commande) | CLI pour automatiser / scripter des analyses |
-| `examples/` | les deux cas Stratema (menu « Charger un exemple ») ; `examples/bibliotheque/` : cas publiés et exemple générique (bibliothèque de cas) |
+| `examples/` | les deux cas Stratema (menu « Charger un cas Stratema »), la démonstration et le script de validation |
 | `tests/` | tests (bibliothèque et API), dont la reproduction chiffrée des deux rapports Stratema |
 
 ---
@@ -66,8 +66,8 @@ L'interface propose six onglets qui suivent la démarche MCDA :
    décideurs, scénarios sur les données, seuil d'une valeur, **diagnostic robuste / modérément robuste / fragile**.
 6. **Rapport** — export HTML (imprimable en PDF), Markdown, Excel (tous les tableaux) ; sauvegarde du projet.
 
-Le menu « Charger un exemple » propose les deux cas Stratema ; les autres cas (cas publiés, choix d'un fournisseur)
-sont dans la **bibliothèque de cas** de la page d'accueil (`/#bibliotheque`). On peut aussi partir d'un projet vierge ou importer un fichier `.json`, `.yaml` ou `.xlsx`
+Le menu « Charger un cas Stratema » propose les deux cas du projet (méthode 1 et méthode 2). On peut aussi partir d'un
+projet vierge ou importer un fichier `.json`, `.yaml` ou `.xlsx`
 (modèle Excel : `mcdakit template modele.xlsx`).
 
 ### b) Ligne de commande
@@ -94,16 +94,16 @@ Options de `run` : `--primary` (méthode de référence pour la sensibilité), `
 ```python
 from mcdakit import DecisionProblem, evaluate, full_analysis, weight_thresholds, to_html
 
-problem = DecisionProblem.load("examples/bibliotheque/choix_fournisseur.yaml")
+problem = DecisionProblem.load("examples/stratema_methode2.json")
 
-res = evaluate(problem, "topsis")                 # ou "wsm", "wpm"
+res = evaluate(problem, "topsis")                 # ou "wsm"
 print(res.table(problem.labels()))                # scores, rangs, écarts au 1er
 print(res.details["Distances"])                   # calculs intermédiaires
 
 print(weight_thresholds(problem, "topsis"))       # où la décision bascule
 
 fa = full_analysis(problem, {"topsis": {}, "wsm": {}},
-                   scenarios={"Délai F3 + 10 j": [("F3", "DELAI", 17)]})
+                   scenarios={"C5 de C : 3 → 2": [("C", "C5", 2)]})
 print(fa.diagnosis)                               # robuste / modérément robuste / fragile
 open("rapport.html", "w").write(to_html(fa))
 ```
@@ -132,15 +132,15 @@ reproduit l'intégralité des calculs des deux rapports Stratema et écrit
 
 Les calculs sont validés de trois façons (détail et chiffres dans [`docs/VALIDATION.md`](docs/VALIDATION.md)) :
 
-- **6 cas publiés** (articles et manuels : Opricovic & Tzeng 2004, Ersoy 2021, Wang & Chin 2011,
-  Papathanasiou & Ploskas 2018, Rizan 2020, Chakraborty 2015) reproduits à la précision de la publication — `mcdakit/benchmarks.py`, `tests/test_literature.py` ;
+- **5 cas publiés** (articles et manuels : Opricovic & Tzeng 2004, Ersoy 2021, Wang & Chin 2011,
+  Papathanasiou & Ploskas 2018, Rizan 2020) reproduits à la précision de la publication — `mcdakit/benchmarks.py`, `tests/test_literature.py` ;
 - **validation croisée** avec deux bibliothèques indépendantes (pymcdm, pyDecision) sur des centaines de problèmes
   aléatoires : écarts de l'ordre de 10⁻¹⁶ — `tests/test_cross_validation.py` ;
 - **propriétés mathématiques** (dominance, changement d'unité, permutation, bornes, cohérence AHP, seuils de
   basculement…) — `tests/test_properties.py`.
 
 `python examples/validation.py` régénère le rapport ; l'API recalcule les cas publiés à la demande (`GET /api/validation`).
-Deux de ces cas sont dans la bibliothèque de cas (`examples/bibliotheque/`), ouvrable depuis la page d'accueil.
+Ces études servent uniquement à vérifier le moteur ; l'application ne propose que le cas Stratema.
 
 ## 4. Format d'un projet
 
@@ -166,7 +166,7 @@ mcdakit/
 ├── weights.py        poids égaux / directs / ROC / rank-sum / AHP (vecteur propre ou moyenne géométrique, RC)
 ├── delphi.py         médiane, quartiles, consensus (IQR) et stabilité entre tours
 ├── normalization.py  none, vector, minmax, max, sum (avec ou sans réorientation des critères à minimiser)
-├── methods.py        somme pondérée (WSM), produit pondéré (WPM), TOPSIS — signature commune
+├── methods.py        somme pondérée (WSM) et TOPSIS — signature commune
 ├── analysis.py       evaluate, run_methods, compare_methods (τ de Kendall, ρ de Spearman)
 ├── sensitivity.py    moteur vectorisé, balayage, seuils, profils, Monte-Carlo, scénarios, diagnostic
 ├── report.py         analyse complète + rendu Markdown / HTML / Excel
@@ -187,7 +187,7 @@ les rapports (et apparaît dans l'interface web via `/api/meta`). Pour la rendre
 pytest
 ```
 
-Tests (76) : propriétés mathématiques (cohérence AHP, bornes TOPSIS, respect de la dominance par
+Tests (70) : propriétés mathématiques (cohérence AHP, bornes TOPSIS, respect de la dominance par
 toutes les méthodes), aller-retour JSON/Excel, égalité moteur vectorisé ↔ méthodes, et reproduction des
 résultats publiés dans les deux rapports Stratema, et appels de toutes les routes de l'API.
 
@@ -211,8 +211,7 @@ Chaque `git push` sur `main` redéploie automatiquement. La documentation intera
 | `GET /api/validation` | recalcule les cas publiés et les compare aux résultats imprimés |
 | `GET /api/meta` | méthodes et normalisations disponibles |
 | `GET /api/examples` | cas Stratema du menu « Charger un exemple » |
-| `GET /api/library` | bibliothèque de cas (cas publiés, exemple générique) |
-| `GET /api/examples/{id}` | contenu d'un exemple (menu ou bibliothèque) |
+| `GET /api/examples/{id}` | contenu d'un cas Stratema |
 | `POST /api/validate` | contrôle du projet : candidates, admissibilité, matrice, poids, cohérence AHP |
 | `POST /api/analyze` | résultats de plusieurs méthodes + comparaison |
 | `POST /api/sensitivity` | seuils, balayage, Monte-Carlo, profils, scénarios, diagnostic |

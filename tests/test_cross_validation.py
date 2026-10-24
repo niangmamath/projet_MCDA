@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from mcdakit.methods import topsis, weighted_product, weighted_sum
+from mcdakit.methods import topsis, weighted_sum
 from mcdakit.weights import ahp
 
 pm = pytest.importorskip("pymcdm.methods")
@@ -41,12 +41,11 @@ def _quiet():
         yield
 
 
-def test_topsis_wsm_wpm_match_pymcdm():
+def test_topsis_wsm_match_pymcdm():
     for _, x, w, t, m, ws, d in _problems(1):
         _close(topsis(m, ws, d, normalization="vector").scores, pm.TOPSIS(pn.vector_normalization)(x, w, t))
         _close(topsis(m, ws, d, normalization="minmax").scores, pm.TOPSIS(pn.minmax_normalization)(x, w, t))
         _close(weighted_sum(m, ws, d, normalization="max").scores, pm.WSM(pn.linear_normalization)(x, w, t, validation=False))
-        _close(weighted_product(m, ws, d, normalization="max").scores, pm.WPM(pn.linear_normalization)(x, w, t, validation=False))
 
 
 def _random_reciprocal(rng, k):

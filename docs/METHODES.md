@@ -31,11 +31,10 @@ Pour chaque tour : médiane, Q1, Q3 (interpolation linéaire), IQR = Q3 − Q1. 
 | Méthode | Score | Logique |
 |---|---|---|
 | Somme pondérée (WSM) | S(a) = Σ w_j r_aj | totalement compensatoire |
-| Produit pondéré (WPM) | S(a) = Π r_aj^w_j | compensation partielle, pénalise les profils déséquilibrés |
 | TOPSIS | Ci* = D⁻ / (D⁺ + D⁻), distances euclidiennes à l'idéal / anti-idéal de V = w·R | compensatoire, dépend de la normalisation |
 
 Toutes respectent la dominance (testé). Les différences de classement entre méthodes viennent de :
-la logique de compensation (additive, multiplicative, distance à l'idéal), la normalisation (étirement des écarts par
+la logique d'agrégation (somme compensatoire vs distance à l'idéal), la normalisation (étirement des écarts par
 min-max) et le traitement cardinal vs ordinal des données.
 
 ## Sensibilité

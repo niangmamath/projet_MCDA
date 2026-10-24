@@ -8,7 +8,7 @@ Un logiciel d'aide à la décision doit produire des résultats exacts et vérif
 2. **Validation croisée** : sur des centaines de problèmes générés aléatoirement, mcdakit donne les mêmes nombres que deux bibliothèques développées par d'autres équipes (pymcdm, pyDecision).
 3. **Propriétés mathématiques** : la suite de tests vérifie les propriétés que toute méthode correcte doit respecter (dominance, changement d'unité, permutation, bornes, cohérence AHP…).
 
-**Bilan : 6 cas publiés reproduits sur 6 — tous conformes.**
+**Bilan : 5 cas publiés reproduits sur 5 — tous conformes.**
 
 ## 1. Reproduction de résultats publiés
 
@@ -21,7 +21,6 @@ Les données et résultats viennent des sources citées. Ces cas sont repris des
 | wangchin2011 | AHP — poids par vecteur propre | 0,3208 ; 0,1395 ; 0,0348 ; 0,1285 ; 0,2374 ; 0,1391 | 0,3208 ; 0,1395 ; 0,0348 ; 0,1285 ; 0,2374 ; 0,1391 | 3.2e-05 | identique | conforme |
 | papathanasiou2018_ahp | AHP complet (critères et alternatives par paires) | 0,117 ; 0,071 ; 0,095 ; 0,212 ; 0,350 ; 0,155 | 0,117 ; 0,071 ; 0,095 ; 0,212 ; 0,350 ; 0,155 | 3.8e-04 | identique | conforme |
 | rizan2020 | Somme pondérée (SAW, normalisation x/max) | 0,350 ; 0,375 ; 0,825 ; 0,642 | 0,350 ; 0,375 ; 0,825 ; 0,642 | 3.3e-04 | identique | conforme |
-| chakraborty2015 | Somme et produit pondérés (WASPAS, λ = 0,5) | 0,8329 ; 0,7884 ; 0,6987 ; 0,8831 ; 0,7971 ; 0,7036 ; 0,8728 ; 0,5749 | 0,8329 ; 0,7884 ; 0,6987 ; 0,8831 ; 0,7971 ; 0,7036 ; 0,8728 ; 0,5749 | 4.2e-05 | identique | conforme |
 
 **Sources**
 
@@ -30,9 +29,8 @@ Les données et résultats viennent des sources citées. Ces cas sont repris des
 - `wangchin2011` : Wang & Chin (2011), A linear programming approximation to the eigenvector method in the analytic hierarchy process. Information Sciences 181(23).
 - `papathanasiou2018_ahp` : Papathanasiou & Ploskas (2018), AHP. In Multiple Criteria Decision Aid, Springer — DOI 10.1007/978-3-319-91648-4_5. *Priorités locales et poids par mcdakit.ahp, synthèse par somme pondérée sans normalisation.*
 - `rizan2020` : Rizan, Wahyuningsih, Pradana & Ramadella (2020), SAW method in supporting the process of admission of new junior high school students. CITSM 2020, IEEE — DOI 10.1109/CITSM50537.2020.9268874.
-- `chakraborty2015` : Chakraborty, Zavadskas & Antucheviciene (2015), Applications of WASPAS method as a multi-criteria decision-making tool. Economic Computation and Economic Cybernetics Studies and Research 49(1). *Les poids publiés somment à 1,0155 ; mcdakit renormalise à 1, le facteur est réappliqué pour la comparaison.*
 
-Deux de ces cas sont fournis dans la bibliothèque de cas (`examples/bibliotheque/`, section « Bibliothèque de cas » de la page d'accueil) : chacun peut les ouvrir dans l'application et retrouver lui-même les valeurs.
+Ces études servent uniquement à vérifier le moteur de calcul : elles ne sont pas proposées comme cas dans l'application, qui ne contient que le projet Stratema.
 
 Le projet Stratema (rapports AHP + somme pondérée et TOPSIS du projet) est également reproduit : poids AHP, RC = 2,34 %, scores des six couples, seuils de basculement, profils et scénarios (`tests/test_methods.py`, `tests/test_sensitivity.py`).
 
@@ -45,7 +43,6 @@ Le projet Stratema (rapports AHP + somme pondérée et TOPSIS du projet) est ég
 | TOPSIS, normalisation vectorielle | 500 | 4.4e-16 |
 | TOPSIS, normalisation min-max | 500 | 2.2e-16 |
 | Somme pondérée, normalisation x/max | 500 | 4.4e-16 |
-| Produit pondéré, normalisation x/max | 500 | 3.3e-16 |
 | AHP, poids (vecteur propre) — pymcdm | 500 | 0.0e+00 |
 | AHP, poids (vecteur propre) — pyDecision | 500 | 0.0e+00 |
 | AHP, ratio de cohérence — pyDecision | 500 | 0.0e+00 |

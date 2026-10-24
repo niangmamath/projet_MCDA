@@ -8,7 +8,7 @@ from mcdakit.methods import METHODS
 from mcdakit.sensitivity import WeightScorer, set_weight
 from mcdakit.weights import ahp
 
-CONFIGS = [("wsm", {"normalization": "minmax"}), ("wsm", {"normalization": "max"}), ("wpm", {"normalization": "max"}),
+CONFIGS = [("wsm", {"normalization": "minmax"}), ("wsm", {"normalization": "max"}),
            ("topsis", {"normalization": "vector"}), ("topsis", {"normalization": "minmax"})]
 
 
@@ -71,7 +71,7 @@ def test_weights_scale_free(key, params):
         np.testing.assert_allclose(_call(key, params, x, w, d).to_numpy(), _call(key, params, x, w * 7.3, d).to_numpy(), atol=1e-12)
 
 
-@pytest.mark.parametrize("key,params", [c for c in CONFIGS if c[0] != "wpm"])
+@pytest.mark.parametrize("key,params", CONFIGS)
 def test_single_criterion(key, params):
     """Tout le poids sur un critère : le classement suit ce critère."""
     for seed in range(30):

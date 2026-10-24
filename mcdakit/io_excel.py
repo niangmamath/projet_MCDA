@@ -78,6 +78,18 @@ def read_excel(source) -> DecisionProblem:
     return DecisionProblem.from_dict(data)
 
 
+def template_problem() -> DecisionProblem:
+    """Projet de départ du modèle Excel : 2 critères et 3 options à remplacer par les vôtres."""
+    return DecisionProblem.from_dict({
+        "name": "Nouveau projet",
+        "criteria": [{"id": "C1", "name": "Coût", "direction": "min", "unit": "€", "aggregation": "sum"},
+                     {"id": "C2", "name": "Qualité", "direction": "max", "unit": "/5", "aggregation": "mean"}],
+        "alternatives": [{"id": "A1", "name": "Option 1", "values": {"C1": 100, "C2": 3}},
+                         {"id": "A2", "name": "Option 2", "values": {"C1": 80, "C2": 2}},
+                         {"id": "A3", "name": "Option 3", "values": {"C1": 120, "C2": 5}}],
+        "weights": {"C1": 1, "C2": 1}})
+
+
 def write_excel(problem: DecisionProblem, target: str | Path | None = None) -> bytes:
     """Écrit le problème dans le format modèle. Retourne les octets (et écrit `target` si fourni)."""
     from .weights import resolve_weights
