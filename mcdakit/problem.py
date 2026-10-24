@@ -10,6 +10,7 @@ Un problème est décrit par :
 
 Le format d'échange est un dictionnaire JSON/YAML (voir docs/FORMAT.md).
 """
+
 from __future__ import annotations
 
 import copy
@@ -55,11 +56,12 @@ def to_number(value: Any) -> float:
 @dataclass
 class Criterion:
     """Critère de décision : identifiant, libellé, sens (max/min), unité et règle d'agrégation en portefeuille."""
+
     id: str
     name: str = ""
-    direction: str = "max"          # "max" (plus c'est haut mieux c'est) ou "min"
+    direction: str = "max"  # "max" (plus c'est haut mieux c'est) ou "min"
     unit: str = ""
-    aggregation: str = "mean"       # utilisée seulement en mode portefeuille
+    aggregation: str = "mean"  # utilisée seulement en mode portefeuille
 
     def __post_init__(self):
         self.name = self.name or self.id
@@ -72,6 +74,7 @@ class Criterion:
 @dataclass
 class Attribute:
     """Colonne hors critères (budget, charge…) : n'entre pas dans le score, sert aux contraintes."""
+
     id: str
     name: str = ""
     unit: str = ""
@@ -86,6 +89,7 @@ class Attribute:
 @dataclass
 class Constraint:
     """Filtre d'admissibilité « colonne opérateur valeur » (ex. JH <= 65)."""
+
     column: str
     op: str
     value: float
@@ -106,6 +110,7 @@ class Constraint:
 @dataclass
 class Portfolio:
     """Mode portefeuille : les alternatives deviennent des combinaisons de min_size à max_size éléments."""
+
     min_size: int
     max_size: int
     separator: str = "+"
@@ -134,8 +139,9 @@ class Portfolio:
 class DecisionProblem:
     """Problème de décision complet : critères, alternatives et évaluations, poids, contraintes,
     portefeuille et surcharges. Point d'entrée de toute la bibliothèque (voir docs/FORMAT.md)."""
+
     criteria: list[Criterion]
-    alternatives: pd.DataFrame                  # index = id, colonnes = name + critères + attributs
+    alternatives: pd.DataFrame  # index = id, colonnes = name + critères + attributs
     weights_spec: dict = field(default_factory=lambda: {"method": "equal"})
     attributes: list[Attribute] = field(default_factory=list)
     constraints: list[Constraint] = field(default_factory=list)
@@ -143,7 +149,7 @@ class DecisionProblem:
     overrides: dict = field(default_factory=dict)  # {alternative: {colonne: valeur}}
     name: str = "Problème de décision"
     description: str = ""
-    analysis: dict = field(default_factory=dict)   # réglages suggérés (méthodes, méthode de référence), facultatif
+    analysis: dict = field(default_factory=dict)  # réglages suggérés (méthodes, méthode de référence), facultatif
 
     # ------------------------------------------------------------------ construction
     @classmethod
@@ -183,9 +189,11 @@ class DecisionProblem:
         suffix = path.suffix.lower()
         if suffix in (".yaml", ".yml"):
             import yaml
+
             return cls.from_dict(yaml.safe_load(path.read_text(encoding="utf-8")))
         if suffix in (".xlsx", ".xls"):
             from .io_excel import read_excel
+
             return read_excel(path)
         return cls.from_dict(json.loads(path.read_text(encoding="utf-8")))
 
@@ -216,6 +224,7 @@ class DecisionProblem:
         path = Path(path)
         if path.suffix.lower() in (".yaml", ".yml"):
             import yaml
+
             path.write_text(yaml.safe_dump(self.to_dict(), allow_unicode=True, sort_keys=False), encoding="utf-8")
         else:
             path.write_text(json.dumps(self.to_dict(), ensure_ascii=False, indent=2), encoding="utf-8")
@@ -286,8 +295,10 @@ class DecisionProblem:
             for k in range(p.min_size, p.max_size + 1):
                 for combo in itertools.combinations(base.index, k):
                     sub = base.loc[list(combo)]
-                    row = {"name": f" {p.separator} ".join(str(base.at[i, "name"]) for i in combo),
-                           "members": list(combo)}
+                    row = {
+                        "name": f" {p.separator} ".join(str(base.at[i, "name"]) for i in combo),
+                        "members": list(combo),
+                    }
                     for col in cols:
                         row[col] = float(AGGREGATIONS[rules[col]](sub[col].to_numpy(dtype=float)))
                     rows[p.separator.join(map(str, combo))] = row
@@ -342,6 +353,7 @@ class DecisionProblem:
 
 def _comb(n: int, k: int) -> int:
     from math import comb
+
     return comb(n, k)
 
 

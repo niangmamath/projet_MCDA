@@ -5,6 +5,7 @@ docs/FORMAT.md ; les tableaux sont renvoyés sous la forme {"index": [...], "col
 
 Lancement local :  uvicorn api.index:app --reload   (puis ouvrir http://localhost:8000)
 """
+
 from __future__ import annotations
 
 import json
@@ -22,9 +23,25 @@ from pydantic import BaseModel, Field
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from mcdakit import (DecisionProblem, compare_methods, data_scenarios, delphi, diagnose, full_analysis,  # noqa: E402
-                     monte_carlo, resolve_weights, run_methods, to_excel, to_html, to_markdown, to_pdf, value_threshold,
-                     weight_profiles, weight_sweep, weight_thresholds)
+from mcdakit import (  # noqa: E402
+    DecisionProblem,
+    compare_methods,
+    data_scenarios,
+    delphi,
+    diagnose,
+    full_analysis,
+    monte_carlo,
+    resolve_weights,
+    run_methods,
+    to_excel,
+    to_html,
+    to_markdown,
+    to_pdf,
+    value_threshold,
+    weight_profiles,
+    weight_sweep,
+    weight_thresholds,
+)
 from mcdakit.io_excel import read_excel, template_problem, write_excel  # noqa: E402
 from mcdakit.methods import METHOD_LABELS, METHOD_LOGIC, METHODS  # noqa: E402
 from mcdakit.normalization import NORMALIZATIONS  # noqa: E402
@@ -64,8 +81,11 @@ def table(df: pd.DataFrame | pd.Series | None):
         return None
     if isinstance(df, pd.Series):
         df = df.to_frame()
-    return {"index": [str(i) for i in df.index], "columns": [str(c) for c in df.columns],
-            "data": [[_val(v) for v in row] for row in df.itertuples(index=False, name=None)]}
+    return {
+        "index": [str(i) for i in df.index],
+        "columns": [str(c) for c in df.columns],
+        "data": [[_val(v) for v in row] for row in df.itertuples(index=False, name=None)],
+    }
 
 
 def series(s: pd.Series) -> dict:
@@ -80,9 +100,19 @@ def method_result(key: str, r, labels: pd.Series) -> dict:
         elif isinstance(d, list):
             details[name] = [list(x) for x in d]
     params = dict(r.params)
-    return {"key": key, "label": METHOD_LABELS.get(key, key), "logic": METHOD_LOGIC.get(key, ""),
-            "score_label": r.score_label, "scores": series(r.scores), "ranking": series(r.ranking),
-            "order": r.order, "best": r.best, "table": table(r.table(labels)), "details": details, "params": params}
+    return {
+        "key": key,
+        "label": METHOD_LABELS.get(key, key),
+        "logic": METHOD_LOGIC.get(key, ""),
+        "score_label": r.score_label,
+        "scores": series(r.scores),
+        "ranking": series(r.ranking),
+        "order": r.order,
+        "best": r.best,
+        "table": table(r.table(labels)),
+        "details": details,
+        "params": params,
+    }
 
 
 # =========================================================================== modèles de requête
@@ -97,7 +127,7 @@ class AnalyzeBody(ProblemBody):
 class SensitivityBody(ProblemBody):
     method: str = "topsis"
     params: dict = Field(default_factory=dict)
-    methods: dict[str, dict] | None = None       # pour le critère « accord des méthodes » du diagnostic
+    methods: dict[str, dict] | None = None  # pour le critère « accord des méthodes » du diagnostic
     sweep_criterion: str | None = None
     mc_runs: int = 10000
     mc_spread: float | None = 0.2
@@ -153,17 +183,24 @@ def health():
 @app.get("/api/meta")
 def meta():
     """Listes de choix pour l'interface."""
-    return {"methods": METHOD_LABELS, "logic": METHOD_LOGIC, "normalizations": NORMALIZATIONS,
-            "aggregations": list(AGGREGATIONS),
-            "operators": list(OPERATORS),
-            "default_normalization": {"wsm": "minmax", "topsis": "vector"}}
+    return {
+        "methods": METHOD_LABELS,
+        "logic": METHOD_LOGIC,
+        "normalizations": NORMALIZATIONS,
+        "aggregations": list(AGGREGATIONS),
+        "operators": list(OPERATORS),
+        "default_normalization": {"wsm": "minmax", "topsis": "vector"},
+    }
 
 
 @app.get("/api/examples")
 def examples():
     """Exemples du menu « Charger un cas Stratema » (fichiers de examples/)."""
-    return [{"id": p.stem, "name": DecisionProblem.load(p).name}
-            for p in sorted(EXAMPLES.glob("*")) if p.suffix in (".json", ".yaml", ".yml")]
+    return [
+        {"id": p.stem, "name": DecisionProblem.load(p).name}
+        for p in sorted(EXAMPLES.glob("*"))
+        if p.suffix in (".json", ".yaml", ".yml")
+    ]
 
 
 @app.get("/api/examples/{name}")
@@ -178,10 +215,15 @@ def example(name: str):
 def validation():
     """Recalcule en direct les cas publiés (mcdakit/benchmarks.py) et les compare aux résultats imprimés."""
     from mcdakit.benchmarks import run_benchmarks
+
     r = run_benchmarks()
-    return {"all_ok": bool(r["conforme"].all() and r["même classement"].all()),
-            "cases": [{k: _val(v) if not isinstance(v, list) else [_val(x) for x in v] for k, v in row.items()}
-                      for row in r.to_dict(orient="records")]}
+    return {
+        "all_ok": bool(r["conforme"].all() and r["même classement"].all()),
+        "cases": [
+            {k: _val(v) if not isinstance(v, list) else [_val(x) for x in v] for k, v in row.items()}
+            for row in r.to_dict(orient="records")
+        ],
+    }
 
 
 @app.post("/api/validate")
@@ -191,20 +233,28 @@ def validate(body: ProblemBody):
     w, ahp = resolve_weights(p)
     cand = p.candidates()
     feas = p.feasibility(cand)
-    out = {"labels": series(cand["name"]),
-           "candidates": table(cand.drop(columns=["members"], errors="ignore")),
-           "feasibility": table(feas),
-           "weights": series(w),
-           "ahp": None}
+    out = {
+        "labels": series(cand["name"]),
+        "candidates": table(cand.drop(columns=["members"], errors="ignore")),
+        "feasibility": table(feas),
+        "weights": series(w),
+        "ahp": None,
+    }
     try:
         out["matrix"] = table(p.decision_matrix())
     except ValueError as exc:
         out["matrix"] = None
         out["matrix_error"] = str(exc)
     if ahp is not None:
-        out["ahp"] = {"lambda_max": ahp.lambda_max, "ci": ahp.ci, "ri": ahp.ri, "cr": ahp.cr,
-                      "consistent": ahp.consistent, "matrix": table(ahp.matrix),
-                      "worst": table(ahp.worst_judgements().set_index("i"))}
+        out["ahp"] = {
+            "lambda_max": ahp.lambda_max,
+            "ci": ahp.ci,
+            "ri": ahp.ri,
+            "cr": ahp.cr,
+            "consistent": ahp.consistent,
+            "matrix": table(ahp.matrix),
+            "worst": table(ahp.worst_judgements().set_index("i")),
+        }
     return out
 
 
@@ -213,10 +263,18 @@ def delphi_route(body: DelphiBody):
     rows = []
     for it in body.items:
         res = delphi(it.rounds, body.iqr_threshold)
-        rows.append({"alternative": it.alternative, "column": it.column, "value": res.value,
-                     "status": res.status, "consensus": res.consensus,
-                     "rounds": [{"votes": r.votes, "median": r.median, "q1": r.q1, "q3": r.q3, "iqr": r.iqr}
-                                for r in res.rounds]})
+        rows.append(
+            {
+                "alternative": it.alternative,
+                "column": it.column,
+                "value": res.value,
+                "status": res.status,
+                "consensus": res.consensus,
+                "rounds": [
+                    {"votes": r.votes, "median": r.median, "q1": r.q1, "q3": r.q3, "iqr": r.iqr} for r in res.rounds
+                ],
+            }
+        )
     return rows
 
 
@@ -227,13 +285,21 @@ def analyze(body: AnalyzeBody):
     p = _problem(body.problem)
     labels = p.labels()
     results = run_methods(p, body.methods)
-    out = {"results": {k: method_result(k, r, labels) for k, r in results.items()},
-           "labels": series(labels), "comparison": None}
+    out = {
+        "results": {k: method_result(k, r, labels) for k, r in results.items()},
+        "labels": series(labels),
+        "comparison": None,
+    }
     if len(results) > 1:
         c = compare_methods(results, labels)
-        out["comparison"] = {"ranks": table(c["ranks"]), "kendall_tau": table(c["kendall_tau"]),
-                             "spearman_rho": table(c["spearman_rho"]), "winners": c["winners"],
-                             "same_winner": c["same_winner"], "divergent": c["divergent"]}
+        out["comparison"] = {
+            "ranks": table(c["ranks"]),
+            "kendall_tau": table(c["kendall_tau"]),
+            "spearman_rho": table(c["spearman_rho"]),
+            "winners": c["winners"],
+            "same_winner": c["same_winner"],
+            "divergent": c["divergent"],
+        }
     return out
 
 
@@ -251,9 +317,13 @@ def sensitivity(body: SensitivityBody):
     sweep = None
     if body.sweep_criterion:
         sw = weight_sweep(p, body.method, body.sweep_criterion, params)
-        sweep = {"criterion": body.sweep_criterion, "grid": [float(x) for x in sw.index],
-                 "scores": {a: [_val(v) for v in sw[a]] for a in sw.columns if a != "gagnant"},
-                 "winner": list(sw["gagnant"]), "current": float(resolve_weights(p)[0][body.sweep_criterion])}
+        sweep = {
+            "criterion": body.sweep_criterion,
+            "grid": [float(x) for x in sw.index],
+            "scores": {a: [_val(v) for v in sw[a]] for a in sw.columns if a != "gagnant"},
+            "winner": list(sw["gagnant"]),
+            "current": float(resolve_weights(p)[0][body.sweep_criterion]),
+        }
     mc = None
     if body.mc_runs > 0:
         mc = monte_carlo(p, body.method, params, n=min(body.mc_runs, MAX_MC), spread=body.mc_spread, seed=body.seed)
@@ -268,9 +338,14 @@ def sensitivity(body: SensitivityBody):
         "labels": series(labels),
         "thresholds": table(thr),
         "sweep": sweep,
-        "monte_carlo": None if mc is None else {
-            "n": mc.n, "spread": mc.spread, "table": table(mc.table(labels)),
-            "rank_distribution": table(mc.rank_distribution)},
+        "monte_carlo": None
+        if mc is None
+        else {
+            "n": mc.n,
+            "spread": mc.spread,
+            "table": table(mc.table(labels)),
+            "rank_distribution": table(mc.rank_distribution),
+        },
         "profiles": table(prof),
         "scenarios": table(scen),
         "diagnosis": {"level": diag.level, "reasons": diag.reasons, "winner": diag.winner},
@@ -282,8 +357,12 @@ def value_threshold_route(body: ValueThresholdBody):
     _check_method(body.method)
     p = _problem(body.problem)
     r = value_threshold(p, body.method, body.alternative, body.column, body.low, body.high, body.params, steps=41)
-    return {"current": r["valeur actuelle"], "threshold": _val(r["seuil"]), "new_winner": r["nouveau gagnant"],
-            "curve": [[_val(v), w] for v, w in r["courbe"]]}
+    return {
+        "current": r["valeur actuelle"],
+        "threshold": _val(r["seuil"]),
+        "new_winner": r["nouveau gagnant"],
+        "curve": [[_val(v), w] for v, w in r["courbe"]],
+    }
 
 
 @app.post("/api/report")
@@ -291,17 +370,31 @@ def report(body: ReportBody):
     for m in body.methods:
         _check_method(m)
     p = _problem(body.problem)
-    fa = full_analysis(p, body.methods, primary=body.primary, mc_runs=min(body.mc_runs, MAX_MC),
-                       mc_spread=body.mc_spread, scenarios=body.scenarios or None, profiles=body.profiles or None)
+    fa = full_analysis(
+        p,
+        body.methods,
+        primary=body.primary,
+        mc_runs=min(body.mc_runs, MAX_MC),
+        mc_spread=body.mc_spread,
+        scenarios=body.scenarios or None,
+        profiles=body.profiles or None,
+    )
     if body.format == "pdf":
-        return Response(to_pdf(fa), media_type="application/pdf",
-                        headers={"Content-Disposition": 'attachment; filename="rapport_mcda.pdf"'})
+        return Response(
+            to_pdf(fa),
+            media_type="application/pdf",
+            headers={"Content-Disposition": 'attachment; filename="rapport_mcda.pdf"'},
+        )
     if body.format == "md":
-        return Response(to_markdown(fa), media_type="text/markdown; charset=utf-8",
-                        headers={"Content-Disposition": 'attachment; filename="rapport_mcda.md"'})
+        return Response(
+            to_markdown(fa),
+            media_type="text/markdown; charset=utf-8",
+            headers={"Content-Disposition": 'attachment; filename="rapport_mcda.md"'},
+        )
     if body.format == "xlsx":
-        return Response(to_excel(fa), media_type=XLSX,
-                        headers={"Content-Disposition": 'attachment; filename="calculs_mcda.xlsx"'})
+        return Response(
+            to_excel(fa), media_type=XLSX, headers={"Content-Disposition": 'attachment; filename="calculs_mcda.xlsx"'}
+        )
     return Response(to_html(fa), media_type="text/html; charset=utf-8")
 
 
@@ -312,9 +405,11 @@ async def import_file(file: UploadFile = File(...)):
     name = (file.filename or "").lower()
     if name.endswith(".xlsx"):
         import io
+
         p = read_excel(io.BytesIO(raw))
     elif name.endswith((".yaml", ".yml")):
         import yaml
+
         p = DecisionProblem.from_dict(yaml.safe_load(raw))
     else:
         p = DecisionProblem.from_dict(json.loads(raw))
@@ -323,14 +418,20 @@ async def import_file(file: UploadFile = File(...)):
 
 @app.post("/api/export-xlsx")
 def export_xlsx(body: ProblemBody):
-    return Response(write_excel(_problem(body.problem)), media_type=XLSX,
-                    headers={"Content-Disposition": 'attachment; filename="projet_mcda.xlsx"'})
+    return Response(
+        write_excel(_problem(body.problem)),
+        media_type=XLSX,
+        headers={"Content-Disposition": 'attachment; filename="projet_mcda.xlsx"'},
+    )
 
 
 @app.get("/api/template")
 def template():
-    return Response(write_excel(template_problem()), media_type=XLSX,
-                    headers={"Content-Disposition": 'attachment; filename="modele_mcda.xlsx"'})
+    return Response(
+        write_excel(template_problem()),
+        media_type=XLSX,
+        headers={"Content-Disposition": 'attachment; filename="modele_mcda.xlsx"'},
+    )
 
 
 # Développement local : servir l'interface statique (sur Vercel, public/ est servi par le CDN).

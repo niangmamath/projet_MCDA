@@ -1,8 +1,20 @@
 import numpy as np
 import pytest
 
-from mcdakit import (WeightScorer, data_scenarios, evaluate, full_analysis, monte_carlo, to_excel, to_html,
-                     to_markdown, value_threshold, weight_profiles, weight_sweep, weight_thresholds)
+from mcdakit import (
+    WeightScorer,
+    data_scenarios,
+    evaluate,
+    full_analysis,
+    monte_carlo,
+    to_excel,
+    to_html,
+    to_markdown,
+    value_threshold,
+    weight_profiles,
+    weight_sweep,
+    weight_thresholds,
+)
 
 
 @pytest.mark.parametrize("method", ["wsm", "topsis"])
@@ -10,7 +22,7 @@ def test_vectorised_scorer_matches_methods(stratema2, method):
     sc = WeightScorer(stratema2, method)
     rng = np.random.default_rng(0)
     for w in rng.dirichlet(np.ones(6), size=5):
-        ref = evaluate(stratema2, method, weights=dict(zip(sc.criteria, w))).scores.to_numpy()
+        ref = evaluate(stratema2, method, weights=dict(zip(sc.criteria, w, strict=True))).scores.to_numpy()
         assert np.allclose(sc.scores(w), ref, atol=1e-12)
 
 
@@ -52,10 +64,14 @@ def test_monte_carlo_reproducible(stratema2):
 
 
 def test_data_scenarios_report_part2(stratema2):
-    sc = data_scenarios(stratema2, "topsis", {
-        "C5 de C : 3 → 2": [("C", "C5", 2)],
-        "B + 10 JH": [("B", "C1", 42)],
-    })
+    sc = data_scenarios(
+        stratema2,
+        "topsis",
+        {
+            "C5 de C : 3 → 2": [("C", "C5", 2)],
+            "B + 10 JH": [("B", "C1", 42)],
+        },
+    )
     assert sc.at["C5 de C : 3 → 2", "gagnant"] == "B+D"
     assert sc.at["B + 10 JH", "gagnant"] == "B+C"
     assert "B+D" in sc.at["B + 10 JH", "exclues (contraintes)"]
@@ -76,4 +92,4 @@ def test_full_analysis_and_reports(stratema2, fournisseur):
     assert to_html(fa).startswith("<!doctype html>")
     assert len(to_excel(fa)) > 1000
     fb = full_analysis(fournisseur, mc_runs=500)
-    assert fb.winner == "F3" and "F2" not in fb.matrix.index   # F2 exclu par délai > 25
+    assert fb.winner == "F3" and "F2" not in fb.matrix.index  # F2 exclu par délai > 25

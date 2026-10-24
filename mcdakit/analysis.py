@@ -1,4 +1,5 @@
 """API de haut niveau : appliquer une ou plusieurs méthodes à un problème et comparer les résultats."""
+
 from __future__ import annotations
 
 from itertools import combinations
@@ -16,8 +17,9 @@ def method_params(problem: DecisionProblem, method: str, params: dict | None = N
     return dict(params or {})
 
 
-def evaluate(problem: DecisionProblem, method: str = "topsis", weights: pd.Series | dict | None = None,
-             **params) -> MethodResult:
+def evaluate(
+    problem: DecisionProblem, method: str = "topsis", weights: pd.Series | dict | None = None, **params
+) -> MethodResult:
     """Évalue un problème avec une méthode. `weights` remplace la spécification du problème."""
     if method not in METHODS:
         raise ValueError(f"Méthode inconnue : {method}. Choix : {list(METHODS)}")

@@ -11,6 +11,7 @@ Toutes les méthodes ont la même signature :
 Elles renvoient les scores, le classement et toutes les matrices intermédiaires (`details`)
 afin que chaque calcul soit traçable dans un rapport.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -24,10 +25,11 @@ from .normalization import normalize
 @dataclass
 class MethodResult:
     """Résultat commun à toutes les méthodes : scores (plus grand = meilleur), rangs et calculs intermédiaires."""
+
     method: str
-    scores: pd.Series                      # plus grand = meilleur
+    scores: pd.Series  # plus grand = meilleur
     score_label: str
-    details: dict = field(default_factory=dict)   # nom -> DataFrame / Series / valeur
+    details: dict = field(default_factory=dict)  # nom -> DataFrame / Series / valeur
     params: dict = field(default_factory=dict)
 
     @property
@@ -73,13 +75,19 @@ def weighted_sum(matrix, weights, directions, normalization: str = "minmax") -> 
     x, w, d = _check(matrix, weights, directions)
     r, oriented = normalize(x, d, normalization)
     if not oriented and (d == "min").any():
-        raise ValueError("Somme pondérée : avec des critères à minimiser, utilisez la normalisation "
-                         "'minmax' ou 'max' (les autres ne réorientent pas les critères).")
+        raise ValueError(
+            "Somme pondérée : avec des critères à minimiser, utilisez la normalisation "
+            "'minmax' ou 'max' (les autres ne réorientent pas les critères)."
+        )
     contrib = r * w
     scores = contrib.sum(axis=1)
-    return MethodResult("Somme pondérée", scores, "score",
-                        {"Matrice normalisée": r, "Contributions pondérées (w·r)": contrib},
-                        {"normalization": normalization})
+    return MethodResult(
+        "Somme pondérée",
+        scores,
+        "score",
+        {"Matrice normalisée": r, "Contributions pondérées (w·r)": contrib},
+        {"normalization": normalization},
+    )
 
 
 # --------------------------------------------------------------------------- TOPSIS
@@ -99,10 +107,13 @@ def topsis(matrix, weights, directions, normalization: str = "vector") -> Method
     ci = (d_minus / denom).fillna(0.5)
     refs = pd.DataFrame({"A⁺ (idéal)": ideal, "A⁻ (anti-idéal)": anti}).T
     dist = pd.DataFrame({"D⁺": d_plus, "D⁻": d_minus, "Ci*": ci})
-    return MethodResult("TOPSIS", ci, "Ci*",
-                        {"Matrice normalisée R": r, "Matrice pondérée V": v,
-                         "Solutions de référence": refs, "Distances": dist},
-                        {"normalization": normalization})
+    return MethodResult(
+        "TOPSIS",
+        ci,
+        "Ci*",
+        {"Matrice normalisée R": r, "Matrice pondérée V": v, "Solutions de référence": refs, "Distances": dist},
+        {"normalization": normalization},
+    )
 
 
 METHODS = {

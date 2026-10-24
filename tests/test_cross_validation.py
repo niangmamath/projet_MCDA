@@ -2,6 +2,7 @@
 
 Ces bibliothèques sont des dépendances de développement : les tests sont ignorés si elles sont absentes.
 """
+
 import warnings
 
 import numpy as np
@@ -22,12 +23,19 @@ def _problems(seed):
         n, m = int(rng.integers(3, 13)), int(rng.integers(2, 9))
         x = rng.uniform(1, 100, (n, m))
         if it % 3 == 0:
-            x = np.round(x / 10) + 1          # nombreux ex aequo
+            x = np.round(x / 10) + 1  # nombreux ex aequo
         w = rng.dirichlet(np.ones(m))
         types = rng.choice([1, -1], m)
         cols = [f"C{j}" for j in range(m)]
-        yield rng, x, w, types, pd.DataFrame(x, columns=cols), pd.Series(w, index=cols), \
-            pd.Series(np.where(types > 0, "max", "min"), index=cols)
+        yield (
+            rng,
+            x,
+            w,
+            types,
+            pd.DataFrame(x, columns=cols),
+            pd.Series(w, index=cols),
+            pd.Series(np.where(types > 0, "max", "min"), index=cols),
+        )
 
 
 def _close(a, b):
@@ -45,7 +53,10 @@ def test_topsis_wsm_match_pymcdm():
     for _, x, w, t, m, ws, d in _problems(1):
         _close(topsis(m, ws, d, normalization="vector").scores, pm.TOPSIS(pn.vector_normalization)(x, w, t))
         _close(topsis(m, ws, d, normalization="minmax").scores, pm.TOPSIS(pn.minmax_normalization)(x, w, t))
-        _close(weighted_sum(m, ws, d, normalization="max").scores, pm.WSM(pn.linear_normalization)(x, w, t, validation=False))
+        _close(
+            weighted_sum(m, ws, d, normalization="max").scores,
+            pm.WSM(pn.linear_normalization)(x, w, t, validation=False),
+        )
 
 
 def _random_reciprocal(rng, k):
@@ -59,6 +70,7 @@ def _random_reciprocal(rng, k):
 
 def test_ahp_matches_pymcdm_and_pydecision():
     from pymcdm.weights.subjective import AHP
+
     pyd = pytest.importorskip("pyDecision.algorithm")
     rng = np.random.default_rng(3)
     for _ in range(N):

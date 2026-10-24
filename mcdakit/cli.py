@@ -1,10 +1,11 @@
 """Interface en ligne de commande.
 
-    mcdakit run problem.json -m wsm:normalization=none -m topsis --report rapport.html
-    mcdakit ahp "1,1/2,3;2,1,4;1/3,1/4,1" --labels C1,C2,C3
-    mcdakit delphi "2,1,3,3,2" "2,2,2,3,2"
-    mcdakit template modele.xlsx
+mcdakit run problem.json -m wsm:normalization=none -m topsis --report rapport.html
+mcdakit ahp "1,1/2,3;2,1,4;1/3,1/4,1" --labels C1,C2,C3
+mcdakit delphi "2,1,3,3,2" "2,2,2,3,2"
+mcdakit template modele.xlsx
 """
+
 from __future__ import annotations
 
 import argparse
@@ -23,7 +24,7 @@ from .weights import ahp
 
 
 def _method_spec(text: str) -> tuple[str, dict]:
-    """"topsis" ou "wsm:normalization=none"."""
+    """ "topsis" ou "wsm:normalization=none"."""
     name, _, rest = text.partition(":")
     if name not in METHODS:
         raise argparse.ArgumentTypeError(f"méthode inconnue {name} ({', '.join(METHODS)})")
@@ -36,8 +37,15 @@ def cmd_run(args) -> int:
     methods = dict(args.method or [("wsm", {}), ("topsis", {})])
     scenarios = json.loads(Path(args.scenarios).read_text(encoding="utf-8")) if args.scenarios else None
     profiles = json.loads(Path(args.profiles).read_text(encoding="utf-8")) if args.profiles else None
-    fa = full_analysis(problem, methods, primary=args.primary, mc_runs=args.mc, mc_spread=args.spread,
-                       scenarios=scenarios, profiles=profiles)
+    fa = full_analysis(
+        problem,
+        methods,
+        primary=args.primary,
+        mc_runs=args.mc,
+        mc_spread=args.spread,
+        scenarios=scenarios,
+        profiles=profiles,
+    )
     pd.set_option("display.width", 160)
     for key, res in fa.results.items():
         print(f"\n=== {METHOD_LABELS[key]} ===")
@@ -71,8 +79,10 @@ def cmd_ahp(args) -> int:
     labels = args.labels.split(",") if args.labels else None
     res = ahp(rows, labels)
     print(pd.DataFrame({"poids": res.weights}).round(6).to_string())
-    print(f"λmax = {res.lambda_max:.6f}  IC = {res.ci:.5f}  IA = {res.ri:.2f}  RC = {res.cr:.2%}  "
-          f"{'cohérent' if res.consistent else 'INCOHÉRENT'}")
+    print(
+        f"λmax = {res.lambda_max:.6f}  IC = {res.ci:.5f}  IA = {res.ri:.2f}  RC = {res.cr:.2%}  "
+        f"{'cohérent' if res.consistent else 'INCOHÉRENT'}"
+    )
     return 0
 
 
@@ -86,6 +96,7 @@ def cmd_delphi(args) -> int:
 
 def cmd_template(args) -> int:
     from .io_excel import template_problem, write_excel
+
     problem = DecisionProblem.load(args.source) if args.source else template_problem()
     write_excel(problem, args.output)
     print(f"Modèle Excel écrit : {args.output}")
@@ -99,8 +110,13 @@ def main(argv=None) -> int:
 
     r = sub.add_parser("run", help="analyse complète (méthodes, comparaison, sensibilité, rapport)")
     r.add_argument("problem", help="fichier .json, .yaml ou .xlsx")
-    r.add_argument("-m", "--method", action="append", type=_method_spec,
-                   help="méthode[:param=valeur,...] (répétable). Défaut : wsm, topsis")
+    r.add_argument(
+        "-m",
+        "--method",
+        action="append",
+        type=_method_spec,
+        help="méthode[:param=valeur,...] (répétable). Défaut : wsm, topsis",
+    )
     r.add_argument("--primary", help="méthode de référence pour la sensibilité (défaut : la première)")
     r.add_argument("--mc", type=int, default=5000, help="nombre de tirages Monte-Carlo (0 pour désactiver)")
     r.add_argument("--spread", type=float, default=0.2, help="dispersion relative des poids tirés")

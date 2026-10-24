@@ -44,11 +44,19 @@ def test_topsis_minmax_switches(stratema2):
 
 
 def test_constraint_filters():
-    p = DecisionProblem.from_dict({
-        "criteria": [{"id": "x"}], "attributes": [{"id": "cost"}],
-        "alternatives": [{"id": "a", "values": {"x": 1, "cost": 5}}, {"id": "b", "values": {"x": 2, "cost": 9}},
-                         {"id": "c", "values": {"x": 3, "cost": 4}}],
-        "portfolio": {"size": 2}, "constraints": [{"column": "cost", "op": "<=", "value": 10}]})
+    p = DecisionProblem.from_dict(
+        {
+            "criteria": [{"id": "x"}],
+            "attributes": [{"id": "cost"}],
+            "alternatives": [
+                {"id": "a", "values": {"x": 1, "cost": 5}},
+                {"id": "b", "values": {"x": 2, "cost": 9}},
+                {"id": "c", "values": {"x": 3, "cost": 4}},
+            ],
+            "portfolio": {"size": 2},
+            "constraints": [{"column": "cost", "op": "<=", "value": 10}],
+        }
+    )
     assert list(p.decision_matrix().index) == ["a+c"]
 
 
@@ -71,6 +79,7 @@ def test_roundtrip_json_and_excel(tmp_path, stratema2):
     p = DecisionProblem.load(tmp_path / "p.json")
     assert evaluate(p, "topsis").scores.equals(evaluate(stratema2, "topsis").scores)
     from mcdakit.io_excel import write_excel
+
     write_excel(stratema2, tmp_path / "p.xlsx")
     px = DecisionProblem.load(tmp_path / "p.xlsx")
     px.overrides = stratema2.overrides

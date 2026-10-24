@@ -1,4 +1,5 @@
 """Détermination des poids des critères : directs, égaux, par rangs (ROC, RS) et AHP."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -51,6 +52,7 @@ def rank_sum(order: list[str]) -> pd.Series:
 @dataclass
 class AHPResult:
     """Résultat AHP : matrice, poids, λmax, indice (IC) et ratio (RC) de cohérence."""
+
     weights: pd.Series
     matrix: pd.DataFrame
     lambda_max: float
@@ -73,11 +75,15 @@ class AHPResult:
         for i in range(n):
             for j in range(i + 1, n):
                 implied = w[i] / w[j]
-                rows.append({
-                    "i": self.matrix.index[i], "j": self.matrix.index[j],
-                    "jugement": a[i, j], "ratio_implicite": implied,
-                    "ecart_log": abs(np.log(a[i, j] / implied)),
-                })
+                rows.append(
+                    {
+                        "i": self.matrix.index[i],
+                        "j": self.matrix.index[j],
+                        "jugement": a[i, j],
+                        "ratio_implicite": implied,
+                        "ecart_log": abs(np.log(a[i, j] / implied)),
+                    }
+                )
         return pd.DataFrame(rows).sort_values("ecart_log", ascending=False).head(top).reset_index(drop=True)
 
 
@@ -117,8 +123,7 @@ def ahp(matrix, labels: list[str] | None = None, method: str = "eigen") -> AHPRe
     ci = (lam - n) / (n - 1) if n > 1 else 0.0
     ri = RANDOM_INDEX[n - 1] if n <= len(RANDOM_INDEX) else RANDOM_INDEX[-1]
     cr = ci / ri if ri > 0 else 0.0
-    return AHPResult(pd.Series(w, index=labels), pd.DataFrame(a, index=labels, columns=labels),
-                     lam, ci, ri, cr, method)
+    return AHPResult(pd.Series(w, index=labels), pd.DataFrame(a, index=labels, columns=labels), lam, ci, ri, cr, method)
 
 
 def ahp_from_judgements(labels: list[str], judgements: dict) -> AHPResult:

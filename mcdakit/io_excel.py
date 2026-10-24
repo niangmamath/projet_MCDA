@@ -9,6 +9,7 @@ Feuilles attendues :
   * « AHP »          : matrice carrée de comparaisons, critères en ligne et colonne (optionnelle ;
                         si présente elle remplace la colonne « poids »)
 """
+
 from __future__ import annotations
 
 import io
@@ -37,28 +38,45 @@ def read_excel(source) -> DecisionProblem:
         cid = _str(r.get("id"))
         if not cid:
             continue
-        criteria.append({"id": cid, "name": _str(r.get("nom"), cid), "direction": _str(r.get("sens"), "max").lower(),
-                         "unit": _str(r.get("unité")), "aggregation": _str(r.get("agrégation"), "mean") or "mean"})
+        criteria.append(
+            {
+                "id": cid,
+                "name": _str(r.get("nom"), cid),
+                "direction": _str(r.get("sens"), "max").lower(),
+                "unit": _str(r.get("unité")),
+                "aggregation": _str(r.get("agrégation"), "mean") or "mean",
+            }
+        )
         if "poids" in r and pd.notna(r["poids"]):
             weights[cid] = float(r["poids"])
     attributes = []
     if "attributs" in norm:
         for _, r in norm["attributs"].iterrows():
             if _str(r.get("id")):
-                attributes.append({"id": _str(r["id"]), "name": _str(r.get("nom"), _str(r["id"])),
-                                   "unit": _str(r.get("unité")), "aggregation": _str(r.get("agrégation"), "sum") or "sum"})
+                attributes.append(
+                    {
+                        "id": _str(r["id"]),
+                        "name": _str(r.get("nom"), _str(r["id"])),
+                        "unit": _str(r.get("unité")),
+                        "aggregation": _str(r.get("agrégation"), "sum") or "sum",
+                    }
+                )
     cols = [c["id"] for c in criteria] + [a["id"] for a in attributes]
     alternatives = []
     for _, r in alt_df.iterrows():
         aid = _str(r.get("id"))
         if not aid:
             continue
-        alternatives.append({"id": aid, "name": _str(r.get("nom"), aid),
-                             "values": {c: r[c] for c in cols if c in r and pd.notna(r[c])}})
+        alternatives.append(
+            {"id": aid, "name": _str(r.get("nom"), aid), "values": {c: r[c] for c in cols if c in r and pd.notna(r[c])}}
+        )
     data = {"criteria": criteria, "attributes": attributes, "alternatives": alternatives}
     if "contraintes" in norm:
-        data["constraints"] = [{"column": _str(r["colonne"]), "op": _str(r["opérateur"]), "value": r["valeur"]}
-                               for _, r in norm["contraintes"].iterrows() if _str(r.get("colonne"))]
+        data["constraints"] = [
+            {"column": _str(r["colonne"]), "op": _str(r["opérateur"]), "value": r["valeur"]}
+            for _, r in norm["contraintes"].iterrows()
+            if _str(r.get("colonne"))
+        ]
     params = {}
     if "parametres" in norm:
         params = {_str(r["clé"]): r["valeur"] for _, r in norm["parametres"].iterrows() if _str(r.get("clé"))}
@@ -82,23 +100,41 @@ def read_excel(source) -> DecisionProblem:
 
 def template_problem() -> DecisionProblem:
     """Projet de départ du modèle Excel : 2 critères et 3 options à remplacer par les vôtres."""
-    return DecisionProblem.from_dict({
-        "name": "Nouveau projet",
-        "criteria": [{"id": "C1", "name": "Coût", "direction": "min", "unit": "€", "aggregation": "sum"},
-                     {"id": "C2", "name": "Qualité", "direction": "max", "unit": "/5", "aggregation": "mean"}],
-        "alternatives": [{"id": "A1", "name": "Option 1", "values": {"C1": 100, "C2": 3}},
-                         {"id": "A2", "name": "Option 2", "values": {"C1": 80, "C2": 2}},
-                         {"id": "A3", "name": "Option 3", "values": {"C1": 120, "C2": 5}}],
-        "weights": {"C1": 1, "C2": 1}})
+    return DecisionProblem.from_dict(
+        {
+            "name": "Nouveau projet",
+            "criteria": [
+                {"id": "C1", "name": "Coût", "direction": "min", "unit": "€", "aggregation": "sum"},
+                {"id": "C2", "name": "Qualité", "direction": "max", "unit": "/5", "aggregation": "mean"},
+            ],
+            "alternatives": [
+                {"id": "A1", "name": "Option 1", "values": {"C1": 100, "C2": 3}},
+                {"id": "A2", "name": "Option 2", "values": {"C1": 80, "C2": 2}},
+                {"id": "A3", "name": "Option 3", "values": {"C1": 120, "C2": 5}},
+            ],
+            "weights": {"C1": 1, "C2": 1},
+        }
+    )
 
 
 def write_excel(problem: DecisionProblem, target: str | Path | None = None) -> bytes:
     """Écrit le problème dans le format modèle. Retourne les octets (et écrit `target` si fourni)."""
     from .weights import resolve_weights
+
     w, ahp_res = resolve_weights(problem)
-    crit = pd.DataFrame([{"id": c.id, "nom": c.name, "sens": c.direction, "unité": c.unit, "poids": w[c.id],
-                          "agrégation": c.aggregation}
-                         for c in problem.criteria])
+    crit = pd.DataFrame(
+        [
+            {
+                "id": c.id,
+                "nom": c.name,
+                "sens": c.direction,
+                "unité": c.unit,
+                "poids": w[c.id],
+                "agrégation": c.aggregation,
+            }
+            for c in problem.criteria
+        ]
+    )
     cols = [c for c in problem.criterion_ids + problem.attribute_ids if c in problem.alternatives.columns]
     alts = problem.alternatives[["name"] + cols].rename(columns={"name": "nom"}).reset_index()
     buf = io.BytesIO()
@@ -106,14 +142,19 @@ def write_excel(problem: DecisionProblem, target: str | Path | None = None) -> b
         crit.to_excel(xw, sheet_name="Critères", index=False)
         alts.to_excel(xw, sheet_name="Alternatives", index=False)
         if problem.attributes:
-            pd.DataFrame([{"id": a.id, "nom": a.name, "unité": a.unit, "agrégation": a.aggregation}
-                          for a in problem.attributes]).to_excel(xw, sheet_name="Attributs", index=False)
-        pd.DataFrame([{"colonne": c.column, "opérateur": c.op, "valeur": c.value} for c in problem.constraints],
-                     columns=["colonne", "opérateur", "valeur"]).to_excel(xw, sheet_name="Contraintes", index=False)
+            pd.DataFrame(
+                [{"id": a.id, "nom": a.name, "unité": a.unit, "agrégation": a.aggregation} for a in problem.attributes]
+            ).to_excel(xw, sheet_name="Attributs", index=False)
+        pd.DataFrame(
+            [{"colonne": c.column, "opérateur": c.op, "valeur": c.value} for c in problem.constraints],
+            columns=["colonne", "opérateur", "valeur"],
+        ).to_excel(xw, sheet_name="Contraintes", index=False)
         params = [{"clé": "nom", "valeur": problem.name}, {"clé": "description", "valeur": problem.description}]
         if problem.portfolio:
-            params += [{"clé": "portefeuille_min", "valeur": problem.portfolio.min_size},
-                       {"clé": "portefeuille_max", "valeur": problem.portfolio.max_size}]
+            params += [
+                {"clé": "portefeuille_min", "valeur": problem.portfolio.min_size},
+                {"clé": "portefeuille_max", "valeur": problem.portfolio.max_size},
+            ]
         pd.DataFrame(params).to_excel(xw, sheet_name="Paramètres", index=False)
         if ahp_res is not None:
             ahp_res.matrix.to_excel(xw, sheet_name="AHP")

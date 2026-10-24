@@ -18,9 +18,9 @@ def strat():
 def test_meta_and_examples():
     assert "topsis" in client.get("/api/meta").json()["methods"]
     ids = [e["id"] for e in client.get("/api/examples").json()]
-    assert ids == ["stratema_methode1", "stratema_methode2"]      # seuls les cas Stratema dans le menu
+    assert ids == ["stratema_methode1", "stratema_methode2"]  # seuls les cas Stratema dans le menu
     assert client.get("/api/examples/stratema_methode1").json()["criteria"]
-    assert client.get("/api/examples/choix_fournisseur").status_code == 404     # plus de cas hors Stratema
+    assert client.get("/api/examples/choix_fournisseur").status_code == 404  # plus de cas hors Stratema
 
 
 def test_validate(strat):
@@ -37,9 +37,17 @@ def test_analyze(strat):
 
 
 def test_sensitivity(strat):
-    r = client.post("/api/sensitivity", json={
-        "problem": strat, "method": "topsis", "sweep_criterion": "C2", "mc_runs": 2000,
-        "profiles": {"Financier": {"C2": 2}}, "scenarios": {"C5 de C": [["C", "C5", 2]]}}).json()
+    r = client.post(
+        "/api/sensitivity",
+        json={
+            "problem": strat,
+            "method": "topsis",
+            "sweep_criterion": "C2",
+            "mc_runs": 2000,
+            "profiles": {"Financier": {"C2": 2}},
+            "scenarios": {"C5 de C": [["C", "C5", 2]]},
+        },
+    ).json()
     assert r["winner"] == "B+C"
     assert r["diagnosis"]["level"] in ("robuste", "modérément robuste", "fragile")
     assert r["sweep"]["winner"][-1] == "B+D"
@@ -47,8 +55,10 @@ def test_sensitivity(strat):
 
 
 def test_value_threshold_and_delphi(strat):
-    r = client.post("/api/value-threshold", json={"problem": strat, "method": "topsis", "alternative": "C",
-                                                  "column": "C5", "low": 1, "high": 5}).json()
+    r = client.post(
+        "/api/value-threshold",
+        json={"problem": strat, "method": "topsis", "alternative": "C", "column": "C5", "low": 1, "high": 5},
+    ).json()
     assert r["threshold"] == pytest.approx(2.4, abs=0.05)
     d = client.post("/api/delphi", json={"items": [{"rounds": ["2,1,3,3,2", "2,2,2,3,2"]}]}).json()
     assert d[0]["value"] == 2 and d[0]["consensus"]
@@ -56,7 +66,9 @@ def test_value_threshold_and_delphi(strat):
 
 def test_reports_and_files(strat):
     for fmt in ("html", "md", "xlsx"):
-        r = client.post("/api/report", json={"problem": strat, "methods": {"topsis": {}}, "format": fmt, "mc_runs": 500})
+        r = client.post(
+            "/api/report", json={"problem": strat, "methods": {"topsis": {}}, "format": fmt, "mc_runs": 500}
+        )
         assert r.status_code == 200 and len(r.content) > 1000
     xlsx = client.post("/api/export-xlsx", json={"problem": strat}).content
     back = client.post("/api/import", files={"file": ("p.xlsx", xlsx)}).json()
@@ -81,7 +93,9 @@ def test_validation_route():
 
 
 def test_report_pdf(strat):
-    r = client.post("/api/report", json={"problem": strat, "methods": {"wsm": {}, "topsis": {}}, "format": "pdf", "mc_runs": 500})
+    r = client.post(
+        "/api/report", json={"problem": strat, "methods": {"wsm": {}, "topsis": {}}, "format": "pdf", "mc_runs": 500}
+    )
     assert r.status_code == 200
     assert r.headers["content-type"] == "application/pdf"
     assert r.content.startswith(b"%PDF")

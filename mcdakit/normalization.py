@@ -4,6 +4,7 @@ Chaque fonction renvoie (R, oriented) :
   * oriented=True  : R est « plus c'est grand, mieux c'est » pour tous les critères (sens déjà intégré) ;
   * oriented=False : R garde le sens d'origine, la méthode doit traiter les critères à minimiser.
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -27,7 +28,7 @@ def normalize(matrix: pd.DataFrame, directions: pd.Series, method: str = "minmax
     if method == "none":
         return x.copy(), False
     if method == "vector":
-        norm = np.sqrt((x ** 2).sum())
+        norm = np.sqrt((x**2).sum())
         return x / norm.replace(0, 1), False
     if method == "sum":
         s = x.sum()
@@ -45,7 +46,9 @@ def normalize(matrix: pd.DataFrame, directions: pd.Series, method: str = "minmax
         if (x.loc[:, ~is_min].max() <= 0).any():
             raise ValueError("La normalisation 'max' exige au moins une valeur > 0 par critère à maximiser.")
         if (x.loc[:, is_min] <= 0).any().any():
-            raise ValueError("La normalisation 'max' exige des valeurs strictement positives pour un critère à minimiser.")
+            raise ValueError(
+                "La normalisation 'max' exige des valeurs strictement positives pour un critère à minimiser."
+            )
         r = x / x.max()
         r.loc[:, is_min] = (x.min() / x).loc[:, is_min]
         return r, True

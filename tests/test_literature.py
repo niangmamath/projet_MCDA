@@ -1,4 +1,5 @@
 """Reproduction des résultats publiés (articles et ouvrages) — voir mcdakit/benchmarks.py."""
+
 import numpy as np
 import pytest
 

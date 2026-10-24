@@ -1,4 +1,5 @@
 """Propriétés mathématiques que toute implémentation correcte doit vérifier (tests aléatoires reproductibles)."""
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -8,8 +9,12 @@ from mcdakit.methods import METHODS
 from mcdakit.sensitivity import WeightScorer, set_weight
 from mcdakit.weights import ahp
 
-CONFIGS = [("wsm", {"normalization": "minmax"}), ("wsm", {"normalization": "max"}),
-           ("topsis", {"normalization": "vector"}), ("topsis", {"normalization": "minmax"})]
+CONFIGS = [
+    ("wsm", {"normalization": "minmax"}),
+    ("wsm", {"normalization": "max"}),
+    ("topsis", {"normalization": "vector"}),
+    ("topsis", {"normalization": "minmax"}),
+]
 
 
 def _random(seed, n=None, m=None):
@@ -68,7 +73,9 @@ def test_weights_scale_free(key, params):
     """Multiplier tous les poids par une constante ne change rien (ils sont renormalisés)."""
     for seed in range(20):
         _, x, w, d = _random(seed)
-        np.testing.assert_allclose(_call(key, params, x, w, d).to_numpy(), _call(key, params, x, w * 7.3, d).to_numpy(), atol=1e-12)
+        np.testing.assert_allclose(
+            _call(key, params, x, w, d).to_numpy(), _call(key, params, x, w * 7.3, d).to_numpy(), atol=1e-12
+        )
 
 
 @pytest.mark.parametrize("key,params", CONFIGS)
@@ -101,7 +108,7 @@ def test_ahp_consistent_matrix_and_transpose():
         res = ahp(a)
         np.testing.assert_allclose(res.weights.to_numpy(), w, atol=1e-10)
         assert res.cr == pytest.approx(0, abs=1e-9)
-        inv = ahp(a.T).weights.to_numpy()          # jugements inversés -> poids ∝ 1/w
+        inv = ahp(a.T).weights.to_numpy()  # jugements inversés -> poids ∝ 1/w
         np.testing.assert_allclose(inv, (1 / w) / (1 / w).sum(), atol=1e-10)
 
 
@@ -116,14 +123,28 @@ def test_delphi_statistics_match_numpy():
 
 def _portfolio_problem(seed):
     rng = np.random.default_rng(seed)
-    items = [{"id": f"E{i}", "values": {"C1": float(rng.integers(1, 6)), "C2": float(rng.integers(1, 6)),
-                                        "C3": float(rng.integers(1, 6)), "COUT": float(rng.integers(10, 40))}}
-             for i in range(5)]
-    return DecisionProblem.from_dict({
-        "criteria": [{"id": c, "aggregation": "mean"} for c in ("C1", "C2", "C3")],
-        "attributes": [{"id": "COUT", "aggregation": "sum"}],
-        "alternatives": items, "weights": {"C1": rng.uniform(), "C2": rng.uniform(), "C3": rng.uniform()},
-        "portfolio": {"size": 2}, "constraints": [{"column": "COUT", "op": "<=", "value": 55}]})
+    items = [
+        {
+            "id": f"E{i}",
+            "values": {
+                "C1": float(rng.integers(1, 6)),
+                "C2": float(rng.integers(1, 6)),
+                "C3": float(rng.integers(1, 6)),
+                "COUT": float(rng.integers(10, 40)),
+            },
+        }
+        for i in range(5)
+    ]
+    return DecisionProblem.from_dict(
+        {
+            "criteria": [{"id": c, "aggregation": "mean"} for c in ("C1", "C2", "C3")],
+            "attributes": [{"id": "COUT", "aggregation": "sum"}],
+            "alternatives": items,
+            "weights": {"C1": rng.uniform(), "C2": rng.uniform(), "C3": rng.uniform()},
+            "portfolio": {"size": 2},
+            "constraints": [{"column": "COUT", "op": "<=", "value": 55}],
+        }
+    )
 
 
 def test_portfolio_linearity_and_constraints():
@@ -134,7 +155,7 @@ def test_portfolio_linearity_and_constraints():
         try:
             res = evaluate(p, "wsm", normalization="none")
         except ValueError:
-            continue                              # aucune paire admissible
+            continue  # aucune paire admissible
         single = p.copy()
         single.portfolio = None
         single.constraints = []
@@ -149,9 +170,11 @@ def test_threshold_is_exact_switch_point():
     """Juste avant le seuil de basculement le gagnant est inchangé, juste après il change."""
     for seed in range(15):
         rng, x, w, d = _random(seed, n=5, m=4)
-        data = {"criteria": [{"id": c, "direction": d[c]} for c in x.columns],
-                "alternatives": [{"id": i, "values": x.loc[i].to_dict()} for i in x.index],
-                "weights": w.to_dict()}
+        data = {
+            "criteria": [{"id": c, "direction": d[c]} for c in x.columns],
+            "alternatives": [{"id": i, "values": x.loc[i].to_dict()} for i in x.index],
+            "weights": w.to_dict(),
+        }
         p = DecisionProblem.from_dict(data)
         sc = WeightScorer(p, "topsis")
         base = sc.winner(sc.base_weights.to_numpy())

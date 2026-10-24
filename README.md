@@ -96,15 +96,14 @@ from mcdakit import DecisionProblem, evaluate, full_analysis, weight_thresholds,
 
 problem = DecisionProblem.load("examples/stratema_methode2.json")
 
-res = evaluate(problem, "topsis")                 # ou "wsm"
-print(res.table(problem.labels()))                # scores, rangs, écarts au 1er
-print(res.details["Distances"])                   # calculs intermédiaires
+res = evaluate(problem, "topsis")  # ou "wsm"
+print(res.table(problem.labels()))  # scores, rangs, écarts au 1er
+print(res.details["Distances"])  # calculs intermédiaires
 
-print(weight_thresholds(problem, "topsis"))       # où la décision bascule
+print(weight_thresholds(problem, "topsis"))  # où la décision bascule
 
-fa = full_analysis(problem, {"topsis": {}, "wsm": {}},
-                   scenarios={"C5 de C : 3 → 2": [("C", "C5", 2)]})
-print(fa.diagnosis)                               # robuste / modérément robuste / fragile
+fa = full_analysis(problem, {"topsis": {}, "wsm": {}}, scenarios={"C5 de C : 3 → 2": [("C", "C5", 2)]})
+print(fa.diagnosis)  # robuste / modérément robuste / fragile
 open("rapport.html", "w").write(to_html(fa))
 ```
 
@@ -198,7 +197,8 @@ les rapports (et apparaît dans l'interface web via `/api/meta`). Pour la rendre
 ## 6. Tests
 
 ```bash
-pytest
+pytest                      # tests
+ruff check . && ruff format --check .   # qualité et mise en forme du code (config dans pyproject.toml)
 ```
 
 71 tests : reproduction chiffrée des deux rapports Stratema, 5 cas publiés, validation croisée avec pymcdm et

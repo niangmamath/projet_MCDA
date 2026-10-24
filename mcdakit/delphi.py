@@ -1,4 +1,5 @@
 """Agrégation de consultations Delphi : médiane, quartiles, consensus et stabilité entre tours."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -21,6 +22,7 @@ def parse_votes(votes) -> list[float]:
 @dataclass
 class DelphiRound:
     """Un tour Delphi : votes des experts, médiane et quartiles."""
+
     votes: list[float]
     median: float
     q1: float
@@ -35,6 +37,7 @@ class DelphiRound:
 @dataclass
 class DelphiResult:
     """Ensemble des tours d'une question Delphi et seuil de consensus."""
+
     rounds: list[DelphiRound]
     iqr_threshold: float
 

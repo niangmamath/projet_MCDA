@@ -9,6 +9,7 @@ Trois familles de tests (cf. consignes MCDA) :
 Le moteur `WeightScorer` vectorise chaque méthode pour évaluer des milliers de jeux de poids
 en une seule opération (les résultats sont identiques à ceux de `methods.py`, cf. tests).
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -94,8 +95,9 @@ def set_weight(weights: pd.Series, criterion: str, value: float) -> pd.Series:
 
 
 # =========================================================================== paramètres de préférence
-def weight_sweep(problem: DecisionProblem, method: str, criterion: str, params: dict | None = None,
-                 steps: int = 101) -> pd.DataFrame:
+def weight_sweep(
+    problem: DecisionProblem, method: str, criterion: str, params: dict | None = None, steps: int = 101
+) -> pd.DataFrame:
     """Scores de chaque alternative quand le poids de `criterion` varie de 0 à 1."""
     sc = WeightScorer(problem, method, params)
     grid = np.linspace(0, 1, steps)
@@ -119,8 +121,9 @@ def _refine(sc: WeightScorer, criterion: str, a: float, b: float, win_a: str, it
     return (a + b) / 2
 
 
-def weight_thresholds(problem: DecisionProblem, method: str, params: dict | None = None,
-                      resolution: int = 2001) -> pd.DataFrame:
+def weight_thresholds(
+    problem: DecisionProblem, method: str, params: dict | None = None, resolution: int = 2001
+) -> pd.DataFrame:
     """Pour chaque critère, poids à partir duquel le gagnant change (à la hausse et à la baisse)."""
     sc = WeightScorer(problem, method, params)
     base_win = sc.winner(sc.base_weights.to_numpy())
@@ -144,14 +147,16 @@ def weight_thresholds(problem: DecisionProblem, method: str, params: dict | None
                 t = _refine(sc, c, min(w0, lo), grid[k], base_win)
                 down = (t, winners[k])
                 break
-        rows.append({
-            "critère": c,
-            "poids actuel": w0,
-            "seuil haut": up[0] if up else np.nan,
-            "bascule vers (haut)": up[1] if up else "—",
-            "seuil bas": down[0] if down else np.nan,
-            "bascule vers (bas)": down[1] if down else "—",
-        })
+        rows.append(
+            {
+                "critère": c,
+                "poids actuel": w0,
+                "seuil haut": up[0] if up else np.nan,
+                "bascule vers (haut)": up[1] if up else "—",
+                "seuil bas": down[0] if down else np.nan,
+                "bascule vers (bas)": down[1] if down else "—",
+            }
+        )
     df = pd.DataFrame(rows).set_index("critère")
     rel_up = (df["seuil haut"] - df["poids actuel"]) / df["poids actuel"]
     rel_down = (df["poids actuel"] - df["seuil bas"]) / df["poids actuel"]
@@ -159,8 +164,9 @@ def weight_thresholds(problem: DecisionProblem, method: str, params: dict | None
     return df
 
 
-def weight_profiles(problem: DecisionProblem, method: str, profiles: dict[str, dict],
-                    params: dict | None = None) -> pd.DataFrame:
+def weight_profiles(
+    problem: DecisionProblem, method: str, profiles: dict[str, dict], params: dict | None = None
+) -> pd.DataFrame:
     """Profils de décideurs : {"Financier": {"C2": 2}, ...} = multiplicateurs appliqués aux poids
     de référence (puis renormalisés). Le profil spécial {"__equal__": True} donne des poids égaux."""
     sc = WeightScorer(problem, method, params)
@@ -185,15 +191,16 @@ def weight_profiles(problem: DecisionProblem, method: str, profiles: dict[str, d
 def dirichlet_concentration(weights: pd.Series, spread: float) -> float:
     """Concentration k telle que le coefficient de variation d'un poids moyen vaille `spread`."""
     wbar = float(weights.mean())
-    return max((1 - wbar) / (wbar * spread ** 2) - 1, 1e-3)
+    return max((1 - wbar) / (wbar * spread**2) - 1, 1e-3)
 
 
 @dataclass
 class MonteCarloResult:
     """Résultat Monte-Carlo : fréquence de 1re place, rang moyen et distribution des rangs."""
-    first_place: pd.Series       # fréquence d'être 1er
+
+    first_place: pd.Series  # fréquence d'être 1er
     mean_rank: pd.Series
-    rank_distribution: pd.DataFrame   # alternatives × rangs (fréquences)
+    rank_distribution: pd.DataFrame  # alternatives × rangs (fréquences)
     n: int
     spread: float | None
 
@@ -204,8 +211,14 @@ class MonteCarloResult:
         return df.sort_values(["fréquence 1er", "rang moyen"], ascending=[False, True])
 
 
-def monte_carlo(problem: DecisionProblem, method: str, params: dict | None = None, n: int = 10000,
-                spread: float | None = 0.2, seed: int | None = 42) -> MonteCarloResult:
+def monte_carlo(
+    problem: DecisionProblem,
+    method: str,
+    params: dict | None = None,
+    n: int = 10000,
+    spread: float | None = 0.2,
+    seed: int | None = 42,
+) -> MonteCarloResult:
     """Tirages de poids autour des poids de référence (loi de Dirichlet).
 
     spread : coefficient de variation visé pour un poids moyen (0,2 ≈ ±20 %).
@@ -223,13 +236,15 @@ def monte_carlo(problem: DecisionProblem, method: str, params: dict | None = Non
     ranks = (-S).argsort(axis=1).argsort(axis=1) + 1
     alts = sc.alternatives
     dist = pd.DataFrame({r: (ranks == r).mean(axis=0) for r in range(1, len(alts) + 1)}, index=alts)
-    return MonteCarloResult(pd.Series((ranks == 1).mean(axis=0), index=alts),
-                            pd.Series(ranks.mean(axis=0), index=alts), dist, n, spread)
+    return MonteCarloResult(
+        pd.Series((ranks == 1).mean(axis=0), index=alts), pd.Series(ranks.mean(axis=0), index=alts), dist, n, spread
+    )
 
 
 # =========================================================================== données / hypothèses
-def data_scenarios(problem: DecisionProblem, method: str, scenarios: dict[str, list],
-                   params: dict | None = None) -> pd.DataFrame:
+def data_scenarios(
+    problem: DecisionProblem, method: str, scenarios: dict[str, list], params: dict | None = None
+) -> pd.DataFrame:
     """scenarios : {"C3 de C : 4 → 3": [("C", "C3", 3)], ...}. L'alternative peut être un élément de
     base (ré-agrégé dans les portefeuilles) ou une alternative générée."""
     ref = evaluate(problem, method, **(params or {}))
@@ -244,8 +259,7 @@ def data_scenarios(problem: DecisionProblem, method: str, scenarios: dict[str, l
         except ValueError as exc:
             rows.append({"scénario": name, "gagnant": f"erreur : {exc}"})
             continue
-        row = {"scénario": name, "gagnant": res.best,
-               "basculement": "oui" if res.best != ref.best else "non"}
+        row = {"scénario": name, "gagnant": res.best, "basculement": "oui" if res.best != ref.best else "non"}
         for a in watch:
             row[f"score {a}"] = res.scores.get(a, np.nan)
         excluded = sorted(set(ref.scores.index) - set(res.scores.index))
@@ -254,8 +268,16 @@ def data_scenarios(problem: DecisionProblem, method: str, scenarios: dict[str, l
     return pd.DataFrame(rows).set_index("scénario")
 
 
-def value_threshold(problem: DecisionProblem, method: str, alternative: str, column: str,
-                    low: float, high: float, params: dict | None = None, steps: int = 81) -> dict:
+def value_threshold(
+    problem: DecisionProblem,
+    method: str,
+    alternative: str,
+    column: str,
+    low: float,
+    high: float,
+    params: dict | None = None,
+    steps: int = 81,
+) -> dict:
     """Plus proche valeur d'une cellule (dans [low, high]) qui change le gagnant."""
     ref = evaluate(problem, method, **(params or {}))
     base_alt = problem.alternatives if alternative in problem.alternatives.index else problem.candidates()
@@ -267,9 +289,16 @@ def value_threshold(problem: DecisionProblem, method: str, alternative: str, col
             winners.append(evaluate(problem.with_value(alternative, column, v), method, **(params or {})).best)
         except ValueError:
             winners.append(None)
-    changes = [(abs(v - current), v, w) for v, w in zip(values, winners) if w is not None and w != ref.best]
+    changes = [
+        (abs(v - current), v, w) for v, w in zip(values, winners, strict=True) if w is not None and w != ref.best
+    ]
     if not changes:
-        return {"valeur actuelle": current, "seuil": None, "nouveau gagnant": None, "courbe": list(zip(values, winners))}
+        return {
+            "valeur actuelle": current,
+            "seuil": None,
+            "nouveau gagnant": None,
+            "courbe": list(zip(values, winners, strict=True)),
+        }
     _, v, w = min(changes)
     # affinage par dichotomie entre la valeur actuelle et v
     a, b = current, v
@@ -279,15 +308,20 @@ def value_threshold(problem: DecisionProblem, method: str, alternative: str, col
             a = m
         else:
             b = m
-    return {"valeur actuelle": current, "seuil": (a + b) / 2, "nouveau gagnant": w,
-            "courbe": list(zip(values, winners))}
+    return {
+        "valeur actuelle": current,
+        "seuil": (a + b) / 2,
+        "nouveau gagnant": w,
+        "courbe": list(zip(values, winners, strict=True)),
+    }
 
 
 # =========================================================================== diagnostic
 @dataclass
 class RobustnessDiagnosis:
     """Verdict (robuste / modérément robuste / fragile) et raisons qui le justifient."""
-    level: str              # "robuste" | "modérément robuste" | "fragile"
+
+    level: str  # "robuste" | "modérément robuste" | "fragile"
     reasons: list[str]
     winner: str
 
@@ -295,16 +329,23 @@ class RobustnessDiagnosis:
         return f"Recommandation {self.level} ({self.winner}) : " + " ; ".join(self.reasons)
 
 
-def diagnose(winner: str, mc: MonteCarloResult | None = None, thresholds: pd.DataFrame | None = None,
-             comparison: dict | None = None, scenarios: pd.DataFrame | None = None,
-             robust_freq: float = 0.9, fragile_freq: float = 0.6,
-             robust_rel: float = 0.5, fragile_rel: float = 0.1) -> RobustnessDiagnosis:
+def diagnose(
+    winner: str,
+    mc: MonteCarloResult | None = None,
+    thresholds: pd.DataFrame | None = None,
+    comparison: dict | None = None,
+    scenarios: pd.DataFrame | None = None,
+    robust_freq: float = 0.9,
+    fragile_freq: float = 0.6,
+    robust_rel: float = 0.5,
+    fragile_rel: float = 0.1,
+) -> RobustnessDiagnosis:
     """Règles explicites (paramétrables) :
-      * fragile  : fréquence Monte-Carlo < fragile_freq OU un poids bascule pour < fragile_rel de
-                   variation relative OU une majorité des scénarios de données basculent ;
-      * robuste  : fréquence ≥ robust_freq ET toute bascule de poids exige ≥ robust_rel de variation ET
-                   toutes les méthodes ont le même gagnant ET aucun scénario ne bascule ;
-      * sinon    : modérément robuste.
+    * fragile  : fréquence Monte-Carlo < fragile_freq OU un poids bascule pour < fragile_rel de
+                 variation relative OU une majorité des scénarios de données basculent ;
+    * robuste  : fréquence ≥ robust_freq ET toute bascule de poids exige ≥ robust_rel de variation ET
+                 toutes les méthodes ont le même gagnant ET aucun scénario ne bascule ;
+    * sinon    : modérément robuste.
     """
     reasons, fragile, robust = [], False, True
     if mc is not None:
@@ -323,8 +364,12 @@ def diagnose(winner: str, mc: MonteCarloResult | None = None, thresholds: pd.Dat
             reasons.append("aucun poids isolé ne fait basculer le gagnant")
     if comparison is not None:
         same = comparison["same_winner"]
-        reasons.append("toutes les méthodes s'accordent sur le 1er" if same else
-                       "les méthodes divergent sur le 1er : " + ", ".join(f"{k} → {v}" for k, v in comparison["winners"].items()))
+        reasons.append(
+            "toutes les méthodes s'accordent sur le 1er"
+            if same
+            else "les méthodes divergent sur le 1er : "
+            + ", ".join(f"{k} → {v}" for k, v in comparison["winners"].items())
+        )
         robust &= same
     if scenarios is not None and "basculement" in scenarios:
         tested = scenarios.drop(index="Référence", errors="ignore")
