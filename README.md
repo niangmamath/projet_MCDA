@@ -180,11 +180,11 @@ résultats publiés dans les deux rapports Stratema, et appels de toutes les rou
 Le dépôt est prêt pour Vercel, sans configuration supplémentaire :
 
 - `public/` est servi tel quel par le CDN (interface) ;
-- `api/index.py` devient une fonction Python (FastAPI) ; `vercel.json` y redirige toutes les routes `/api/*`
-  et y inclut les dossiers `mcdakit/` et `examples/` ;
+- `api/index.py` est détecté comme application FastAPI et reçoit toutes les requêtes `/api/*` ;
+  `vercel.json` y inclut les dossiers `mcdakit/`, `examples/` et `public/` ;
 - `requirements.txt` liste les dépendances installées au build.
 
-Étapes : importer le dépôt GitHub dans Vercel (*Add New → Project*), laisser le preset « Other », déployer.
+Étapes : importer le dépôt GitHub dans Vercel (*Add New → Project*), le preset « FastAPI » est détecté automatiquement, déployer.
 Chaque `git push` sur `main` redéploie automatiquement. La documentation interactive de l'API est servie sur
 `/api/docs`.
 

@@ -3,10 +3,7 @@
   "functions": {
     "api/index.py": {
       "maxDuration": 60,
-      "includeFiles": "{mcdakit,examples}/**"
+      "includeFiles": "{mcdakit,examples,public}/**"
     }
-  },
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/index" }
-  ]
+  }
 }
