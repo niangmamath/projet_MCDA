@@ -57,6 +57,8 @@ def _check(matrix: pd.DataFrame, weights: pd.Series, directions: pd.Series):
     w = weights.reindex(crit).astype(float)
     if w.isna().any():
         raise ValueError(f"Poids manquants : {list(w[w.isna()].index)}")
+    if (w < 0).any() or w.sum() <= 0:
+        raise ValueError("Les poids doivent être positifs, de somme strictement positive.")
     w = w / w.sum()
     return matrix.astype(float), w, directions.reindex(crit)
 
