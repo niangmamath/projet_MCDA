@@ -1,0 +1,120 @@
+{
+  "name": "Cas publié — PROMETHEE II (Papathanasiou & Ploskas, 2018)",
+  "description": "Exemple de manuel : 6 alternatives, 4 critères à maximiser, fonction de préférence linéaire (q = 1, p = 2). Source : Papathanasiou & Ploskas, Multiple Criteria Decision Aid, Springer 2018, chap. PROMETHEE (DOI 10.1007/978-3-319-91648-4_3). Flux nets publiés : A1 −0,26 ; A2 −0,52 ; A3 −0,22 ; A4 0,36 ; A5 0,70 ; A6 −0,06 → classement A5 > A4 > A6 > A3 > A1 > A2. Résultat à lire dans l'onglet Résultats, méthode PROMETHEE II.",
+  "criteria": [
+    {
+      "id": "C1",
+      "name": "Critère 1",
+      "direction": "max",
+      "preference": {
+        "type": "linear",
+        "q": 1,
+        "p": 2
+      }
+    },
+    {
+      "id": "C2",
+      "name": "Critère 2",
+      "direction": "max",
+      "preference": {
+        "type": "linear",
+        "q": 1,
+        "p": 2
+      }
+    },
+    {
+      "id": "C3",
+      "name": "Critère 3",
+      "direction": "max",
+      "preference": {
+        "type": "linear",
+        "q": 1,
+        "p": 2
+      }
+    },
+    {
+      "id": "C4",
+      "name": "Critère 4",
+      "direction": "max",
+      "preference": {
+        "type": "linear",
+        "q": 1,
+        "p": 2
+      }
+    }
+  ],
+  "alternatives": [
+    {
+      "id": "A1",
+      "name": "Alternative 1",
+      "values": {
+        "C1": 8.0,
+        "C2": 7.0,
+        "C3": 2.0,
+        "C4": 1.0
+      }
+    },
+    {
+      "id": "A2",
+      "name": "Alternative 2",
+      "values": {
+        "C1": 5.0,
+        "C2": 3.0,
+        "C3": 7.0,
+        "C4": 5.0
+      }
+    },
+    {
+      "id": "A3",
+      "name": "Alternative 3",
+      "values": {
+        "C1": 7.0,
+        "C2": 5.0,
+        "C3": 6.0,
+        "C4": 4.0
+      }
+    },
+    {
+      "id": "A4",
+      "name": "Alternative 4",
+      "values": {
+        "C1": 9.0,
+        "C2": 9.0,
+        "C3": 7.0,
+        "C4": 3.0
+      }
+    },
+    {
+      "id": "A5",
+      "name": "Alternative 5",
+      "values": {
+        "C1": 11.0,
+        "C2": 10.0,
+        "C3": 3.0,
+        "C4": 7.0
+      }
+    },
+    {
+      "id": "A6",
+      "name": "Alternative 6",
+      "values": {
+        "C1": 6.0,
+        "C2": 9.0,
+        "C3": 5.0,
+        "C4": 4.0
+      }
+    }
+  ],
+  "weights": {
+    "C1": 0.4,
+    "C2": 0.3,
+    "C3": 0.1,
+    "C4": 0.2
+  },
+  "analysis": {
+    "primary": "promethee",
+    "methods": {
+      "promethee": {}
+    }
+  }
+}

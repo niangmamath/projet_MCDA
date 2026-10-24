@@ -1,0 +1,112 @@
+{
+  "name": "Cas publié — Somme pondérée, admission d'élèves (Rizan et al., 2020)",
+  "description": "Admission de nouveaux élèves : 4 candidats évalués sur 7 critères (notes de 0 à 1), méthode SAW. Source : Rizan, Wahyuningsih, Pradana & Ramadella (2020), CITSM 2020, IEEE, DOI 10.1109/CITSM50537.2020.9268874. Scores publiés : 0,350 ; 0,375 ; 0,825 ; 0,642 → le candidat 3 est retenu. Méthode : somme pondérée, normalisation « linéaire x / max ».",
+  "criteria": [
+    {
+      "id": "C1",
+      "name": "Critère 1",
+      "direction": "max"
+    },
+    {
+      "id": "C2",
+      "name": "Critère 2",
+      "direction": "max"
+    },
+    {
+      "id": "C3",
+      "name": "Critère 3",
+      "direction": "max"
+    },
+    {
+      "id": "C4",
+      "name": "Critère 4",
+      "direction": "max"
+    },
+    {
+      "id": "C5",
+      "name": "Critère 5",
+      "direction": "max"
+    },
+    {
+      "id": "C6",
+      "name": "Critère 6",
+      "direction": "max"
+    },
+    {
+      "id": "C7",
+      "name": "Critère 7",
+      "direction": "max"
+    }
+  ],
+  "alternatives": [
+    {
+      "id": "A1",
+      "name": "Candidat 1",
+      "values": {
+        "C1": 0.75,
+        "C2": 0.5,
+        "C3": 0.75,
+        "C4": 0.0,
+        "C5": 0.0,
+        "C6": 0.0,
+        "C7": 1.0
+      }
+    },
+    {
+      "id": "A2",
+      "name": "Candidat 2",
+      "values": {
+        "C1": 0.75,
+        "C2": 1.0,
+        "C3": 0.75,
+        "C4": 0.0,
+        "C5": 0.0,
+        "C6": 0.0,
+        "C7": 0.75
+      }
+    },
+    {
+      "id": "A3",
+      "name": "Candidat 3",
+      "values": {
+        "C1": 0.75,
+        "C2": 0.75,
+        "C3": 0.75,
+        "C4": 0.0,
+        "C5": 0.5,
+        "C6": 0.25,
+        "C7": 1.0
+      }
+    },
+    {
+      "id": "A4",
+      "name": "Candidat 4",
+      "values": {
+        "C1": 0.5,
+        "C2": 0.5,
+        "C3": 0.75,
+        "C4": 1.0,
+        "C5": 0.5,
+        "C6": 0.0,
+        "C7": 0.75
+      }
+    }
+  ],
+  "weights": {
+    "C1": 0.1,
+    "C2": 0.1,
+    "C3": 0.1,
+    "C4": 0.15,
+    "C5": 0.2,
+    "C6": 0.25,
+    "C7": 0.1
+  },
+  "analysis": {
+    "primary": "wsm",
+    "methods": {
+      "wsm": {
+        "normalization": "max"
+      }
+    }
+  }
+}

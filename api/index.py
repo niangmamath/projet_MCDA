@@ -176,6 +176,16 @@ def example(name: str):
     raise HTTPException(404, "Exemple introuvable")
 
 
+@app.get("/api/validation")
+def validation():
+    """Recalcule en direct les cas publiés (mcdakit/benchmarks.py) et les compare aux résultats imprimés."""
+    from mcdakit.benchmarks import run_benchmarks
+    r = run_benchmarks()
+    return {"all_ok": bool(r["conforme"].all() and r["même classement"].all()),
+            "cases": [{k: _val(v) if not isinstance(v, list) else [_val(x) for x in v] for k, v in row.items()}
+                      for row in r.to_dict(orient="records")]}
+
+
 @app.post("/api/validate")
 def validate(body: ProblemBody):
     """Vérifie le problème et renvoie candidates, admissibilité, matrice et poids."""

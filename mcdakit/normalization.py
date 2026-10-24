@@ -36,8 +36,13 @@ def normalize(matrix: pd.DataFrame, directions: pd.Series, method: str = "minmax
         r.loc[:, is_min] = 1 - r.loc[:, is_min]
         return r.fillna(1.0), True
     if method == "max":
-        if (x <= 0).any().any():
-            raise ValueError("La normalisation 'max' exige des valeurs strictement positives.")
+        # x / max pour un critère à maximiser (zéros admis), min / x pour un critère à minimiser.
+        if (x < 0).any().any():
+            raise ValueError("La normalisation 'max' exige des valeurs positives ou nulles.")
+        if (x.loc[:, ~is_min].max() <= 0).any():
+            raise ValueError("La normalisation 'max' exige au moins une valeur > 0 par critère à maximiser.")
+        if (x.loc[:, is_min] <= 0).any().any():
+            raise ValueError("La normalisation 'max' exige des valeurs strictement positives pour un critère à minimiser.")
         r = x / x.max()
         r.loc[:, is_min] = (x.min() / x).loc[:, is_min]
         return r, True

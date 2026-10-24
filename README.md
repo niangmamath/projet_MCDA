@@ -127,6 +127,20 @@ reproduit l'intégralité des calculs des deux rapports Stratema et écrit
 | Profils (financier → BD, égaux → CD) et 8 scénarios de données (C5 de C → BD) | identiques |
 | Normalisation min-max → BD 0,7019 | identique |
 
+### Validation
+
+Les calculs sont validés de trois façons (détail et chiffres dans [`docs/VALIDATION.md`](docs/VALIDATION.md)) :
+
+- **10 cas publiés** (articles et manuels : Opricovic & Tzeng 2004, Ziemba 2017 et 2019, Papathanasiou & Ploskas 2018,
+  Wang & Chin 2011…) reproduits à la précision de la publication — `mcdakit/benchmarks.py`, `tests/test_literature.py` ;
+- **validation croisée** avec deux bibliothèques indépendantes (pymcdm, pyDecision) sur des centaines de problèmes
+  aléatoires : écarts de l'ordre de 10⁻¹⁶ — `tests/test_cross_validation.py` ;
+- **propriétés mathématiques** (dominance, changement d'unité, permutation, bornes, cohérence AHP, seuils de
+  basculement…) — `tests/test_properties.py`.
+
+`python examples/validation.py` régénère le rapport ; l'API recalcule les cas publiés à la demande (`GET /api/validation`).
+Quatre de ces cas sont proposés comme exemples dans l'application (« Cas publié — … »).
+
 ## 4. Format d'un projet
 
 Voir [`docs/FORMAT.md`](docs/FORMAT.md) (JSON/YAML/Excel) et [`docs/METHODES.md`](docs/METHODES.md)
@@ -172,7 +186,7 @@ les rapports (et apparaît dans l'interface web via `/api/meta`). Pour la rendre
 pytest
 ```
 
-Tests : propriétés mathématiques (cohérence AHP, flux PROMETHEE de somme nulle, respect de la dominance par
+Tests (98) : propriétés mathématiques (cohérence AHP, flux PROMETHEE de somme nulle, respect de la dominance par
 toutes les méthodes), aller-retour JSON/Excel, égalité moteur vectorisé ↔ méthodes, et reproduction des
 résultats publiés dans les deux rapports Stratema, et appels de toutes les routes de l'API.
 
@@ -193,6 +207,7 @@ Chaque `git push` sur `main` redéploie automatiquement. La documentation intera
 
 | Route | Rôle |
 |---|---|
+| `GET /api/validation` | recalcule les cas publiés et les compare aux résultats imprimés |
 | `GET /api/meta` | méthodes, normalisations, fonctions de préférence disponibles |
 | `GET /api/examples`, `GET /api/examples/{id}` | exemples fournis |
 | `POST /api/validate` | contrôle du projet : candidates, admissibilité, matrice, poids, cohérence AHP |

@@ -72,3 +72,8 @@ def test_errors_are_400(strat):
 
 def test_static_index():
     assert "mcdakit" in client.get("/").text
+
+
+def test_validation_route():
+    r = client.get("/api/validation").json()
+    assert r["all_ok"] is True and len(r["cases"]) >= 10

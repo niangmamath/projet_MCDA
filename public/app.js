@@ -109,6 +109,12 @@ function fromProblem(d) {
     const [lo, hi] = typeof s === "object" ? [s.min ?? 1, s.max ?? s.min ?? 1] : [s, s];
     m.portfolio = { on: true, min: lo, max: hi };
   }
+  // Réglages suggérés par le fichier (ex. méthode utilisée dans l'article d'un cas publié)
+  if (d.analysis && d.analysis.methods) {
+    for (const k of Object.keys(m.ui.methods)) m.ui.methods[k].on = false;
+    for (const [k, params] of Object.entries(d.analysis.methods)) m.ui.methods[k] = { ...(m.ui.methods[k] || {}), ...params, on: true };
+    if (d.analysis.primary) m.ui.primary = d.analysis.primary;
+  }
   let w = d.weights || { method: "equal" };
   if (!w.method) w = { method: "direct", values: w };
   const ids = m.criteria.map((c) => c.id);

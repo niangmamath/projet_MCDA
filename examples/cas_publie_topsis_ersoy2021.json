@@ -1,0 +1,126 @@
+{
+  "name": "Cas publié — TOPSIS, sélection d'équipement (Ersoy, 2021)",
+  "description": "Sélection d'équipement pour une entreprise de e-commerce : 6 équipements, 6 critères (4 à maximiser, 2 à minimiser), poids issus de la méthode entropique. Source : Ersoy (2021), LogForum 17(3). Scores de proximité publiés : 0,308 ; 0,254 ; 0,327 ; 0,263 ; 0,857 ; 0,192 → l'équipement 5 est recommandé. Méthode TOPSIS, normalisation vectorielle. Les critères sont numérotés C1 à C6 dans l’ordre de l’article, qui en donne les intitulés.",
+  "criteria": [
+    {
+      "id": "C1",
+      "name": "Critère 1",
+      "direction": "max"
+    },
+    {
+      "id": "C2",
+      "name": "Critère 2",
+      "direction": "max"
+    },
+    {
+      "id": "C3",
+      "name": "Critère 3",
+      "direction": "max"
+    },
+    {
+      "id": "C4",
+      "name": "Critère 4",
+      "direction": "max"
+    },
+    {
+      "id": "C5",
+      "name": "Critère 5",
+      "direction": "min"
+    },
+    {
+      "id": "C6",
+      "name": "Critère 6",
+      "direction": "min"
+    }
+  ],
+  "alternatives": [
+    {
+      "id": "A1",
+      "name": "Équipement 1",
+      "values": {
+        "C1": 256.0,
+        "C2": 8.0,
+        "C3": 41.0,
+        "C4": 1.6,
+        "C5": 1.77,
+        "C6": 7347.16
+      }
+    },
+    {
+      "id": "A2",
+      "name": "Équipement 2",
+      "values": {
+        "C1": 256.0,
+        "C2": 8.0,
+        "C3": 32.0,
+        "C4": 1.0,
+        "C5": 1.8,
+        "C6": 6919.99
+      }
+    },
+    {
+      "id": "A3",
+      "name": "Équipement 3",
+      "values": {
+        "C1": 256.0,
+        "C2": 8.0,
+        "C3": 53.0,
+        "C4": 1.6,
+        "C5": 1.9,
+        "C6": 8400.0
+      }
+    },
+    {
+      "id": "A4",
+      "name": "Équipement 4",
+      "values": {
+        "C1": 256.0,
+        "C2": 8.0,
+        "C3": 41.0,
+        "C4": 1.0,
+        "C5": 1.75,
+        "C6": 6808.9
+      }
+    },
+    {
+      "id": "A5",
+      "name": "Équipement 5",
+      "values": {
+        "C1": 512.0,
+        "C2": 8.0,
+        "C3": 35.0,
+        "C4": 1.6,
+        "C5": 1.7,
+        "C6": 8479.99
+      }
+    },
+    {
+      "id": "A6",
+      "name": "Équipement 6",
+      "values": {
+        "C1": 256.0,
+        "C2": 4.0,
+        "C3": 35.0,
+        "C4": 1.6,
+        "C5": 1.7,
+        "C6": 7499.99
+      }
+    }
+  ],
+  "weights": {
+    "C1": 0.405,
+    "C2": 0.221,
+    "C3": 0.134,
+    "C4": 0.199,
+    "C5": 0.007,
+    "C6": 0.034
+  },
+  "analysis": {
+    "primary": "topsis",
+    "methods": {
+      "topsis": {
+        "normalization": "vector"
+      }
+    }
+  }
+}

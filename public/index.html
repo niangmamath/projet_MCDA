@@ -22,6 +22,7 @@
     <nav class="nav-links" aria-label="Sections">
       <a href="#fonctionnement">Fonctionnement</a>
       <a href="#methodes">Méthodes</a>
+      <a href="#validation">Validation</a>
       <a href="#demarrer">Démarrer</a>
       <a href="#faq">FAQ</a>
     </nav>
@@ -211,6 +212,33 @@
     </div>
   </section>
 
+
+  <!-- ======================================================== VALIDATION -->
+  <section class="section" id="validation">
+    <div class="wrap">
+      <p class="eyebrow center">Validation</p>
+      <h2 class="center">Des calculs vérifiés, pas seulement affichés</h2>
+      <p class="sub center">Une recommandation n'a de valeur que si ses calculs sont exacts. Le moteur est confronté en
+        permanence à des résultats publiés et à des implémentations indépendantes.</p>
+      <div class="stats">
+        <div><b id="v-cases">10 / 10</b><span>cas publiés (articles et manuels) reproduits à la précision de la publication</span></div>
+        <div><b>6 500</b><span>comparaisons avec deux bibliothèques indépendantes (pymcdm, pyDecision) : écart &lt; 10<sup>−15</sup></span></div>
+        <div><b>9</b><span>familles de propriétés mathématiques testées : dominance, unités, permutation, bornes, cohérence AHP…</span></div>
+      </div>
+      <div class="vtable-wrap">
+        <table class="vtable">
+          <thead><tr><th>Source publiée</th><th>Méthode</th><th>Résultat publié</th><th>Recalculé</th><th>Verdict</th></tr></thead>
+          <tbody id="v-body"><tr><td colspan="5" class="muted">Recalcul en direct des cas publiés…</td></tr></tbody>
+        </table>
+      </div>
+      <p class="note center" id="v-note">Ce tableau est recalculé par le serveur à l'ouverture de la page.
+        Essayez vous-même : chargez <a href="/app?exemple=cas_publie_promethee_eolien_ziemba2017">le parc éolien de Ziemba et al. (2017)</a>,
+        <a href="/app?exemple=cas_publie_topsis_ersoy2021">la sélection d'équipement d'Ersoy (2021)</a>,
+        <a href="/app?exemple=cas_publie_promethee_papathanasiou2018">l'exemple PROMETHEE de Papathanasiou &amp; Ploskas</a> ou
+        <a href="/app?exemple=cas_publie_saw_rizan2020">l'admission d'élèves de Rizan et al. (2020)</a>, et comparez aux valeurs de l'article.</p>
+    </div>
+  </section>
+
   <!-- ======================================================== USAGES -->
   <section class="section">
     <div class="wrap">
@@ -312,6 +340,27 @@
     im.addEventListener("keydown", (e) => { if (e.key === "Enter") open(); });
   });
   dlg.addEventListener("click", () => dlg.close());
+
+  // Validation : recalcul en direct des cas publiés
+  (async () => {
+    const body = document.getElementById("v-body");
+    const f = (v) => v.map((x) => x.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 4 })).join(" · ");
+    const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    try {
+      const r = await (await fetch("/api/validation")).json();
+      body.innerHTML = r.cases.map((c) => {
+        const authors = c.source.split(" (")[0];
+        const year = (c.source.match(/\((\d{4})\)/) || [, ""])[1];
+        const src = (authors.includes(",") ? authors.split(",")[0] + " et al." : authors) + " (" + year + ")";
+        return `<tr><td>${esc(src)}</td><td>${esc(c.méthode)}</td><td class="num">${f(c.publié)}</td><td class="num">${f(c.mcdakit)}</td>` +
+          `<td><span class="pill ${c.conforme ? "ok" : "bad"}">${c.conforme ? "conforme" : "écart"}</span></td></tr>`;
+      }).join("");
+      const ok = r.cases.filter((c) => c.conforme).length;
+      document.getElementById("v-cases").textContent = `${ok} / ${r.cases.length}`;
+    } catch {
+      body.innerHTML = '<tr><td colspan="5" class="muted">Recalcul indisponible pour le moment.</td></tr>';
+    }
+  })();
 </script>
 </body>
 </html>

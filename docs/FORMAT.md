@@ -37,6 +37,11 @@ Un projet est un dictionnaire (JSON ou YAML). Seuls `criteria` et `alternatives`
 
   "overrides": {                     // valeurs imposées pour une alternative (ex. Delphi sur un couple)
     "A+D": {"C3": 2}
+  },
+
+  "analysis": {                      // facultatif : méthodes cochées à l'ouverture dans l'application
+    "primary": "promethee",
+    "methods": {"promethee": {}, "topsis": {"normalization": "vector"}}
   }
 }
 ```

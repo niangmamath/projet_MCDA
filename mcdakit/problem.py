@@ -135,6 +135,7 @@ class DecisionProblem:
     overrides: dict = field(default_factory=dict)  # {alternative: {colonne: valeur}}
     name: str = "Problème de décision"
     description: str = ""
+    analysis: dict = field(default_factory=dict)   # réglages suggérés (méthodes, méthode de référence), facultatif
 
     # ------------------------------------------------------------------ construction
     @classmethod
@@ -160,6 +161,7 @@ class DecisionProblem:
             overrides={str(k): dict(v) for k, v in data.get("overrides", {}).items()},
             name=data.get("name", "Problème de décision"),
             description=data.get("description", ""),
+            analysis=dict(data.get("analysis", {})),
         )
         problem.validate()
         return problem
@@ -191,6 +193,7 @@ class DecisionProblem:
             "weights": self.weights_spec,
             "constraints": [vars(c).copy() for c in self.constraints],
             "overrides": self.overrides,
+            **({"analysis": self.analysis} if self.analysis else {}),
         }
         if self.portfolio:
             data["portfolio"] = self.portfolio.to_spec()

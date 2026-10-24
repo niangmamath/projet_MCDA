@@ -1,0 +1,208 @@
+{
+  "name": "Cas publié — PROMETHEE, implantation d'un parc éolien en mer (Ziemba et al., 2017)",
+  "description": "Choix entre 4 sites de parc éolien offshore sur 12 critères (fonction de préférence en V, seuil p propre à chaque critère). Source : Ziemba, Wątróbski, Zioło & Karczmarczyk (2017), Energies 10(11), DOI 10.3390/en10111755. Flux nets publiés : −0,0445 ; 0,1884 ; −0,0954 ; −0,0485 → le site 2 est recommandé. Les critères sont numérotés C1 à C12 dans l’ordre de l’article, qui en donne les intitulés.",
+  "criteria": [
+    {
+      "id": "C1",
+      "name": "Critère 1",
+      "direction": "min",
+      "preference": {
+        "type": "vshape",
+        "p": 7280
+      }
+    },
+    {
+      "id": "C2",
+      "name": "Critère 2",
+      "direction": "min",
+      "preference": {
+        "type": "vshape",
+        "p": 4
+      }
+    },
+    {
+      "id": "C3",
+      "name": "Critère 3",
+      "direction": "min",
+      "preference": {
+        "type": "vshape",
+        "p": 13.4
+      }
+    },
+    {
+      "id": "C4",
+      "name": "Critère 4",
+      "direction": "min",
+      "preference": {
+        "type": "vshape",
+        "p": 7.4
+      }
+    },
+    {
+      "id": "C5",
+      "name": "Critère 5",
+      "direction": "min",
+      "preference": {
+        "type": "vshape",
+        "p": 3
+      }
+    },
+    {
+      "id": "C6",
+      "name": "Critère 6",
+      "direction": "max",
+      "preference": {
+        "type": "vshape",
+        "p": 1662
+      }
+    },
+    {
+      "id": "C7",
+      "name": "Critère 7",
+      "direction": "min",
+      "preference": {
+        "type": "vshape",
+        "p": 3
+      }
+    },
+    {
+      "id": "C8",
+      "name": "Critère 8",
+      "direction": "min",
+      "preference": {
+        "type": "vshape",
+        "p": 3
+      }
+    },
+    {
+      "id": "C9",
+      "name": "Critère 9",
+      "direction": "max",
+      "preference": {
+        "type": "vshape",
+        "p": 13.8
+      }
+    },
+    {
+      "id": "C10",
+      "name": "Critère 10",
+      "direction": "min",
+      "preference": {
+        "type": "vshape",
+        "p": 3
+      }
+    },
+    {
+      "id": "C11",
+      "name": "Critère 11",
+      "direction": "max",
+      "preference": {
+        "type": "vshape",
+        "p": 766240
+      }
+    },
+    {
+      "id": "C12",
+      "name": "Critère 12",
+      "direction": "max",
+      "preference": {
+        "type": "vshape",
+        "p": 17820
+      }
+    }
+  ],
+  "alternatives": [
+    {
+      "id": "A1",
+      "name": "Site 1",
+      "values": {
+        "C1": 16347.0,
+        "C2": 9.0,
+        "C3": 73.8,
+        "C4": 36.7,
+        "C5": 1.5,
+        "C6": 3730.0,
+        "C7": 2.0,
+        "C8": 1.0,
+        "C9": 38.8,
+        "C10": 4.0,
+        "C11": 1720524.0,
+        "C12": 40012.0
+      }
+    },
+    {
+      "id": "A2",
+      "name": "Site 2",
+      "values": {
+        "C1": 14219.0,
+        "C2": 8.5,
+        "C3": 55.0,
+        "C4": 36.0,
+        "C5": 2.0,
+        "C6": 3240.0,
+        "C7": 1.0,
+        "C8": 1.0,
+        "C9": 33.1,
+        "C10": 2.0,
+        "C11": 1496512.0,
+        "C12": 34803.0
+      }
+    },
+    {
+      "id": "A3",
+      "name": "Site 3",
+      "values": {
+        "C1": 8160.0,
+        "C2": 9.0,
+        "C3": 64.8,
+        "C4": 28.5,
+        "C5": 2.0,
+        "C6": 1860.0,
+        "C7": 2.0,
+        "C8": 2.0,
+        "C9": 45.8,
+        "C10": 4.0,
+        "C11": 858830.0,
+        "C12": 19973.0
+      }
+    },
+    {
+      "id": "A4",
+      "name": "Site 4",
+      "values": {
+        "C1": 8160.0,
+        "C2": 8.5,
+        "C3": 62.5,
+        "C4": 29.5,
+        "C5": 1.5,
+        "C6": 1860.0,
+        "C7": 1.0,
+        "C8": 3.0,
+        "C9": 27.3,
+        "C10": 3.0,
+        "C11": 858830.0,
+        "C12": 19973.0
+      }
+    }
+  ],
+  "weights": {
+    "C1": 20,
+    "C2": 5,
+    "C3": 5,
+    "C4": 1.67,
+    "C5": 1.67,
+    "C6": 11.67,
+    "C7": 11.67,
+    "C8": 5,
+    "C9": 5,
+    "C10": 16.67,
+    "C11": 8.33,
+    "C12": 8.33
+  },
+  "analysis": {
+    "primary": "promethee",
+    "methods": {
+      "promethee": {}
+    }
+  }
+}
