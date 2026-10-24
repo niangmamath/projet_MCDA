@@ -2,7 +2,7 @@
 
 Chaque cas reprend les données et le résultat imprimés dans la source (article ou ouvrage). Ces cas sont
 repris des suites de tests de bibliothèques MCDA établies (pymcdm 1.4, pyrepo-mcda 0.1.15), qui les citent ;
-les DOI indiqués sont ceux donnés par ces bibliothèques.
+chaque cas renvoie à l'article par son DOI (lien https://doi.org/…).
 `run_benchmarks()` recalcule chaque cas avec mcdakit et compare au résultat publié, à la précision de la
 publication.
 """
@@ -77,17 +77,17 @@ def _papathanasiou_ahp():
 BENCHMARKS: list[Benchmark] = [
     Benchmark("opricovic2004", "TOPSIS (normalisation min-max)",
               "Opricovic & Tzeng (2004), Compromise solution by MCDM methods: a comparative analysis of VIKOR and TOPSIS. European Journal of Operational Research 156(2)",
-              "—", [0.500, 0.617, 0.500], 3,
+              "10.1016/S0377-2217(03)00020-1", [0.500, 0.617, 0.500], 3,
               lambda: _run(topsis, np.array([[1, 2, 5], [3000, 3750, 4500]]).T, [0.5, 0.5], [-1, 1], normalization="minmax"),
               "Les valeurs publiées sont obtenues avec la normalisation min-max."),
     Benchmark("ersoy2021", "TOPSIS (normalisation vectorielle)",
               "Ersoy (2021), Equipment selection for an e-commerce company using entropy-based TOPSIS, EDAS and CODAS methods during the COVID-19. LogForum 17(3)",
-              "—", [0.308, 0.254, 0.327, 0.263, 0.857, 0.192], 3,
+              "10.17270/J.LOG.2021.603", [0.308, 0.254, 0.327, 0.263, 0.857, 0.192], 3,
               lambda: _run(topsis, ERSOY_2021, [0.405, 0.221, 0.134, 0.199, 0.007, 0.034], [1, 1, 1, 1, -1, -1]),
               "Tolérance 0,001 : les poids entropiques sont publiés arrondis à 3 décimales.", tolerance=0.001),
     Benchmark("wangchin2011", "AHP — poids par vecteur propre",
               "Wang & Chin (2011), A linear programming approximation to the eigenvector method in the analytic hierarchy process. Information Sciences 181(23)",
-              "—", [0.3208, 0.1395, 0.0348, 0.1285, 0.2374, 0.1391], 4,
+              "10.1016/j.ins.2011.07.009", [0.3208, 0.1395, 0.0348, 0.1285, 0.2374, 0.1391], 4,
               lambda: ahp(WANG_CHIN_2011).weights.to_numpy()),
     Benchmark("papathanasiou2018_ahp", "AHP complet (critères et alternatives par paires)",
               "Papathanasiou & Ploskas (2018), AHP. In Multiple Criteria Decision Aid, Springer",
@@ -108,6 +108,7 @@ def run_benchmarks() -> pd.DataFrame:
         diff = float(np.max(np.abs(got - pub)))
         rank = lambda v: pd.Series(v).rank(ascending=False, method="min").tolist()
         rows.append({"cas": b.key, "méthode": b.method, "source": b.source, "doi": b.doi,
+                     "url": f"https://doi.org/{b.doi}" if b.doi and b.doi != "—" else "",
                      "publié": list(pub), "mcdakit": [round(float(x), b.decimals) for x in got],
                      "écart max": diff, "tolérance": b.tol,
                      "même classement": rank(np.round(got, b.decimals)) == rank(pub),

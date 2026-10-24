@@ -12,23 +12,23 @@ Un logiciel d'aide à la décision doit produire des résultats exacts et vérif
 
 ## 1. Reproduction de résultats publiés
 
-Les données et résultats viennent des sources citées. Ces cas sont repris des suites de tests de pymcdm 1.4 et pyrepo-mcda 0.1.15, qui les citent avec ces références ; les DOI sont ceux qu'elles indiquent. Un cas est conforme si l'écart ne dépasse pas la précision de la publication (une demi-unité de la dernière décimale imprimée, sauf mention).
+Les données et résultats viennent des sources citées. Ces cas sont repris des suites de tests de pymcdm 1.4 et pyrepo-mcda 0.1.15, qui les citent avec ces références ; chaque cas renvoie à l'article par son DOI. Un cas est conforme si l'écart ne dépasse pas la précision de la publication (une demi-unité de la dernière décimale imprimée, sauf mention).
 
 | Cas | Méthode | Résultat publié | mcdakit | Écart max | Classement | Verdict |
 |---|---|---|---|---|---|---|
-| opricovic2004 | TOPSIS (normalisation min-max) | 0,500 ; 0,617 ; 0,500 | 0,500 ; 0,617 ; 0,500 | 2.2e-04 | identique | conforme |
-| ersoy2021 | TOPSIS (normalisation vectorielle) | 0,308 ; 0,254 ; 0,327 ; 0,263 ; 0,857 ; 0,192 | 0,307 ; 0,254 ; 0,327 ; 0,262 ; 0,856 ; 0,191 | 7.5e-04 | identique | conforme |
-| wangchin2011 | AHP — poids par vecteur propre | 0,3208 ; 0,1395 ; 0,0348 ; 0,1285 ; 0,2374 ; 0,1391 | 0,3208 ; 0,1395 ; 0,0348 ; 0,1285 ; 0,2374 ; 0,1391 | 3.2e-05 | identique | conforme |
-| papathanasiou2018_ahp | AHP complet (critères et alternatives par paires) | 0,117 ; 0,071 ; 0,095 ; 0,212 ; 0,350 ; 0,155 | 0,117 ; 0,071 ; 0,095 ; 0,212 ; 0,350 ; 0,155 | 3.8e-04 | identique | conforme |
-| rizan2020 | Somme pondérée (SAW, normalisation x/max) | 0,350 ; 0,375 ; 0,825 ; 0,642 | 0,350 ; 0,375 ; 0,825 ; 0,642 | 3.3e-04 | identique | conforme |
+| [opricovic2004](https://doi.org/10.1016/S0377-2217(03)00020-1) | TOPSIS (normalisation min-max) | 0,500 ; 0,617 ; 0,500 | 0,500 ; 0,617 ; 0,500 | 2.2e-04 | identique | conforme |
+| [ersoy2021](https://doi.org/10.17270/J.LOG.2021.603) | TOPSIS (normalisation vectorielle) | 0,308 ; 0,254 ; 0,327 ; 0,263 ; 0,857 ; 0,192 | 0,307 ; 0,254 ; 0,327 ; 0,262 ; 0,856 ; 0,191 | 7.5e-04 | identique | conforme |
+| [wangchin2011](https://doi.org/10.1016/j.ins.2011.07.009) | AHP — poids par vecteur propre | 0,3208 ; 0,1395 ; 0,0348 ; 0,1285 ; 0,2374 ; 0,1391 | 0,3208 ; 0,1395 ; 0,0348 ; 0,1285 ; 0,2374 ; 0,1391 | 3.2e-05 | identique | conforme |
+| [papathanasiou2018_ahp](https://doi.org/10.1007/978-3-319-91648-4_5) | AHP complet (critères et alternatives par paires) | 0,117 ; 0,071 ; 0,095 ; 0,212 ; 0,350 ; 0,155 | 0,117 ; 0,071 ; 0,095 ; 0,212 ; 0,350 ; 0,155 | 3.8e-04 | identique | conforme |
+| [rizan2020](https://doi.org/10.1109/CITSM50537.2020.9268874) | Somme pondérée (SAW, normalisation x/max) | 0,350 ; 0,375 ; 0,825 ; 0,642 | 0,350 ; 0,375 ; 0,825 ; 0,642 | 3.3e-04 | identique | conforme |
 
 **Sources**
 
-- `opricovic2004` : Opricovic & Tzeng (2004), Compromise solution by MCDM methods: a comparative analysis of VIKOR and TOPSIS. European Journal of Operational Research 156(2). *Les valeurs publiées sont obtenues avec la normalisation min-max.*
-- `ersoy2021` : Ersoy (2021), Equipment selection for an e-commerce company using entropy-based TOPSIS, EDAS and CODAS methods during the COVID-19. LogForum 17(3). *Tolérance 0,001 : les poids entropiques sont publiés arrondis à 3 décimales.*
-- `wangchin2011` : Wang & Chin (2011), A linear programming approximation to the eigenvector method in the analytic hierarchy process. Information Sciences 181(23).
-- `papathanasiou2018_ahp` : Papathanasiou & Ploskas (2018), AHP. In Multiple Criteria Decision Aid, Springer — DOI 10.1007/978-3-319-91648-4_5. *Priorités locales et poids par mcdakit.ahp, synthèse par somme pondérée sans normalisation.*
-- `rizan2020` : Rizan, Wahyuningsih, Pradana & Ramadella (2020), SAW method in supporting the process of admission of new junior high school students. CITSM 2020, IEEE — DOI 10.1109/CITSM50537.2020.9268874.
+- `opricovic2004` : Opricovic & Tzeng (2004), Compromise solution by MCDM methods: a comparative analysis of VIKOR and TOPSIS. European Journal of Operational Research 156(2) — [doi:10.1016/S0377-2217(03)00020-1](https://doi.org/10.1016/S0377-2217(03)00020-1). *Les valeurs publiées sont obtenues avec la normalisation min-max.*
+- `ersoy2021` : Ersoy (2021), Equipment selection for an e-commerce company using entropy-based TOPSIS, EDAS and CODAS methods during the COVID-19. LogForum 17(3) — [doi:10.17270/J.LOG.2021.603](https://doi.org/10.17270/J.LOG.2021.603). *Tolérance 0,001 : les poids entropiques sont publiés arrondis à 3 décimales.*
+- `wangchin2011` : Wang & Chin (2011), A linear programming approximation to the eigenvector method in the analytic hierarchy process. Information Sciences 181(23) — [doi:10.1016/j.ins.2011.07.009](https://doi.org/10.1016/j.ins.2011.07.009).
+- `papathanasiou2018_ahp` : Papathanasiou & Ploskas (2018), AHP. In Multiple Criteria Decision Aid, Springer — [doi:10.1007/978-3-319-91648-4_5](https://doi.org/10.1007/978-3-319-91648-4_5). *Priorités locales et poids par mcdakit.ahp, synthèse par somme pondérée sans normalisation.*
+- `rizan2020` : Rizan, Wahyuningsih, Pradana & Ramadella (2020), SAW method in supporting the process of admission of new junior high school students. CITSM 2020, IEEE — [doi:10.1109/CITSM50537.2020.9268874](https://doi.org/10.1109/CITSM50537.2020.9268874).
 
 Ces études servent uniquement à vérifier le moteur de calcul : elles ne sont pas proposées comme cas dans l'application, qui ne contient que le projet Stratema.
 

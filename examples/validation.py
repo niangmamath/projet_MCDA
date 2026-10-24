@@ -96,7 +96,7 @@ def main():
 
     w("## 1. Reproduction de résultats publiés\n")
     w("Les données et résultats viennent des sources citées. Ces cas sont repris des suites de tests de pymcdm 1.4 et "
-      "pyrepo-mcda 0.1.15, qui les citent avec ces références ; les DOI sont ceux qu'elles indiquent. Un cas est "
+      "pyrepo-mcda 0.1.15, qui les citent avec ces références ; chaque cas renvoie à l'article par son DOI. Un cas est "
       "conforme si l'écart ne dépasse pas la précision de la publication (une demi-unité de la dernière décimale "
       "imprimée, sauf mention).\n")
     w("| Cas | Méthode | Résultat publié | mcdakit | Écart max | Classement | Verdict |")
@@ -105,12 +105,12 @@ def main():
     dec = {b.key: b.decimals for b in BENCHMARKS}
     for _, r in bench.iterrows():
         d = dec[r["cas"]]
-        w(f"| {r['cas']} | {r['méthode']} | {fmt_list(r['publié'], d)} | {fmt_list(r['mcdakit'], d)} | "
+        w(f"| [{r['cas']}]({r['url']}) | {r['méthode']} | {fmt_list(r['publié'], d)} | {fmt_list(r['mcdakit'], d)} | "
           f"{r['écart max']:.1e} | {'identique' if r['même classement'] else 'DIFFÉRENT'} | "
           f"{'conforme' if r['conforme'] else 'NON CONFORME'} |")
     w("\n**Sources**\n")
     for _, r in bench.iterrows():
-        doi = f" — DOI {r['doi']}" if r["doi"] and r["doi"] != "—" else ""
+        doi = f" — [doi:{r['doi']}]({r['url']})" if r["url"] else ""
         note = f" *{r['note']}*" if r["note"] else ""
         w(f"- `{r['cas']}` : {r['source']}{doi}.{note}")
     w("\nCes études servent uniquement à vérifier le moteur de calcul : elles ne sont pas proposées comme cas dans "

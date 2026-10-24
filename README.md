@@ -132,8 +132,9 @@ reproduit l'intégralité des calculs des deux rapports Stratema et écrit
 
 Les calculs sont validés de trois façons (détail et chiffres dans [`docs/VALIDATION.md`](docs/VALIDATION.md)) :
 
-- **5 cas publiés** (articles et manuels : Opricovic & Tzeng 2004, Ersoy 2021, Wang & Chin 2011,
-  Papathanasiou & Ploskas 2018, Rizan 2020) reproduits à la précision de la publication — `mcdakit/benchmarks.py`, `tests/test_literature.py` ;
+- **5 cas publiés** (articles et manuels : [Opricovic & Tzeng 2004](https://doi.org/10.1016/S0377-2217(03)00020-1),
+  [Ersoy 2021](https://doi.org/10.17270/J.LOG.2021.603), [Wang & Chin 2011](https://doi.org/10.1016/j.ins.2011.07.009),
+  [Papathanasiou & Ploskas 2018](https://doi.org/10.1007/978-3-319-91648-4_5), [Rizan et al. 2020](https://doi.org/10.1109/CITSM50537.2020.9268874)) reproduits à la précision de la publication — `mcdakit/benchmarks.py`, `tests/test_literature.py` ;
 - **validation croisée** avec deux bibliothèques indépendantes (pymcdm, pyDecision) sur des centaines de problèmes
   aléatoires : écarts de l'ordre de 10⁻¹⁶ — `tests/test_cross_validation.py` ;
 - **propriétés mathématiques** (dominance, changement d'unité, permutation, bornes, cohérence AHP, seuils de

@@ -248,8 +248,27 @@
           <tbody id="v-body"><tr><td colspan="5" class="muted">Recalcul en direct des cas publiés…</td></tr></tbody>
         </table>
       </div>
-      <p class="note center" id="v-note">Ces études servent uniquement à vérifier les calculs du moteur ; le seul cas
-        proposé dans l'application est celui du projet Stratema.</p>
+      <div class="refs">
+        <h3>Références</h3>
+        <ol>
+          <li>Opricovic, S. &amp; Tzeng, G.-H. (2004). Compromise solution by MCDM methods: a comparative analysis of VIKOR and TOPSIS.
+            <i>European Journal of Operational Research</i>, 156(2), 445–455.
+            <a href="https://doi.org/10.1016/S0377-2217(03)00020-1" target="_blank" rel="noopener">doi:10.1016/S0377-2217(03)00020-1</a></li>
+          <li>Ersoy, Y. (2021). Equipment selection for an e-commerce company using entropy-based TOPSIS, EDAS and CODAS methods during the COVID-19.
+            <i>LogForum</i>, 17(3), 341–358.
+            <a href="https://doi.org/10.17270/J.LOG.2021.603" target="_blank" rel="noopener">doi:10.17270/J.LOG.2021.603</a></li>
+          <li>Wang, Y.-M. &amp; Chin, K.-S. (2011). A linear programming approximation to the eigenvector method in the analytic hierarchy process.
+            <i>Information Sciences</i>, 181(23), 5240–5248.
+            <a href="https://doi.org/10.1016/j.ins.2011.07.009" target="_blank" rel="noopener">doi:10.1016/j.ins.2011.07.009</a></li>
+          <li>Papathanasiou, J. &amp; Ploskas, N. (2018). AHP. In <i>Multiple Criteria Decision Aid: Methods, Examples and Python Implementations</i>, Springer.
+            <a href="https://doi.org/10.1007/978-3-319-91648-4_5" target="_blank" rel="noopener">doi:10.1007/978-3-319-91648-4_5</a></li>
+          <li>Rizan, O., Wahyuningsih, D., Pradana, H. A. &amp; Ramadella, S. (2020). SAW method in supporting the process of admission of new junior high school students.
+            <i>8th International Conference on Cyber and IT Service Management (CITSM)</i>, IEEE.
+            <a href="https://doi.org/10.1109/CITSM50537.2020.9268874" target="_blank" rel="noopener">doi:10.1109/CITSM50537.2020.9268874</a></li>
+        </ol>
+        <p class="note">Ces études servent uniquement à vérifier les calculs du moteur ; le seul cas proposé dans l'application
+          est celui du projet Stratema. Détail complet des comparaisons : rapport de validation du dépôt (<code>docs/VALIDATION.md</code>).</p>
+      </div>
     </div>
   </section>
 
@@ -367,7 +386,8 @@
         const authors = c.source.split(" (")[0];
         const year = (c.source.match(/\((\d{4})\)/) || [, ""])[1];
         const src = (authors.includes(",") ? authors.split(",")[0] + " et al." : authors) + " (" + year + ")";
-        return `<tr><td>${esc(src)}</td><td>${esc(c.méthode)}</td><td class="num">${f(c.publié)}</td><td class="num">${f(c.mcdakit)}</td>` +
+        const cell = c.url ? `<a href="${esc(c.url)}" target="_blank" rel="noopener">${esc(src)} ↗</a>` : esc(src);
+        return `<tr><td>${cell}</td><td>${esc(c.méthode)}</td><td class="num">${f(c.publié)}</td><td class="num">${f(c.mcdakit)}</td>` +
           `<td><span class="pill ${c.conforme ? "ok" : "bad"}">${c.conforme ? "conforme" : "écart"}</span></td></tr>`;
       }).join("");
       const ok = r.cases.filter((c) => c.conforme).length;
