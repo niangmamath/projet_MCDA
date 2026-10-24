@@ -64,7 +64,7 @@
           </div>
           <div class="mock-foot"><span>Ci* — proximité à l'idéal</span><a href="/app?exemple=stratema_methode2">+ Ouvrir le cas</a></div>
         </div>
-        <figcaption class="mock-float"><i>92%</i><div><b>Modérément robuste</b><small>1er dans 92 % des tirages de poids</small></div></figcaption>
+        <figcaption class="mock-float"><i>92%</i><div><b>Modérément robuste</b><small>1er dans 92 % des tirages (poids ±20 %)</small></div></figcaption>
       </figure>
     </div>
   </section>
@@ -229,8 +229,8 @@
         <article><h3>TOPSIS</h3><p class="m-tag">Distance à l'idéal</p><p>Classe selon la proximité à une option idéale fictive et l'éloignement de la pire.</p></article>
         <article><h3>Analyse de sensibilité</h3><p class="m-tag">Robustesse</p><p>Seuils de basculement des poids, Monte-Carlo, profils de décideurs et scénarios sur les données : dans quelle mesure faire confiance au choix ?</p></article>
       </div>
-      <p class="note center">Toutes les méthodes sont implémentées dans une bibliothèque Python open source et testées sur un cas réel
-        dont elles reproduisent les résultats publiés au dix-millième près.</p>
+      <p class="note center">Les calculs sont vérifiés sur des cas publiés, dont ils retrouvent les résultats à la
+        précision de la publication (voir la section Validation).</p>
     </div>
   </section>
 
@@ -266,8 +266,10 @@
             <i>8th International Conference on Cyber and IT Service Management (CITSM)</i>, IEEE.
             <a href="https://doi.org/10.1109/CITSM50537.2020.9268874" target="_blank" rel="noopener">doi:10.1109/CITSM50537.2020.9268874</a></li>
         </ol>
-        <p class="note">Ces études servent uniquement à vérifier les calculs du moteur ; le seul cas proposé dans l'application
-          est celui du projet Stratema. Détail complet des comparaisons : rapport de validation du dépôt (<code>docs/VALIDATION.md</code>).</p>
+        <p class="note">Provenance des données : les matrices, poids et résultats publiés de ces cinq études sont repris
+          des suites de tests de deux bibliothèques MCDA établies (pymcdm 1.4 et pyrepo-mcda 0.1.15), qui les citent avec
+          ces références ; ils n'ont pas été recopiés directement depuis les articles. Ces études servent uniquement à
+          vérifier les calculs du moteur ; le seul cas proposé dans l'application est celui du projet Stratema.</p>
       </div>
     </div>
   </section>

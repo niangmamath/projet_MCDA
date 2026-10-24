@@ -19,7 +19,7 @@ def stratema2():
 
 @pytest.fixture
 def fournisseur():
-    """Petit problème de test (sans portefeuille, avec une contrainte) défini ici, hors des exemples."""
+    """Données fictives, uniquement pour les tests (sans portefeuille, avec une contrainte) : ce n'est pas un cas réel."""
     return DecisionProblem.from_dict({
         "criteria": [{"id": "COUT", "direction": "min"}, {"id": "DELAI", "direction": "min"},
                      {"id": "QUAL", "direction": "max"}, {"id": "RSE", "direction": "max"}],
