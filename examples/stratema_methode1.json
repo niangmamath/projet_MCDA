@@ -1,0 +1,35 @@
+{
+  "name": "Stratema — choix de deux missions (méthode 1 : AHP + somme pondérée)",
+  "description": "Staffer exactement deux missions parmi quatre sous une capacité de 65 jours-homme. Notes 1-5 (C3 révisé par Delphi), poids AHP. Chaque couple reçoit la moyenne des notes de ses deux missions.",
+  "criteria": [
+    {"id": "C1", "name": "Disponibilité / charge", "direction": "max", "unit": "note 1-5", "aggregation": "mean"},
+    {"id": "C2", "name": "Marge", "direction": "max", "unit": "note 1-5", "aggregation": "mean"},
+    {"id": "C3", "name": "Opportunité future", "direction": "max", "unit": "note 1-5", "aggregation": "mean"},
+    {"id": "C4", "name": "Fidélité", "direction": "max", "unit": "note 1-5", "aggregation": "mean"},
+    {"id": "C5", "name": "Stratégie", "direction": "max", "unit": "note 1-5", "aggregation": "mean"},
+    {"id": "C6", "name": "Compétence actuelle", "direction": "max", "unit": "note 1-5", "aggregation": "mean"}
+  ],
+  "attributes": [
+    {"id": "JH", "name": "Charge", "unit": "jours-homme", "aggregation": "sum"},
+    {"id": "MARGE_EUR", "name": "Marge", "unit": "€", "aggregation": "sum"}
+  ],
+  "alternatives": [
+    {"id": "A", "name": "AtlasMeca", "values": {"C1": 3, "C2": 2, "C3": 3, "C4": 5, "C5": 2, "C6": 5, "JH": 30, "MARGE_EUR": 30700}},
+    {"id": "B", "name": "MedTech Nova", "values": {"C1": 2, "C2": 4, "C3": 5, "C4": 2, "C5": 5, "C6": 2, "JH": 32, "MARGE_EUR": 39200}},
+    {"id": "C", "name": "Agence nationale", "values": {"C1": 5, "C2": 3, "C3": 4, "C4": 3, "C5": 3, "C6": 5, "JH": 18, "MARGE_EUR": 20200}},
+    {"id": "D", "name": "Orion Systems", "values": {"C1": 4, "C2": 5, "C3": 2, "C4": 4, "C5": 4, "C6": 4, "JH": 25, "MARGE_EUR": 41800}}
+  ],
+  "weights": {
+    "method": "ahp",
+    "matrix": [
+      ["1",   "1/2", "1/3", "2", "1/3", "1/2"],
+      ["2",   "1",   "1/2", "3", "1/2", "2"],
+      ["3",   "2",   "1",   "5", "1/2", "3"],
+      ["1/2", "1/3", "1/5", "1", "1/5", "1/3"],
+      ["3",   "2",   "2",   "5", "1",   "3"],
+      ["2",   "1/2", "1/3", "3", "1/3", "1"]
+    ]
+  },
+  "portfolio": {"size": 2, "separator": "+"},
+  "constraints": [{"column": "JH", "op": "<=", "value": 65}]
+}

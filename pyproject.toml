@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mcdakit"
+version = "1.0.0"
+description = "Boîte à outils générique d'aide à la décision multicritère : AHP, Delphi, somme pondérée, produit pondéré, TOPSIS, PROMETHEE, portefeuilles sous contraintes et analyse de sensibilité."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+dependencies = ["numpy>=1.24", "pandas>=2.0", "openpyxl>=3.1", "pyyaml>=6.0"]
+
+[project.optional-dependencies]
+app = ["streamlit>=1.30", "plotly>=5.18"]
+dev = ["pytest>=7"]
+
+[project.scripts]
+mcdakit = "mcdakit.cli:main"
+
+[tool.setuptools]
+packages = ["mcdakit"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

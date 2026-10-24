@@ -1,0 +1,187 @@
+# mcdakit — aide à la décision multicritère pour n'importe quel projet
+
+`mcdakit` est une brique logicielle **générique et réutilisable** d'aide à la décision multicritère (MCDA).
+Elle transforme une décision « intuitive » en une démarche structurée et traçable :
+
+```
+Entrées                          Traitement                                   Sorties
+────────────────────────────     ──────────────────────────────────────────   ─────────────────────────────
+alternatives, critères,      →   pondération (égale, directe, ROC, AHP)     →  scores, classements,
+performances, sens (max/min),    Delphi (consensus d'experts)                  comparaison des méthodes,
+poids, contraintes,              portefeuilles (combinaisons de k éléments)    seuils de basculement,
+paramètres de méthode            normalisation + méthode MCDA                  Monte-Carlo, diagnostic de
+                                 analyse de sensibilité                        robustesse, rapport HTML/MD/Excel
+```
+
+Aucun résultat, alternative ou critère n'est codé en dur : tout vient du fichier de projet (JSON, YAML ou Excel)
+ou de l'interface web.
+
+| Composant | Rôle |
+|---|---|
+| `mcdakit/` | bibliothèque Python (numpy + pandas), importable dans une future plateforme |
+| `app/streamlit_app.py` | interface web pour non-spécialistes (saisie, curseurs AHP, graphiques, export) |
+| `mcdakit` (commande) | CLI pour automatiser / scripter des analyses |
+| `examples/` | cas Stratema (méthodes 1 et 2) + exemple générique « choix d'un fournisseur » |
+| `tests/` | 30 tests, dont la reproduction chiffrée des deux rapports Stratema |
+
+---
+
+## 1. Installation
+
+Prérequis : Python ≥ 3.10.
+
+```bash
+git clone <ce dépôt> mcdakit && cd mcdakit
+python -m venv .venv && source .venv/bin/activate        # Windows : .venv\Scripts\activate
+pip install -e ".[app,dev]"                              # bibliothèque + interface + tests
+```
+
+Dépendances : `numpy`, `pandas` (calcul), `openpyxl` (Excel), `pyyaml` (YAML) ; `streamlit` et `plotly`
+pour l'interface uniquement ; `pytest` pour les tests. Aucune bibliothèque MCDA externe : toutes les méthodes
+sont implémentées et testées dans le dépôt.
+
+## 2. Utilisation
+
+### a) Interface web (pour tout le monde)
+
+```bash
+streamlit run app/streamlit_app.py
+```
+
+Le navigateur s'ouvre sur six onglets qui suivent la démarche MCDA :
+
+1. **Données** — critères (sens, unité), alternatives et évaluations dans des tableaux éditables ;
+   attributs hors critères (budget, charge…), contraintes d'admissibilité, mode portefeuille.
+2. **Poids** — égaux, directs, simple classement (ROC) ou **AHP** par curseurs (échelle de Saaty) avec
+   ratio de cohérence en direct et désignation des jugements à revoir.
+3. **Delphi** — saisie des votes par tour, médiane / quartiles / consensus, application au modèle en un clic.
+4. **Résultats** — plusieurs méthodes côte à côte, choix de la normalisation, comparaison des classements
+   (τ de Kendall), détail de tous les calculs intermédiaires.
+5. **Sensibilité** — seuils de basculement des poids, courbes de balayage, Monte-Carlo, profils de
+   décideurs, scénarios sur les données, seuil d'une valeur, **diagnostic robuste / modérément robuste / fragile**.
+6. **Rapport** — export HTML (imprimable en PDF), Markdown, Excel (tous les tableaux) ; sauvegarde du projet.
+
+On peut partir d'un exemple, d'un projet vierge ou importer un fichier `.json`, `.yaml` ou `.xlsx`
+(modèle Excel : `mcdakit template modele.xlsx`).
+
+### b) Ligne de commande
+
+```bash
+# analyse complète + rapport (HTML, .md ou .xlsx selon l'extension)
+mcdakit run examples/stratema_methode2.json -m topsis -m wsm -m promethee --report rapport.html
+
+# une seule méthode avec paramètres
+mcdakit rank examples/stratema_methode1.json -m wsm:normalization=none
+
+# outils autonomes
+mcdakit ahp "1,1/2,3;2,1,4;1/3,1/4,1" --labels Coût,Qualité,Délai
+mcdakit delphi "2,1,3,3,2" "2,2,2,3,2"
+mcdakit template mon_projet.xlsx
+```
+
+Options de `run` : `--primary` (méthode de référence pour la sensibilité), `--mc` (nombre de tirages),
+`--spread` (dispersion des poids), `--scenarios scen.json` (`{"nom": [["alternative", "colonne", valeur]]}`),
+`--profiles prof.json` (`{"nom": {"C2": 2}}`).
+
+### c) Bibliothèque Python
+
+```python
+from mcdakit import DecisionProblem, evaluate, full_analysis, weight_thresholds, to_html
+
+problem = DecisionProblem.load("examples/choix_fournisseur.yaml")
+
+res = evaluate(problem, "topsis")                 # ou "wsm", "wpm", "promethee"
+print(res.table(problem.labels()))                # scores, rangs, écarts au 1er
+print(res.details["Distances"])                   # calculs intermédiaires
+
+print(weight_thresholds(problem, "topsis"))       # où la décision bascule
+
+fa = full_analysis(problem, {"topsis": {}, "promethee": {}},
+                   scenarios={"Délai F3 + 10 j": [("F3", "DELAI", 17)]})
+print(fa.diagnosis)                               # robuste / modérément robuste / fragile
+open("rapport.html", "w").write(to_html(fa))
+```
+
+Un problème peut aussi être construit en mémoire avec `DecisionProblem.from_dict({...})`.
+
+## 3. Démonstration
+
+```bash
+python examples/demo_stratema.py
+```
+
+reproduit l'intégralité des calculs des deux rapports Stratema et écrit
+`docs/rapport_exemple_stratema.html`. Résultats retrouvés à 10⁻⁴ près :
+
+| Élément du rapport | mcdakit |
+|---|---|
+| Poids AHP, λmax = 6,145258, RC = 2,34 % | identiques |
+| Méthode 1 : BC 3,8746 > BD 3,8675 > CD > AB > AC > AD | identique |
+| Méthode 2 : TOPSIS BC 0,7228 > BD 0,6559 > AB 0,5986 > … | identique, D⁺/D⁻ compris |
+| Seuils TOPSIS : C2 24,5 % · C3 17,1 % · C4 13,9 % · C5 44,1 % · C6 29,3 % · C1 47,1 % | identiques |
+| Profils (financier → BD, égaux → CD) et 8 scénarios de données (C5 de C → BD) | identiques |
+| Normalisation min-max → BD 0,7019 | identique |
+
+## 4. Format d'un projet
+
+Voir [`docs/FORMAT.md`](docs/FORMAT.md) (JSON/YAML/Excel) et [`docs/METHODES.md`](docs/METHODES.md)
+(formules, hypothèses et règles du diagnostic). Exemple minimal :
+
+```yaml
+name: Choix d'un logiciel
+criteria:
+  - {id: PRIX, name: Prix annuel, direction: min, unit: "€"}
+  - {id: FONC, name: Couverture fonctionnelle, direction: max}
+alternatives:
+  - {id: X, values: {PRIX: 12000, FONC: 4}}
+  - {id: Y, values: {PRIX: 9000,  FONC: 3}}
+weights: {PRIX: 1, FONC: 2}          # normalisés automatiquement
+```
+
+## 5. Architecture du code
+
+```
+mcdakit/
+├── problem.py        modèle de données, validation, portefeuilles, contraintes, surcharges, (dé)sérialisation
+├── weights.py        poids égaux / directs / ROC / rank-sum / AHP (vecteur propre ou moyenne géométrique, RC)
+├── delphi.py         médiane, quartiles, consensus (IQR) et stabilité entre tours
+├── normalization.py  none, vector, minmax, max, sum (avec ou sans réorientation des critères à minimiser)
+├── methods.py        WSM, WPM, TOPSIS, PROMETHEE II (+ incomparabilités PROMETHEE I) — signature commune
+├── analysis.py       evaluate, run_methods, compare_methods (τ de Kendall, ρ de Spearman)
+├── sensitivity.py    moteur vectorisé, balayage, seuils, profils, Monte-Carlo, scénarios, diagnostic
+├── report.py         analyse complète + rendu Markdown / HTML / Excel
+├── io_excel.py       import / export du modèle Excel
+└── cli.py            commande `mcdakit`
+```
+
+**Ajouter une méthode** : écrire une fonction `ma_methode(matrix, weights, directions, **params) -> MethodResult`
+dans `methods.py` et l'enregistrer dans `METHODS` ; elle devient disponible dans l'API, la CLI, l'interface et
+les rapports. Pour la rendre utilisable par la sensibilité vectorisée, ajouter sa branche dans
+`WeightScorer.scores` (un test vérifie l'égalité avec la méthode de référence).
+
+## 6. Tests
+
+```bash
+pytest
+```
+
+30 tests : propriétés mathématiques (cohérence AHP, flux PROMETHEE de somme nulle, respect de la dominance par
+toutes les méthodes), aller-retour JSON/Excel, égalité moteur vectorisé ↔ méthodes, et reproduction des
+résultats publiés dans les deux rapports Stratema.
+
+## 7. Mettre l'application en ligne
+
+Pour la rendre accessible sans installation : pousser le dépôt sur GitHub puis le déployer gratuitement sur
+[Streamlit Community Cloud](https://streamlit.io/cloud) (fichier principal `app/streamlit_app.py`,
+dépendances `requirements.txt`).
+
+## 8. Limites
+
+- Les portefeuilles sont énumérés exhaustivement (jusqu'à 20 000 combinaisons) ; au-delà, une approche
+  d'optimisation serait nécessaire.
+- L'agrégation d'un portefeuille (somme, moyenne, min, max) suppose l'additivité ; les interactions
+  (synergies, redondances) se traitent par surcharge de cellules, idéalement issues d'un Delphi.
+- Le diagnostic de robustesse applique des règles explicites et paramétrables (`diagnose`), pas une vérité
+  absolue. Le modèle éclaire la décision ; il ne se substitue pas au décideur.
+
+Licence MIT.

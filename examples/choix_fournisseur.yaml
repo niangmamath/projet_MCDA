@@ -1,0 +1,20 @@
+# Exemple générique (sans portefeuille) : choisir un fournisseur.
+name: Choix d'un fournisseur de composants
+description: Comparaison de quatre fournisseurs sur coût, délai, qualité et RSE.
+criteria:
+  - {id: COUT,   name: Coût unitaire,      direction: min, unit: "€"}
+  - {id: DELAI,  name: Délai de livraison, direction: min, unit: jours,
+     preference: {type: linear, q: 2, p: 10}}
+  - {id: QUAL,   name: Qualité (audit),    direction: max, unit: "/100",
+     preference: {type: linear, q: 3, p: 15}}
+  - {id: RSE,    name: Score RSE,          direction: max, unit: "/5"}
+alternatives:
+  - {id: F1, name: Alpha Industries, values: {COUT: 12.5, DELAI: 15, QUAL: 82, RSE: 3}}
+  - {id: F2, name: Beta Components,  values: {COUT: 10.9, DELAI: 30, QUAL: 74, RSE: 2}}
+  - {id: F3, name: Gamma Tech,       values: {COUT: 14.0, DELAI: 7,  QUAL: 90, RSE: 4}}
+  - {id: F4, name: Delta Supply,     values: {COUT: 11.8, DELAI: 20, QUAL: 79, RSE: 5}}
+weights:
+  method: roc                 # simple classement des critères, du plus au moins important
+  order: [QUAL, COUT, DELAI, RSE]
+constraints:
+  - {column: DELAI, op: "<=", value: 25}
