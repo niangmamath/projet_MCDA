@@ -172,7 +172,7 @@ def main():
     w("- Exactitude du calcul ne veut pas dire pertinence du modèle : critères, poids et données restent sous la "
       "responsabilité du décideur.\n")
     w("## Reproduire\n")
-    w("```bash\npip install -e \".[dev]\" pymcdm pyDecision\npytest                          # toute la suite, y compris la validation\npython examples/validation.py   # régénère ce document\n```")
+    w("```bash\npip install -e \".[dev,validation]\"\npytest                          # toute la suite, y compris la validation\npython examples/validation.py   # régénère ce document\n```")
     w("\nL'application en ligne recalcule aussi les cas publiés à la demande : `GET /api/validation`.")
     path = ROOT / "docs" / "VALIDATION.md"
     path.write_text("\n".join(out) + "\n", encoding="utf-8")

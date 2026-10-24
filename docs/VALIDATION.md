@@ -94,7 +94,7 @@ Le cas Rizan et al. (2020) contient des notes égales à 0. La normalisation « 
 ## Reproduire
 
 ```bash
-pip install -e ".[dev]" pymcdm pyDecision
+pip install -e ".[dev,validation]"
 pytest                          # toute la suite, y compris la validation
 python examples/validation.py   # régénère ce document
 ```

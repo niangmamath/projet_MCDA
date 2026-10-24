@@ -34,7 +34,7 @@ Prérequis : Python ≥ 3.10.
 ```bash
 git clone <ce dépôt> mcdakit && cd mcdakit
 python -m venv .venv && source .venv/bin/activate        # Windows : .venv\Scripts\activate
-pip install -e ".[web,dev]"                              # bibliothèque + API web + tests
+pip install -e ".[web,dev,validation]"                   # bibliothèque + API web + tests (+ bibliothèques de validation croisée, Python ≥ 3.11)
 ```
 
 Dépendances : `numpy`, `pandas` (calcul), `openpyxl` (Excel), `pyyaml` (YAML) ; `fastapi`,
