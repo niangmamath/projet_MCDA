@@ -121,8 +121,8 @@ def main():
         doi = f" — DOI {r['doi']}" if r["doi"] and r["doi"] != "—" else ""
         note = f" *{r['note']}*" if r["note"] else ""
         w(f"- `{r['cas']}` : {r['source']}{doi}.{note}")
-    w("\nQuatre de ces cas sont aussi fournis comme exemples dans l'application (préfixe « Cas publié ») : chacun peut "
-      "les charger et retrouver lui-même les valeurs.\n")
+    w("\nQuatre de ces cas sont fournis dans la bibliothèque de cas (`examples/bibliotheque/`, section « Bibliothèque "
+      "de cas » de la page d'accueil) : chacun peut les ouvrir dans l'application et retrouver lui-même les valeurs.\n")
     w("Le projet Stratema (rapports AHP + somme pondérée et TOPSIS du projet) est également reproduit : poids AHP, "
       "RC = 2,34 %, scores des six couples, seuils de basculement, profils et scénarios (`tests/test_methods.py`, "
       "`tests/test_sensitivity.py`).\n")

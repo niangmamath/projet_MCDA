@@ -31,6 +31,7 @@ from mcdakit.normalization import NORMALIZATIONS  # noqa: E402
 from mcdakit.problem import AGGREGATIONS, OPERATORS  # noqa: E402
 
 EXAMPLES = ROOT / "examples"
+LIBRARY = EXAMPLES / "bibliotheque"
 MAX_MC = 50000
 XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
@@ -161,18 +162,30 @@ def meta():
 
 @app.get("/api/examples")
 def examples():
+    """Exemples du menu « Charger un exemple » : les deux cas Stratema (fichiers à la racine de examples/)."""
+    return [{"id": p.stem, "name": DecisionProblem.load(p).name}
+            for p in sorted(EXAMPLES.glob("*")) if p.suffix in (".json", ".yaml", ".yml")]
+
+
+@app.get("/api/library")
+def library():
+    """Bibliothèque de cas (examples/bibliotheque/) : cas publiés et exemple générique, avec leur description."""
     out = []
-    for p in sorted(EXAMPLES.glob("*")):
+    for p in sorted(LIBRARY.glob("*")):
         if p.suffix in (".json", ".yaml", ".yml"):
-            out.append({"id": p.stem, "name": DecisionProblem.load(p).name})
+            prob = DecisionProblem.load(p)
+            out.append({"id": p.stem, "name": prob.name, "description": prob.description,
+                        "published": p.stem.startswith("cas_publie_"),
+                        "size": f"{len(prob.alternatives)} alternatives · {len(prob.criteria)} critères"})
     return out
 
 
 @app.get("/api/examples/{name}")
 def example(name: str):
-    for p in EXAMPLES.glob(f"{name}.*"):
-        if p.suffix in (".json", ".yaml", ".yml"):
-            return DecisionProblem.load(p).to_dict()
+    for folder in (EXAMPLES, LIBRARY):
+        for p in folder.glob(f"{name}.*"):
+            if p.suffix in (".json", ".yaml", ".yml"):
+                return DecisionProblem.load(p).to_dict()
     raise HTTPException(404, "Exemple introuvable")
 
 
@@ -328,7 +341,7 @@ def export_xlsx(body: ProblemBody):
 
 @app.get("/api/template")
 def template():
-    return Response(write_excel(DecisionProblem.load(EXAMPLES / "choix_fournisseur.yaml")), media_type=XLSX,
+    return Response(write_excel(DecisionProblem.load(LIBRARY / "choix_fournisseur.yaml")), media_type=XLSX,
                     headers={"Content-Disposition": 'attachment; filename="modele_mcda.xlsx"'})
 
 

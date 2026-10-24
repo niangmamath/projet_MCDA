@@ -23,6 +23,7 @@
       <a href="#fonctionnement">Fonctionnement</a>
       <a href="#methodes">Méthodes</a>
       <a href="#validation">Validation</a>
+      <a href="#bibliotheque">Bibliothèque</a>
       <a href="#demarrer">Démarrer</a>
       <a href="#faq">FAQ</a>
     </nav>
@@ -239,6 +240,19 @@
     </div>
   </section>
 
+  <!-- ======================================================== BIBLIOTHÈQUE -->
+  <section class="section alt" id="bibliotheque">
+    <div class="wrap">
+      <p class="eyebrow center">Bibliothèque de cas</p>
+      <h2 class="center">Des cas prêts à ouvrir</h2>
+      <p class="sub center">Le menu de l'application est réservé au projet Stratema. Retrouvez ici les autres cas :
+        des études publiées, dont vous pouvez comparer les résultats à ceux de l'article, et un exemple simple pour débuter.</p>
+      <div class="library" id="library">
+        <p class="note center">Chargement de la bibliothèque…</p>
+      </div>
+    </div>
+  </section>
+
   <!-- ======================================================== USAGES -->
   <section class="section">
     <div class="wrap">
@@ -261,8 +275,9 @@
       <p class="eyebrow center">Guide de démarrage</p>
       <h2 class="center">Votre première décision en 10 minutes</h2>
       <ol class="guide">
-        <li><b>Partez de l'exemple</b> pour vous repérer : <a href="/app?exemple=choix_fournisseur">choix d'un fournisseur</a> (simple)
-          ou <a href="/app?exemple=stratema_methode2">Stratema</a> (complet, avec portefeuille, AHP et Delphi).</li>
+        <li><b>Partez d'un cas existant</b> pour vous repérer : le cas <a href="/app?exemple=stratema_methode2">Stratema</a>
+          (menu « Charger un cas Stratema » : portefeuille, AHP et Delphi) ou un cas de la <a href="#bibliotheque">bibliothèque</a>,
+          comme le <a href="/app?exemple=choix_fournisseur">choix d'un fournisseur</a> (simple).</li>
         <li><b>Créez votre projet</b> avec « Nouveau » : remplacez les 2 critères et 3 options de départ par les vôtres.
           Donnez à chaque critère un identifiant court (C1, PRIX…) et son sens.</li>
         <li><b>Remplissez les valeurs.</b> Le cadre vert sous les tableaux confirme que le modèle est valide et indique les options exclues.</li>
@@ -340,6 +355,26 @@
     im.addEventListener("keydown", (e) => { if (e.key === "Enter") open(); });
   });
   dlg.addEventListener("click", () => dlg.close());
+
+  // Bibliothèque de cas
+  (async () => {
+    const box = document.getElementById("library");
+    const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    try {
+      const cases = await (await fetch("/api/library")).json();
+      cases.sort((a, b) => a.published - b.published);       // l'exemple simple d'abord, puis les cas publiés
+      box.innerHTML = cases.map((c) => `
+        <article class="case">
+          <div class="case-top"><span class="pill ${c.published ? "ok" : "warn"}">${c.published ? "Cas publié" : "Exemple pour débuter"}</span>
+            <span class="case-size">${esc(c.size)}</span></div>
+          <h3>${esc(c.name.replace(/^Cas publié — /, ""))}</h3>
+          <p>${esc(c.description)}</p>
+          <a class="btn btn-ghost btn-sm" href="/app?exemple=${encodeURIComponent(c.id)}">Ouvrir dans l'application →</a>
+        </article>`).join("");
+    } catch {
+      box.innerHTML = '<p class="note center">Bibliothèque indisponible pour le moment.</p>';
+    }
+  })();
 
   // Validation : recalcul en direct des cas publiés
   (async () => {

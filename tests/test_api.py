@@ -18,8 +18,11 @@ def strat():
 def test_meta_and_examples():
     assert "topsis" in client.get("/api/meta").json()["methods"]
     ids = [e["id"] for e in client.get("/api/examples").json()]
-    assert "stratema_methode2" in ids
+    assert ids == ["stratema_methode1", "stratema_methode2"]      # seuls les cas Stratema dans le menu
+    lib = {e["id"] for e in client.get("/api/library").json()}
+    assert "choix_fournisseur" in lib and "cas_publie_topsis_ersoy2021" in lib
     assert client.get("/api/examples/choix_fournisseur").json()["criteria"]
+    assert client.get("/api/examples/cas_publie_saw_rizan2020").json()["analysis"]["primary"] == "wsm"
 
 
 def test_validate(strat):

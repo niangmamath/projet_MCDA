@@ -19,4 +19,4 @@ def stratema2():
 
 @pytest.fixture
 def fournisseur():
-    return DecisionProblem.load(EX / "choix_fournisseur.yaml")
+    return DecisionProblem.load(EX / "bibliotheque" / "choix_fournisseur.yaml")

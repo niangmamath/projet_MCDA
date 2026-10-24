@@ -3,7 +3,7 @@
 Usage minimal :
 
     from mcdakit import DecisionProblem, evaluate, full_analysis, to_markdown
-    problem = DecisionProblem.load("examples/choix_fournisseur.yaml")
+    problem = DecisionProblem.load("examples/bibliotheque/choix_fournisseur.yaml")
     print(evaluate(problem, "topsis").table(problem.labels()))
     print(to_markdown(full_analysis(problem, ["wsm", "topsis", "promethee"])))
 """

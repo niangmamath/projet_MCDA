@@ -84,7 +84,7 @@ def cmd_delphi(args) -> int:
 
 def cmd_template(args) -> int:
     from .io_excel import write_excel
-    src = Path(__file__).resolve().parent.parent / "examples" / "choix_fournisseur.yaml"
+    src = Path(__file__).resolve().parent.parent / "examples" / "bibliotheque" / "choix_fournisseur.yaml"
     problem = DecisionProblem.load(args.source or src)
     write_excel(problem, args.output)
     print(f"Modèle Excel écrit : {args.output}")

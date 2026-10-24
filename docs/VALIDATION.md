@@ -40,7 +40,7 @@ Les données et résultats viennent des sources citées. Ces cas sont repris des
 - `rizan2020` : Rizan, Wahyuningsih, Pradana & Ramadella (2020), SAW method in supporting the process of admission of new junior high school students. CITSM 2020, IEEE — DOI 10.1109/CITSM50537.2020.9268874.
 - `chakraborty2015` : Chakraborty, Zavadskas & Antucheviciene (2015), Applications of WASPAS method as a multi-criteria decision-making tool. Economic Computation and Economic Cybernetics Studies and Research 49(1). *Les poids publiés somment à 1,0155 ; mcdakit renormalise à 1, le facteur est réappliqué pour la comparaison.*
 
-Quatre de ces cas sont aussi fournis comme exemples dans l'application (préfixe « Cas publié ») : chacun peut les charger et retrouver lui-même les valeurs.
+Quatre de ces cas sont fournis dans la bibliothèque de cas (`examples/bibliotheque/`, section « Bibliothèque de cas » de la page d'accueil) : chacun peut les ouvrir dans l'application et retrouver lui-même les valeurs.
 
 Le projet Stratema (rapports AHP + somme pondérée et TOPSIS du projet) est également reproduit : poids AHP, RC = 2,34 %, scores des six couples, seuils de basculement, profils et scénarios (`tests/test_methods.py`, `tests/test_sensitivity.py`).
 

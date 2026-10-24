@@ -22,7 +22,7 @@ ou de l'interface web.
 | `api/index.py` | API HTTP (FastAPI) qui expose la bibliothèque — fonction Python Vercel |
 | `public/` | site web : page d'accueil (`index.html`) et application (`app.html`, servie sur `/app`) en HTML/CSS/JS sans build |
 | `mcdakit` (commande) | CLI pour automatiser / scripter des analyses |
-| `examples/` | cas Stratema (méthodes 1 et 2) + exemple générique « choix d'un fournisseur » |
+| `examples/` | les deux cas Stratema (menu « Charger un exemple ») ; `examples/bibliotheque/` : cas publiés et exemple générique (bibliothèque de cas) |
 | `tests/` | tests (bibliothèque et API), dont la reproduction chiffrée des deux rapports Stratema |
 
 ---
@@ -66,7 +66,8 @@ L'interface propose six onglets qui suivent la démarche MCDA :
    décideurs, scénarios sur les données, seuil d'une valeur, **diagnostic robuste / modérément robuste / fragile**.
 6. **Rapport** — export HTML (imprimable en PDF), Markdown, Excel (tous les tableaux) ; sauvegarde du projet.
 
-On peut partir d'un exemple, d'un projet vierge ou importer un fichier `.json`, `.yaml` ou `.xlsx`
+Le menu « Charger un exemple » propose les deux cas Stratema ; les autres cas (cas publiés, choix d'un fournisseur)
+sont dans la **bibliothèque de cas** de la page d'accueil (`/#bibliotheque`). On peut aussi partir d'un projet vierge ou importer un fichier `.json`, `.yaml` ou `.xlsx`
 (modèle Excel : `mcdakit template modele.xlsx`).
 
 ### b) Ligne de commande
@@ -93,7 +94,7 @@ Options de `run` : `--primary` (méthode de référence pour la sensibilité), `
 ```python
 from mcdakit import DecisionProblem, evaluate, full_analysis, weight_thresholds, to_html
 
-problem = DecisionProblem.load("examples/choix_fournisseur.yaml")
+problem = DecisionProblem.load("examples/bibliotheque/choix_fournisseur.yaml")
 
 res = evaluate(problem, "topsis")                 # ou "wsm", "wpm", "promethee"
 print(res.table(problem.labels()))                # scores, rangs, écarts au 1er
@@ -139,7 +140,7 @@ Les calculs sont validés de trois façons (détail et chiffres dans [`docs/VALI
   basculement…) — `tests/test_properties.py`.
 
 `python examples/validation.py` régénère le rapport ; l'API recalcule les cas publiés à la demande (`GET /api/validation`).
-Quatre de ces cas sont proposés comme exemples dans l'application (« Cas publié — … »).
+Quatre de ces cas sont dans la bibliothèque de cas (`examples/bibliotheque/`), ouvrable depuis la page d'accueil.
 
 ## 4. Format d'un projet
 
@@ -209,7 +210,9 @@ Chaque `git push` sur `main` redéploie automatiquement. La documentation intera
 |---|---|
 | `GET /api/validation` | recalcule les cas publiés et les compare aux résultats imprimés |
 | `GET /api/meta` | méthodes, normalisations, fonctions de préférence disponibles |
-| `GET /api/examples`, `GET /api/examples/{id}` | exemples fournis |
+| `GET /api/examples` | cas Stratema du menu « Charger un exemple » |
+| `GET /api/library` | bibliothèque de cas (cas publiés, exemple générique) |
+| `GET /api/examples/{id}` | contenu d'un exemple (menu ou bibliothèque) |
 | `POST /api/validate` | contrôle du projet : candidates, admissibilité, matrice, poids, cohérence AHP |
 | `POST /api/analyze` | résultats de plusieurs méthodes + comparaison |
 | `POST /api/sensitivity` | seuils, balayage, Monte-Carlo, profils, scénarios, diagnostic |
