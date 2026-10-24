@@ -24,6 +24,8 @@ from .weights import AHPResult, resolve_weights
 
 @dataclass
 class FullAnalysis:
+    """Tout ce qu'il faut pour un rapport : poids, matrice, résultats par méthode, comparaison,
+    sensibilité et diagnostic. Produit par full_analysis()."""
     problem: DecisionProblem
     weights: pd.Series
     ahp: AHPResult | None
@@ -42,6 +44,7 @@ class FullAnalysis:
 
     @property
     def winner(self) -> str:
+        """Alternative recommandée par la méthode de référence."""
         return self.results[self.primary].best
 
 
@@ -49,6 +52,10 @@ def full_analysis(problem: DecisionProblem, methods: dict[str, dict] | list[str]
                   primary: str | None = None, mc_runs: int = 5000, mc_spread: float | None = 0.2,
                   scenarios: dict[str, list] | None = None, profiles: dict[str, dict] | None = None,
                   seed: int = 42) -> FullAnalysis:
+    """Analyse complète d'un problème : résultats de chaque méthode, comparaison, seuils de basculement des poids,
+    Monte-Carlo, profils et scénarios facultatifs, puis diagnostic de robustesse.
+
+    `methods` : liste de noms ou {nom: paramètres} ; `primary` : méthode de référence (la première par défaut)."""
     methods = methods or ["wsm", "topsis"]
     if isinstance(methods, (list, tuple)):
         methods = {m: {} for m in methods}
@@ -282,6 +289,7 @@ def _labelled(df: pd.DataFrame, labels: pd.Series) -> pd.DataFrame:
 
 
 def build_document(fa: FullAnalysis) -> _Doc:
+    """Construit le contenu du rapport, indépendamment du format de sortie."""
     p, doc, lab = fa.problem, _Doc(), fa.labels
     doc.h(1, p.name)
     doc.p(f"Rapport généré le {date.today():%d/%m/%Y} avec mcdakit.")
@@ -401,10 +409,12 @@ def build_document(fa: FullAnalysis) -> _Doc:
 
 
 def to_markdown(fa: FullAnalysis) -> str:
+    """Rapport complet au format Markdown."""
     return build_document(fa).markdown()
 
 
 def to_html(fa: FullAnalysis) -> str:
+    """Rapport complet en page HTML autonome."""
     return build_document(fa).html(fa.problem.name)
 
 

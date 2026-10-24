@@ -19,6 +19,9 @@ NORMALIZATIONS = {
 
 
 def normalize(matrix: pd.DataFrame, directions: pd.Series, method: str = "minmax") -> tuple[pd.DataFrame, bool]:
+    """Normalise la matrice (alternatives × critères) avec `method` parmi NORMALIZATIONS.
+
+    Renvoie (R, oriented) ; voir l'en-tête du module pour le sens de `oriented`."""
     x = matrix.astype(float)
     is_min = directions.reindex(x.columns) == "min"
     if method == "none":

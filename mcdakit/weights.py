@@ -21,6 +21,7 @@ SAATY_SCALE = {
 
 
 def normalize(weights: dict | pd.Series) -> pd.Series:
+    """Ramène des poids positifs quelconques à une somme de 1 (erreur si négatifs ou de somme nulle)."""
     w = pd.Series(weights, dtype=float)
     if (w < 0).any():
         raise ValueError("Les poids doivent être positifs.")
@@ -30,6 +31,7 @@ def normalize(weights: dict | pd.Series) -> pd.Series:
 
 
 def equal_weights(criteria: list[str]) -> pd.Series:
+    """Poids égaux 1/n."""
     return pd.Series(1.0 / len(criteria), index=criteria)
 
 
@@ -40,6 +42,7 @@ def rank_order_centroid(order: list[str]) -> pd.Series:
 
 
 def rank_sum(order: list[str]) -> pd.Series:
+    """Poids « rank-sum » : proportionnels à n − rang + 1, normalisés."""
     n = len(order)
     raw = pd.Series([n - i + 1 for i in range(1, n + 1)], index=order, dtype=float)
     return raw / raw.sum()
@@ -47,6 +50,7 @@ def rank_sum(order: list[str]) -> pd.Series:
 
 @dataclass
 class AHPResult:
+    """Résultat AHP : matrice, poids, λmax, indice (IC) et ratio (RC) de cohérence."""
     weights: pd.Series
     matrix: pd.DataFrame
     lambda_max: float
@@ -57,6 +61,7 @@ class AHPResult:
 
     @property
     def consistent(self) -> bool:
+        """Vrai si RC < 10 % (seuil de Saaty)."""
         return self.cr < 0.10
 
     def worst_judgements(self, top: int = 3) -> pd.DataFrame:

@@ -23,6 +23,7 @@ from .normalization import normalize
 
 @dataclass
 class MethodResult:
+    """Résultat commun à toutes les méthodes : scores (plus grand = meilleur), rangs et calculs intermédiaires."""
     method: str
     scores: pd.Series                      # plus grand = meilleur
     score_label: str
@@ -36,13 +37,16 @@ class MethodResult:
 
     @property
     def order(self) -> list[str]:
+        """Alternatives de la meilleure à la moins bonne."""
         return list(self.scores.sort_values(ascending=False).index)
 
     @property
     def best(self) -> str:
+        """Alternative classée 1re."""
         return self.order[0]
 
     def table(self, labels: pd.Series | None = None) -> pd.DataFrame:
+        """Tableau trié : score, rang et écart au 1er (avec libellés si fournis)."""
         df = pd.DataFrame({self.score_label: self.scores, "rang": self.ranking})
         if labels is not None:
             df.insert(0, "alternative", labels.reindex(df.index))

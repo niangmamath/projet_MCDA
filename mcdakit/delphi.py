@@ -20,6 +20,7 @@ def parse_votes(votes) -> list[float]:
 
 @dataclass
 class DelphiRound:
+    """Un tour Delphi : votes des experts, médiane et quartiles."""
     votes: list[float]
     median: float
     q1: float
@@ -27,16 +28,19 @@ class DelphiRound:
 
     @property
     def iqr(self) -> float:
+        """Écart interquartile Q3 − Q1."""
         return self.q3 - self.q1
 
 
 @dataclass
 class DelphiResult:
+    """Ensemble des tours d'une question Delphi et seuil de consensus."""
     rounds: list[DelphiRound]
     iqr_threshold: float
 
     @property
     def final(self) -> DelphiRound:
+        """Dernier tour."""
         return self.rounds[-1]
 
     @property
@@ -46,14 +50,17 @@ class DelphiResult:
 
     @property
     def consensus(self) -> bool:
+        """Vrai si l'IQR du dernier tour est ≤ au seuil."""
         return self.final.iqr <= self.iqr_threshold
 
     @property
     def stable(self) -> bool:
+        """Vrai si la médiane n'a pas changé entre les deux derniers tours."""
         return len(self.rounds) >= 2 and self.rounds[-1].median == self.rounds[-2].median
 
     @property
     def status(self) -> str:
+        """Libellé lisible : consensus, consensus avec médiane encore mobile, ou nouveau tour conseillé."""
         if self.consensus and (self.stable or len(self.rounds) == 1):
             return "consensus"
         if self.consensus:

@@ -190,6 +190,7 @@ def dirichlet_concentration(weights: pd.Series, spread: float) -> float:
 
 @dataclass
 class MonteCarloResult:
+    """Résultat Monte-Carlo : fréquence de 1re place, rang moyen et distribution des rangs."""
     first_place: pd.Series       # fréquence d'être 1er
     mean_rank: pd.Series
     rank_distribution: pd.DataFrame   # alternatives × rangs (fréquences)
@@ -285,6 +286,7 @@ def value_threshold(problem: DecisionProblem, method: str, alternative: str, col
 # =========================================================================== diagnostic
 @dataclass
 class RobustnessDiagnosis:
+    """Verdict (robuste / modérément robuste / fragile) et raisons qui le justifient."""
     level: str              # "robuste" | "modérément robuste" | "fragile"
     reasons: list[str]
     winner: str

@@ -93,6 +93,7 @@ def cmd_template(args) -> int:
 
 
 def main(argv=None) -> int:
+    """Point d'entrée de la commande `mcdakit` (sous-commandes run, rank, ahp, delphi, template)."""
     ap = argparse.ArgumentParser(prog="mcdakit", description="Aide à la décision multicritère")
     sub = ap.add_subparsers(dest="cmd", required=True)
 

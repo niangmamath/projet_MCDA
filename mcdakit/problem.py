@@ -54,6 +54,7 @@ def to_number(value: Any) -> float:
 
 @dataclass
 class Criterion:
+    """Critère de décision : identifiant, libellé, sens (max/min), unité et règle d'agrégation en portefeuille."""
     id: str
     name: str = ""
     direction: str = "max"          # "max" (plus c'est haut mieux c'est) ou "min"
@@ -70,6 +71,7 @@ class Criterion:
 
 @dataclass
 class Attribute:
+    """Colonne hors critères (budget, charge…) : n'entre pas dans le score, sert aux contraintes."""
     id: str
     name: str = ""
     unit: str = ""
@@ -83,6 +85,7 @@ class Attribute:
 
 @dataclass
 class Constraint:
+    """Filtre d'admissibilité « colonne opérateur valeur » (ex. JH <= 65)."""
     column: str
     op: str
     value: float
@@ -93,6 +96,7 @@ class Constraint:
         self.value = to_number(self.value)
 
     def check(self, x: float) -> bool:
+        """Vrai si la valeur x respecte la contrainte."""
         return bool(OPERATORS[self.op](x, self.value))
 
     def __str__(self) -> str:
@@ -101,12 +105,14 @@ class Constraint:
 
 @dataclass
 class Portfolio:
+    """Mode portefeuille : les alternatives deviennent des combinaisons de min_size à max_size éléments."""
     min_size: int
     max_size: int
     separator: str = "+"
 
     @classmethod
     def from_spec(cls, spec: dict) -> "Portfolio":
+        """Construit le portefeuille depuis {"size": k}, {"size": {"min": a, "max": b}} ou {"size": [a, b]}."""
         size = spec.get("size", 2)
         if isinstance(size, dict):
             lo, hi = int(size.get("min", 1)), int(size.get("max", size.get("min", 1)))
@@ -119,12 +125,15 @@ class Portfolio:
         return cls(lo, hi, spec.get("separator", "+"))
 
     def to_spec(self) -> dict:
+        """Forme sérialisable (inverse de from_spec)."""
         size = self.min_size if self.min_size == self.max_size else {"min": self.min_size, "max": self.max_size}
         return {"size": size, "separator": self.separator}
 
 
 @dataclass
 class DecisionProblem:
+    """Problème de décision complet : critères, alternatives et évaluations, poids, contraintes,
+    portefeuille et surcharges. Point d'entrée de toute la bibliothèque (voir docs/FORMAT.md)."""
     criteria: list[Criterion]
     alternatives: pd.DataFrame                  # index = id, colonnes = name + critères + attributs
     weights_spec: dict = field(default_factory=lambda: {"method": "equal"})
@@ -139,6 +148,7 @@ class DecisionProblem:
     # ------------------------------------------------------------------ construction
     @classmethod
     def from_dict(cls, data: dict) -> "DecisionProblem":
+        """Construit un problème depuis un dictionnaire au format docs/FORMAT.md (contenu d'un JSON/YAML)."""
         crit_keys = {"id", "name", "direction", "unit", "aggregation"}
         criteria = [Criterion(**{k: v for k, v in c.items() if k in crit_keys}) for c in data["criteria"]]
         attributes = [Attribute(**a) for a in data.get("attributes", [])]
@@ -168,6 +178,7 @@ class DecisionProblem:
 
     @classmethod
     def load(cls, path: str | Path) -> "DecisionProblem":
+        """Charge un projet .json, .yaml/.yml ou .xlsx."""
         path = Path(path)
         suffix = path.suffix.lower()
         if suffix in (".yaml", ".yml"):
@@ -179,6 +190,7 @@ class DecisionProblem:
         return cls.from_dict(json.loads(path.read_text(encoding="utf-8")))
 
     def to_dict(self) -> dict:
+        """Sérialise le problème au format docs/FORMAT.md (inverse de from_dict)."""
         cols = self.criterion_ids + self.attribute_ids
         alts = []
         for alt_id, row in self.alternatives.iterrows():
@@ -200,6 +212,7 @@ class DecisionProblem:
         return data
 
     def save(self, path: str | Path) -> None:
+        """Enregistre le projet en JSON, YAML ou Excel selon l'extension."""
         path = Path(path)
         if path.suffix.lower() in (".yaml", ".yml"):
             import yaml

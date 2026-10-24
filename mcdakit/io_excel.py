@@ -24,6 +24,8 @@ def _str(v, default=""):
 
 
 def read_excel(source) -> DecisionProblem:
+    """Lit un classeur au format du modèle (feuilles Critères, Alternatives, et facultativement
+    Attributs, Contraintes, Paramètres, AHP) ; `source` est un chemin ou des octets."""
     sheets = pd.read_excel(source, sheet_name=None)
     norm = {k.strip().lower().replace("è", "e").replace("é", "e"): v for k, v in sheets.items()}
     crit_df = norm.get("criteres")

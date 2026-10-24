@@ -26,6 +26,10 @@ Pour chaque tour : médiane, Q1, Q3 (interpolation linéaire), IQR = Q3 − Q1. 
 | max | x / max ; min / x pour « min » | oui |
 | sum | x / Σx | non |
 
+Par défaut : `minmax` pour la somme pondérée, `vector` pour TOPSIS. `none` ne convient que si tous les critères
+sont déjà sur une même échelle orientée « plus = mieux » (ex. notes de 1 à 5) ; la somme pondérée refuse `none`,
+`vector` et `sum` s'il y a un critère à minimiser.
+
 ## Méthodes d'agrégation
 
 | Méthode | Score | Logique |

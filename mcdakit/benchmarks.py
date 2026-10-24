@@ -20,6 +20,7 @@ from .weights import ahp
 
 @dataclass
 class Benchmark:
+    """Cas publié : données, résultat imprimé, précision et référence (DOI)."""
     key: str
     method: str
     source: str
@@ -101,6 +102,7 @@ BENCHMARKS: list[Benchmark] = [
 
 
 def run_benchmarks() -> pd.DataFrame:
+    """Recalcule chaque cas publié et le compare au résultat imprimé (un tableau, une ligne par cas)."""
     rows = []
     for b in BENCHMARKS:
         got = np.asarray(b.compute(), dtype=float)

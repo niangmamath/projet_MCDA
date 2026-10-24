@@ -59,6 +59,7 @@ def kendall_tau(a: pd.Series, b: pd.Series) -> float:
 
 
 def spearman_rho(a: pd.Series, b: pd.Series) -> float:
+    """Corrélation de rang de Spearman entre deux classements."""
     ra, rb = a.rank(), b.reindex(a.index).rank()
     if ra.std() == 0 or rb.std() == 0:
         return 1.0

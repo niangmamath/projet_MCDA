@@ -10,7 +10,7 @@ alternatives, critères,      →   pondération (égale, directe, ROC, AHP)    
 performances, sens (max/min),    Delphi (consensus d'experts)                  comparaison des méthodes,
 poids, contraintes,              portefeuilles (combinaisons de k éléments)    seuils de basculement,
 paramètres de méthode            normalisation + méthode MCDA                  Monte-Carlo, diagnostic de
-                                 analyse de sensibilité                        robustesse, rapport HTML/MD/Excel
+                                 analyse de sensibilité                        robustesse, rapport PDF/HTML/MD/Excel
 ```
 
 Aucun résultat, alternative ou critère n'est codé en dur : tout vient du fichier de projet (JSON, YAML ou Excel)
@@ -38,7 +38,7 @@ pip install -e ".[web,dev,validation]"                   # bibliothèque + API w
 ```
 
 Dépendances : `numpy`, `pandas` (calcul), `openpyxl` (Excel), `pyyaml` (YAML) ; `fastapi`,
-`python-multipart` (et `uvicorn` en local) pour l'API web ; `pytest`/`httpx` pour les tests. L'interface charge
+`python-multipart` (et `uvicorn` en local) pour l'API web ; `fpdf2` (rapport PDF, police DejaVu fournie dans `mcdakit/fonts/`) ; `pytest`/`httpx` pour les tests. L'interface charge
 Plotly depuis cdnjs. Aucune bibliothèque MCDA externe : toutes les méthodes
 sont implémentées et testées dans le dépôt.
 
@@ -73,7 +73,7 @@ projet vierge ou importer un fichier `.json`, `.yaml` ou `.xlsx`
 ### b) Ligne de commande
 
 ```bash
-# analyse complète + rapport (HTML, .md ou .xlsx selon l'extension)
+# analyse complète + rapport (.pdf, .html, .md ou .xlsx selon l'extension)
 mcdakit run examples/stratema_methode2.json -m topsis -m wsm --report rapport.pdf
 
 # une seule méthode avec paramètres
@@ -109,6 +109,18 @@ open("rapport.html", "w").write(to_html(fa))
 ```
 
 Un problème peut aussi être construit en mémoire avec `DecisionProblem.from_dict({...})`.
+Toutes les fonctions et classes publiques sont documentées : `help(mcdakit.full_analysis)`, `help(DecisionProblem)`…
+
+### Poids et normalisation : ce qui est garanti
+
+- Les poids sont **toujours ramenés à une somme de 1** avant tout calcul, quelle que soit leur origine (AHP, saisie
+  directe en %, en points ou en fractions, ROC, profils, tirages Monte-Carlo). Les poids négatifs sont refusés.
+- La normalisation **par défaut** dépend de la méthode : min-max pour la somme pondérée, vectorielle pour TOPSIS.
+  Elle se change par méthode (`-m wsm:normalization=none`, menu de l'onglet Résultats). Un projet peut fixer ses
+  réglages dans `analysis` (voir `docs/FORMAT.md`) : les deux cas Stratema reprennent ceux des rapports
+  (méthode 1 : somme pondérée sans normalisation sur les notes 1 à 5 ; méthode 2 : TOPSIS vectoriel).
+  B + C et B + D étant très proches, changer la normalisation peut inverser le classement : c'est une
+  conclusion de l'analyse de sensibilité, pas une erreur.
 
 ## 3. Démonstration
 
@@ -170,7 +182,8 @@ mcdakit/
 ├── methods.py        somme pondérée (WSM) et TOPSIS — signature commune
 ├── analysis.py       evaluate, run_methods, compare_methods (τ de Kendall, ρ de Spearman)
 ├── sensitivity.py    moteur vectorisé, balayage, seuils, profils, Monte-Carlo, scénarios, diagnostic
-├── report.py         analyse complète + rendu Markdown / HTML / Excel
+├── report.py         analyse complète + rendu PDF / HTML / Markdown / Excel
+├── fonts/            police DejaVu embarquée dans les PDF (accents, symboles)
 ├── io_excel.py       import / export du modèle Excel
 └── cli.py            commande `mcdakit`
 api/index.py          API FastAPI (Vercel)
@@ -188,9 +201,10 @@ les rapports (et apparaît dans l'interface web via `/api/meta`). Pour la rendre
 pytest
 ```
 
-Tests (70) : propriétés mathématiques (cohérence AHP, bornes TOPSIS, respect de la dominance par
-toutes les méthodes), aller-retour JSON/Excel, égalité moteur vectorisé ↔ méthodes, et reproduction des
-résultats publiés dans les deux rapports Stratema, et appels de toutes les routes de l'API.
+71 tests : reproduction chiffrée des deux rapports Stratema, 5 cas publiés, validation croisée avec pymcdm et
+pyDecision (si installées), propriétés mathématiques (dominance, changement d'unité, cohérence AHP, bornes
+TOPSIS…), aller-retour JSON/Excel, égalité moteur vectorisé ↔ méthodes, et appels de toutes les routes de l'API
+(dont la génération du PDF).
 
 ## 7. Déploiement sur Vercel
 
@@ -218,7 +232,7 @@ Chaque `git push` sur `main` redéploie automatiquement. La documentation intera
 | `POST /api/sensitivity` | seuils, balayage, Monte-Carlo, profils, scénarios, diagnostic |
 | `POST /api/value-threshold` | seuil de basculement d'une valeur |
 | `POST /api/delphi` | synthèse des tours Delphi |
-| `POST /api/report` | rapport `html`, `md` ou `xlsx` |
+| `POST /api/report` | rapport `pdf`, `html`, `md` ou `xlsx` |
 | `POST /api/import`, `POST /api/export-xlsx`, `GET /api/template` | fichiers JSON / YAML / Excel |
 
 Les corps de requête contiennent `{"problem": <projet au format docs/FORMAT.md>, ...}`.
