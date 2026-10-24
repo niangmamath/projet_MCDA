@@ -1,0 +1,6 @@
+tests/
+docs/
+*.zip
+*.egg-info
+.pytest_cache
+__pycache__

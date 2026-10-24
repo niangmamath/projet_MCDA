@@ -19,10 +19,11 @@ ou de l'interface web.
 | Composant | Rôle |
 |---|---|
 | `mcdakit/` | bibliothèque Python (numpy + pandas), importable dans une future plateforme |
-| `app/streamlit_app.py` | interface web pour non-spécialistes (saisie, curseurs AHP, graphiques, export) |
+| `api/index.py` | API HTTP (FastAPI) qui expose la bibliothèque — fonction Python Vercel |
+| `public/` | interface web pour non-spécialistes (HTML/CSS/JS sans build, graphiques Plotly) |
 | `mcdakit` (commande) | CLI pour automatiser / scripter des analyses |
 | `examples/` | cas Stratema (méthodes 1 et 2) + exemple générique « choix d'un fournisseur » |
-| `tests/` | 30 tests, dont la reproduction chiffrée des deux rapports Stratema |
+| `tests/` | tests (bibliothèque et API), dont la reproduction chiffrée des deux rapports Stratema |
 
 ---
 
@@ -33,22 +34,25 @@ Prérequis : Python ≥ 3.10.
 ```bash
 git clone <ce dépôt> mcdakit && cd mcdakit
 python -m venv .venv && source .venv/bin/activate        # Windows : .venv\Scripts\activate
-pip install -e ".[app,dev]"                              # bibliothèque + interface + tests
+pip install -e ".[web,dev]"                              # bibliothèque + API web + tests
 ```
 
-Dépendances : `numpy`, `pandas` (calcul), `openpyxl` (Excel), `pyyaml` (YAML) ; `streamlit` et `plotly`
-pour l'interface uniquement ; `pytest` pour les tests. Aucune bibliothèque MCDA externe : toutes les méthodes
+Dépendances : `numpy`, `pandas` (calcul), `openpyxl` (Excel), `pyyaml` (YAML) ; `fastapi`,
+`python-multipart` (et `uvicorn` en local) pour l'API web ; `pytest`/`httpx` pour les tests. L'interface charge
+Plotly depuis cdnjs. Aucune bibliothèque MCDA externe : toutes les méthodes
 sont implémentées et testées dans le dépôt.
 
 ## 2. Utilisation
 
 ### a) Interface web (pour tout le monde)
 
+En ligne : l'URL Vercel du projet. En local :
+
 ```bash
-streamlit run app/streamlit_app.py
+uvicorn api.index:app --reload        # puis ouvrir http://localhost:8000
 ```
 
-Le navigateur s'ouvre sur six onglets qui suivent la démarche MCDA :
+L'interface propose six onglets qui suivent la démarche MCDA :
 
 1. **Données** — critères (sens, unité), alternatives et évaluations dans des tableaux éditables ;
    attributs hors critères (budget, charge…), contraintes d'admissibilité, mode portefeuille.
@@ -152,11 +156,13 @@ mcdakit/
 ├── report.py         analyse complète + rendu Markdown / HTML / Excel
 ├── io_excel.py       import / export du modèle Excel
 └── cli.py            commande `mcdakit`
+api/index.py          API FastAPI (Vercel)
+public/               interface web : index.html, app.js, style.css
 ```
 
 **Ajouter une méthode** : écrire une fonction `ma_methode(matrix, weights, directions, **params) -> MethodResult`
 dans `methods.py` et l'enregistrer dans `METHODS` ; elle devient disponible dans l'API, la CLI, l'interface et
-les rapports. Pour la rendre utilisable par la sensibilité vectorisée, ajouter sa branche dans
+les rapports (et apparaît dans l'interface web via `/api/meta`). Pour la rendre utilisable par la sensibilité vectorisée, ajouter sa branche dans
 `WeightScorer.scores` (un test vérifie l'égalité avec la méthode de référence).
 
 ## 6. Tests
@@ -165,15 +171,38 @@ les rapports. Pour la rendre utilisable par la sensibilité vectorisée, ajouter
 pytest
 ```
 
-30 tests : propriétés mathématiques (cohérence AHP, flux PROMETHEE de somme nulle, respect de la dominance par
+Tests : propriétés mathématiques (cohérence AHP, flux PROMETHEE de somme nulle, respect de la dominance par
 toutes les méthodes), aller-retour JSON/Excel, égalité moteur vectorisé ↔ méthodes, et reproduction des
-résultats publiés dans les deux rapports Stratema.
+résultats publiés dans les deux rapports Stratema, et appels de toutes les routes de l'API.
 
-## 7. Mettre l'application en ligne
+## 7. Déploiement sur Vercel
 
-Pour la rendre accessible sans installation : pousser le dépôt sur GitHub puis le déployer gratuitement sur
-[Streamlit Community Cloud](https://streamlit.io/cloud) (fichier principal `app/streamlit_app.py`,
-dépendances `requirements.txt`).
+Le dépôt est prêt pour Vercel, sans configuration supplémentaire :
+
+- `public/` est servi tel quel par le CDN (interface) ;
+- `api/index.py` devient une fonction Python (FastAPI) ; `vercel.json` y redirige toutes les routes `/api/*`
+  et y inclut les dossiers `mcdakit/` et `examples/` ;
+- `requirements.txt` liste les dépendances installées au build.
+
+Étapes : importer le dépôt GitHub dans Vercel (*Add New → Project*), laisser le preset « Other », déployer.
+Chaque `git push` sur `main` redéploie automatiquement. La documentation interactive de l'API est servie sur
+`/api/docs`.
+
+### Routes de l'API
+
+| Route | Rôle |
+|---|---|
+| `GET /api/meta` | méthodes, normalisations, fonctions de préférence disponibles |
+| `GET /api/examples`, `GET /api/examples/{id}` | exemples fournis |
+| `POST /api/validate` | contrôle du projet : candidates, admissibilité, matrice, poids, cohérence AHP |
+| `POST /api/analyze` | résultats de plusieurs méthodes + comparaison |
+| `POST /api/sensitivity` | seuils, balayage, Monte-Carlo, profils, scénarios, diagnostic |
+| `POST /api/value-threshold` | seuil de basculement d'une valeur |
+| `POST /api/delphi` | synthèse des tours Delphi |
+| `POST /api/report` | rapport `html`, `md` ou `xlsx` |
+| `POST /api/import`, `POST /api/export-xlsx`, `GET /api/template` | fichiers JSON / YAML / Excel |
+
+Les corps de requête contiennent `{"problem": <projet au format docs/FORMAT.md>, ...}`.
 
 ## 8. Limites
 

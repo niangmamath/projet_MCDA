@@ -89,6 +89,17 @@ class WeightScorer:
         return self.alternatives[int(np.argmax(self.scores(weights)))]
 
 
+def _weight_grid(base: np.ndarray, k: int, grid: np.ndarray) -> np.ndarray:
+    """Version vectorisée de `set_weight` : une ligne de poids par valeur de la grille pour le critère k."""
+    others = base.copy()
+    others[k] = 0.0
+    tot = others.sum()
+    share = others / tot if tot > 0 else np.where(np.arange(len(base)) == k, 0.0, 1.0 / (len(base) - 1))
+    W = (1.0 - grid)[:, None] * share[None, :]
+    W[:, k] = grid
+    return W
+
+
 def set_weight(weights: pd.Series, criterion: str, value: float) -> pd.Series:
     """Fixe le poids d'un critère et redistribue le reste proportionnellement (somme = 1)."""
     w = weights.astype(float).copy()
@@ -108,7 +119,8 @@ def weight_sweep(problem: DecisionProblem, method: str, criterion: str, params: 
     """Scores de chaque alternative quand le poids de `criterion` varie de 0 à 1."""
     sc = WeightScorer(problem, method, params)
     grid = np.linspace(0, 1, steps)
-    W = np.array([set_weight(sc.base_weights, criterion, v).reindex(sc.criteria).to_numpy() for v in grid])
+    base = sc.base_weights.reindex(sc.criteria).to_numpy()
+    W = _weight_grid(base, sc.criteria.index(criterion), grid)
     S = sc.scores(W)
     df = pd.DataFrame(S, index=pd.Index(grid, name=f"poids {criterion}"), columns=sc.alternatives)
     df["gagnant"] = [sc.alternatives[i] for i in S.argmax(axis=1)]
@@ -116,9 +128,11 @@ def weight_sweep(problem: DecisionProblem, method: str, criterion: str, params: 
 
 
 def _refine(sc: WeightScorer, criterion: str, a: float, b: float, win_a: str, iters: int = 40) -> float:
+    base = sc.base_weights.reindex(sc.criteria).to_numpy()
+    k = sc.criteria.index(criterion)
     for _ in range(iters):
         m = (a + b) / 2
-        if sc.winner(set_weight(sc.base_weights, criterion, m).reindex(sc.criteria).to_numpy()) == win_a:
+        if sc.winner(_weight_grid(base, k, np.array([m]))[0]) == win_a:
             a = m
         else:
             b = m
@@ -131,10 +145,11 @@ def weight_thresholds(problem: DecisionProblem, method: str, params: dict | None
     sc = WeightScorer(problem, method, params)
     base_win = sc.winner(sc.base_weights.to_numpy())
     grid = np.linspace(0, 1, resolution)
+    base = sc.base_weights.reindex(sc.criteria).to_numpy()
     rows = []
-    for c in sc.criteria:
+    for k_c, c in enumerate(sc.criteria):
         w0 = float(sc.base_weights[c])
-        W = np.array([set_weight(sc.base_weights, c, v).reindex(sc.criteria).to_numpy() for v in grid])
+        W = _weight_grid(base, k_c, grid)
         winners = np.array(sc.alternatives)[sc.scores(W).argmax(axis=1)]
         k0 = int(np.searchsorted(grid, w0))
         up = down = None

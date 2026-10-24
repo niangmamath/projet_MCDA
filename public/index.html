@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>mcdakit — Aide à la décision multicritère</title>
+  <meta name="description" content="Structurer une décision multicritère : AHP, Delphi, somme pondérée, TOPSIS, PROMETHEE, analyse de sensibilité et rapport.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E⚖️%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.35.2/plotly.min.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="logo">⚖️</span><div><strong>mcdakit</strong><small>Aide à la décision multicritère</small></div></div>
+  <div class="project-actions">
+    <select id="example-select" aria-label="Exemples"><option value="">Charger un exemple…</option></select>
+    <label class="btn ghost" for="import-file">Importer</label>
+    <input type="file" id="import-file" accept=".json,.yaml,.yml,.xlsx" hidden>
+    <button class="btn ghost" id="new-project">Nouveau</button>
+  </div>
+</header>
+
+<main>
+  <section class="project-head">
+    <input id="p-name" class="title-input" placeholder="Nom du projet" aria-label="Nom du projet">
+    <textarea id="p-desc" rows="2" placeholder="Contexte, décideur, décision à prendre…" aria-label="Description"></textarea>
+  </section>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-tab="data" class="active"><span>1</span>Données</button>
+    <button role="tab" data-tab="weights"><span>2</span>Poids</button>
+    <button role="tab" data-tab="delphi"><span>3</span>Delphi</button>
+    <button role="tab" data-tab="results"><span>4</span>Résultats</button>
+    <button role="tab" data-tab="sensitivity"><span>5</span>Sensibilité</button>
+    <button role="tab" data-tab="report"><span>6</span>Rapport</button>
+  </nav>
+
+  <div id="status" class="status" hidden></div>
+
+  <!-- 1. Données -->
+  <section class="panel active" id="tab-data">
+    <h2>Critères</h2>
+    <p class="hint">Sens <b>max</b> : une valeur plus élevée est meilleure ; <b>min</b> : plus basse est meilleure (coût, délai…).
+      Les colonnes préférence / q / p / s ne servent qu'à PROMETHEE (q : seuil d'indifférence, p : seuil de préférence stricte).</p>
+    <div id="criteria-table"></div>
+
+    <details class="box">
+      <summary>Attributs hors critères (budget, charge…) utilisables dans les contraintes</summary>
+      <div id="attributes-table"></div>
+    </details>
+
+    <h2>Alternatives et évaluations</h2>
+    <div id="alternatives-table"></div>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>Mode portefeuille</h3>
+        <label class="switch"><input type="checkbox" id="pf-on"> Choisir une combinaison d'éléments (ex. 2 missions parmi 4)</label>
+        <div class="row">
+          <label>Taille min <input type="number" id="pf-min" min="1" max="20" value="2"></label>
+          <label>Taille max <input type="number" id="pf-max" min="1" max="20" value="2"></label>
+        </div>
+        <p class="hint">Chaque combinaison devient une alternative ; ses valeurs sont agrégées selon la colonne « agrégation ».</p>
+      </div>
+      <div class="card">
+        <h3>Contraintes</h3>
+        <p class="hint">Filtres d'admissibilité (ex. charge ≤ 65) : une alternative qui les viole est exclue.</p>
+        <div id="constraints-table"></div>
+      </div>
+    </div>
+    <details class="box">
+      <summary>Surcharges de cellules (ex. valeurs corrigées par Delphi pour une combinaison)</summary>
+      <div id="overrides-table"></div>
+    </details>
+    <div id="data-summary" class="callout"></div>
+  </section>
+
+  <!-- 2. Poids -->
+  <section class="panel" id="tab-weights">
+    <h2>Pondération des critères</h2>
+    <div class="seg" id="wmode">
+      <button data-mode="equal">Égaux</button>
+      <button data-mode="direct">Directs</button>
+      <button data-mode="roc">Classement (ROC)</button>
+      <button data-mode="ahp">AHP</button>
+    </div>
+    <p class="hint" id="wmode-hint"></p>
+    <div id="weights-input"></div>
+    <div class="grid2 top">
+      <div id="weights-chart" class="chart"></div>
+      <div id="ahp-info"></div>
+    </div>
+  </section>
+
+  <!-- 3. Delphi -->
+  <section class="panel" id="tab-delphi">
+    <h2>Consultation Delphi</h2>
+    <p class="hint">Pour une évaluation incertaine, saisissez les votes anonymes des experts tour par tour (ex. « 2, 1, 3, 3, 2 »).
+      Valeur retenue : médiane du dernier tour. Consensus : écart interquartile ≤ seuil.</p>
+    <label class="inline">Seuil de consensus (IQR) <input type="number" id="delphi-iqr" value="1" step="0.5" min="0"></label>
+    <div id="delphi-table"></div>
+    <div id="delphi-results"></div>
+    <button class="btn primary" id="delphi-apply" disabled>Appliquer les valeurs retenues au modèle</button>
+  </section>
+
+  <!-- 4. Résultats -->
+  <section class="panel" id="tab-results">
+    <h2>Méthodes</h2>
+    <div id="method-picker" class="method-grid"></div>
+    <label class="inline">Méthode de référence (recommandation, sensibilité, rapport)
+      <select id="primary-method"></select></label>
+    <div id="results-out"></div>
+  </section>
+
+  <!-- 5. Sensibilité -->
+  <section class="panel" id="tab-sensitivity">
+    <p id="sens-intro" class="callout info"></p>
+    <h2>A. Paramètres de préférence : les poids</h2>
+    <div id="thresholds"></div>
+    <label class="inline">Balayer le poids de <select id="sweep-crit"></select></label>
+    <div id="sweep-chart" class="chart tall"></div>
+
+    <h3>Monte-Carlo sur les poids</h3>
+    <div class="row wrap">
+      <label>Tirages <input type="number" id="mc-n" value="10000" min="500" max="50000" step="500"></label>
+      <label class="switch"><input type="checkbox" id="mc-uniform"> Aucune information sur les poids (tirage uniforme)</label>
+      <label>Dispersion autour des poids <input type="range" id="mc-spread" min="0.05" max="0.6" step="0.05" value="0.2"> <output id="mc-spread-out">20 %</output></label>
+    </div>
+    <div class="grid2">
+      <div id="mc-chart" class="chart"></div>
+      <div id="mc-heat" class="chart"></div>
+    </div>
+
+    <h3>Profils de décideurs</h3>
+    <p class="hint">Multiplicateurs appliqués aux poids de référence, puis renormalisés.</p>
+    <div id="profiles-table"></div>
+    <label class="switch"><input type="checkbox" id="equal-profile" checked> Ajouter le profil « poids égaux »</label>
+    <div id="profiles-out"></div>
+
+    <h2>B. Données et hypothèses</h2>
+    <p class="hint">Chaque ligne modifie une valeur ; les lignes portant le même nom de scénario sont appliquées ensemble.
+      Modifier un élément de base le ré-agrège dans toutes les combinaisons qui le contiennent.</p>
+    <div id="scenarios-table"></div>
+    <div id="scenarios-out"></div>
+
+    <details class="box">
+      <summary>Seuil de basculement d'une valeur</summary>
+      <div class="row wrap">
+        <label>Alternative / élément <select id="vt-alt"></select></label>
+        <label>Colonne <select id="vt-col"></select></label>
+        <label>de <input type="number" id="vt-lo" step="any"></label>
+        <label>à <input type="number" id="vt-hi" step="any"></label>
+        <button class="btn" id="vt-run">Chercher le seuil</button>
+      </div>
+      <div id="vt-out"></div>
+    </details>
+
+    <h2>C. Diagnostic de robustesse</h2>
+    <div id="diagnosis"></div>
+  </section>
+
+  <!-- 6. Rapport -->
+  <section class="panel" id="tab-report">
+    <h2>Exporter le rapport</h2>
+    <p class="hint">Le rapport reprend toutes les étapes : formulation, poids (et cohérence AHP), matrice, calculs intermédiaires
+      de chaque méthode, comparaison, sensibilité, diagnostic et recommandation, avec les réglages des onglets Résultats et Sensibilité.</p>
+    <div class="row wrap">
+      <button class="btn primary" data-report="html">Ouvrir le rapport HTML (imprimable en PDF)</button>
+      <button class="btn" data-report="md">Télécharger en Markdown</button>
+      <button class="btn" data-report="xlsx">Tous les tableaux (Excel)</button>
+    </div>
+    <h2>Sauvegarder le projet</h2>
+    <div class="row wrap">
+      <button class="btn" id="save-json">Projet JSON (rechargeable)</button>
+      <button class="btn" id="save-xlsx">Projet Excel (modifiable)</button>
+      <a class="btn ghost" href="/api/template">Modèle Excel vierge</a>
+    </div>
+    <p class="hint">Le projet est aussi conservé automatiquement dans ce navigateur. API documentée : <a href="/api/docs">/api/docs</a>.</p>
+  </section>
+</main>
+<footer>mcdakit — le modèle éclaire la décision ; il ne se substitue pas au décideur.</footer>
+</body>
+</html>
