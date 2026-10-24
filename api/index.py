@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from mcdakit import (DecisionProblem, compare_methods, data_scenarios, delphi, diagnose, full_analysis,  # noqa: E402
-                     monte_carlo, resolve_weights, run_methods, to_excel, to_html, to_markdown, value_threshold,
+                     monte_carlo, resolve_weights, run_methods, to_excel, to_html, to_markdown, to_pdf, value_threshold,
                      weight_profiles, weight_sweep, weight_thresholds)
 from mcdakit.io_excel import read_excel, template_problem, write_excel  # noqa: E402
 from mcdakit.methods import METHOD_LABELS, METHOD_LOGIC, METHODS  # noqa: E402
@@ -293,6 +293,9 @@ def report(body: ReportBody):
     p = _problem(body.problem)
     fa = full_analysis(p, body.methods, primary=body.primary, mc_runs=min(body.mc_runs, MAX_MC),
                        mc_spread=body.mc_spread, scenarios=body.scenarios or None, profiles=body.profiles or None)
+    if body.format == "pdf":
+        return Response(to_pdf(fa), media_type="application/pdf",
+                        headers={"Content-Disposition": 'attachment; filename="rapport_mcda.pdf"'})
     if body.format == "md":
         return Response(to_markdown(fa), media_type="text/markdown; charset=utf-8",
                         headers={"Content-Disposition": 'attachment; filename="rapport_mcda.md"'})

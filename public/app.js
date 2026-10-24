@@ -659,7 +659,7 @@ async function makeReport(format) {
     if (format === "html") {
       const url = URL.createObjectURL(blob);
       if (win) win.location.href = url; else download(blob, "rapport_mcda.html");
-    } else download(blob, format === "md" ? "rapport_mcda.md" : "calculs_mcda.xlsx");
+    } else download(blob, { pdf: "rapport_mcda.pdf", md: "rapport_mcda.md" }[format] || "calculs_mcda.xlsx");
   } catch (e) { if (win) win.close(); showStatus(e.message); }
 }
 

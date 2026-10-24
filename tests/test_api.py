@@ -78,3 +78,10 @@ def test_static_index():
 def test_validation_route():
     r = client.get("/api/validation").json()
     assert r["all_ok"] is True and len(r["cases"]) >= 5
+
+
+def test_report_pdf(strat):
+    r = client.post("/api/report", json={"problem": strat, "methods": {"wsm": {}, "topsis": {}}, "format": "pdf", "mc_runs": 500})
+    assert r.status_code == 200
+    assert r.headers["content-type"] == "application/pdf"
+    assert r.content.startswith(b"%PDF")

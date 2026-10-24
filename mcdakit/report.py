@@ -88,7 +88,7 @@ def _fmt(v, digits: int = 4) -> str:
 
 
 class _Doc:
-    """Petit modèle de document rendu en Markdown ou en HTML."""
+    """Petit modèle de document rendu en Markdown, en HTML ou en PDF."""
 
     def __init__(self):
         self.blocks: list[tuple] = []
@@ -107,6 +107,113 @@ class _Doc:
 
     def bullets(self, items: list[str]):
         self.blocks.append(("ul", items))
+
+    def pdf(self, title: str) -> bytes:
+        """Rendu PDF (A4) avec fpdf2 et la police DejaVu embarquée (accents, λ, φ, ≥, → …)."""
+        from pathlib import Path
+
+        from fpdf import FPDF
+        from fpdf.fonts import FontFace
+
+        navy, orange, sky, ink, muted = (15, 76, 117), (245, 146, 47), (220, 239, 251), (13, 27, 42), (93, 107, 122)
+        fonts = Path(__file__).resolve().parent / "fonts"
+
+        class _PDF(FPDF):
+            def header(self):
+                if self.page_no() > 1:
+                    self.set_font("DejaVu", "", 7.5)
+                    self.set_text_color(*muted)
+                    self.cell(0, 5, title, align="L")
+                    self.ln(7)
+
+            def footer(self):
+                self.set_y(-12)
+                self.set_font("DejaVu", "", 7.5)
+                self.set_text_color(*muted)
+                self.cell(0, 5, f"mcdakit — rapport d'aide à la décision · page {self.page_no()}/{{nb}}", align="C")
+
+        pdf = _PDF(format="A4")
+        pdf.add_font("DejaVu", "", str(fonts / "DejaVuSans.ttf"))
+        pdf.add_font("DejaVu", "B", str(fonts / "DejaVuSans-Bold.ttf"))
+        pdf.add_font("DejaVu", "I", str(fonts / "DejaVuSans-Oblique.ttf"))
+        pdf.set_title(title)
+        pdf.set_author("mcdakit")
+        pdf.set_margins(16, 16, 16)
+        pdf.set_auto_page_break(True, margin=16)
+        pdf.add_page()
+        width = pdf.w - pdf.l_margin - pdf.r_margin
+
+        def text(s: str, size: float = 9.5, style: str = "", color=ink, h: float = 5.0):
+            pdf.set_font("DejaVu", style, size)
+            pdf.set_text_color(*color)
+            pdf.multi_cell(0, h, s, new_x="LMARGIN", new_y="NEXT")
+
+        for b in self.blocks:
+            kind = b[0]
+            if kind == "h":
+                level, s = b[1], b[2]
+                if level == 1:
+                    pdf.set_fill_color(*orange)
+                    pdf.rect(pdf.l_margin, pdf.get_y(), 18, 1.6, "F")
+                    pdf.ln(4)
+                    text(s, 17, "B", navy, 8)
+                    pdf.ln(1)
+                elif level == 2:
+                    if pdf.get_y() > pdf.h - 50:
+                        pdf.add_page()
+                    pdf.ln(4)
+                    text(s, 13, "B", navy, 7)
+                    pdf.set_draw_color(*orange)
+                    pdf.set_line_width(0.6)
+                    pdf.line(pdf.l_margin, pdf.get_y() + 0.5, pdf.l_margin + width, pdf.get_y() + 0.5)
+                    pdf.ln(3)
+                else:
+                    pdf.ln(2)
+                    text(s, 10.5, "B", ink, 6)
+            elif kind == "p":
+                text(b[1])
+                pdf.ln(1.5)
+            elif kind == "note":
+                pdf.set_font("DejaVu", "", 9.5)
+                pdf.set_text_color(*navy)
+                pdf.set_fill_color(*sky)
+                pdf.multi_cell(0, 5, b[1], fill=True, padding=(2.5, 3), new_x="LMARGIN", new_y="NEXT")
+                pdf.ln(2)
+            elif kind == "ul":
+                for item in b[1]:
+                    pdf.set_x(pdf.l_margin + 3)
+                    pdf.set_font("DejaVu", "", 9.5)
+                    pdf.set_text_color(*ink)
+                    pdf.multi_cell(width - 3, 5, f"•  {item}", new_x="LMARGIN", new_y="NEXT")
+                pdf.ln(1.5)
+            elif kind == "table":
+                df, index, digits, caption = b[1:]
+                head = ([df.index.name or ""] if index else []) + [str(c) for c in df.columns]
+                rows = [([str(i)] if index else []) + [_fmt(v, digits) for v in r] for i, r in df.iterrows()]
+                numeric = [False] * len(head)
+                for j in range(len(head)):
+                    vals = [r[j] for r in rows]
+                    numeric[j] = bool(vals) and all(v.replace(" ", "").replace(".", "").replace("-", "").replace("—", "").isdigit()
+                                                    or v in ("—", "") for v in vals) and j > 0
+                size = 8 if len(head) <= 6 else 7 if len(head) <= 9 else 6
+                pdf.set_font("DejaVu", "", size)
+                lengths = [max([len(head[j])] + [len(r[j]) for r in rows]) for j in range(len(head))]
+                weights = [min(max(n, 4), 34) for n in lengths]
+                pdf.set_text_color(*ink)
+                pdf.set_draw_color(220, 226, 234)
+                pdf.set_line_width(0.2)
+                with pdf.table(col_widths=weights, width=width, line_height=size * 0.55,
+                               text_align=tuple("RIGHT" if n else "LEFT" for n in numeric),
+                               headings_style=FontFace(emphasis="BOLD", color=(255, 255, 255), fill_color=navy),
+                               cell_fill_color=(246, 248, 251), cell_fill_mode="ROWS", padding=1.2,
+                               first_row_as_headings=True) as t:
+                    t.row(head)
+                    for r in rows:
+                        t.row(r)
+                if caption:
+                    text(caption, 7.5, "I", muted, 4)
+                pdf.ln(3)
+        return bytes(pdf.output())
 
     def markdown(self) -> str:
         out = []
@@ -299,6 +406,11 @@ def to_markdown(fa: FullAnalysis) -> str:
 
 def to_html(fa: FullAnalysis) -> str:
     return build_document(fa).html(fa.problem.name)
+
+
+def to_pdf(fa: FullAnalysis) -> bytes:
+    """Rapport complet au format PDF (A4), prêt à imprimer ou à joindre."""
+    return build_document(fa).pdf(fa.problem.name)
 
 
 def to_excel(fa: FullAnalysis) -> bytes:

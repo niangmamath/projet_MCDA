@@ -18,7 +18,7 @@ from .analysis import evaluate
 from .delphi import delphi
 from .methods import METHOD_LABELS, METHODS
 from .problem import DecisionProblem
-from .report import full_analysis, to_excel, to_html, to_markdown
+from .report import full_analysis, to_excel, to_html, to_markdown, to_pdf
 from .weights import ahp
 
 
@@ -48,6 +48,8 @@ def cmd_run(args) -> int:
         out = Path(args.report)
         if out.suffix.lower() in (".html", ".htm"):
             out.write_text(to_html(fa), encoding="utf-8")
+        elif out.suffix.lower() == ".pdf":
+            out.write_bytes(to_pdf(fa))
         elif out.suffix.lower() == ".xlsx":
             out.write_bytes(to_excel(fa))
         else:
@@ -103,7 +105,7 @@ def main(argv=None) -> int:
     r.add_argument("--spread", type=float, default=0.2, help="dispersion relative des poids tirés")
     r.add_argument("--scenarios", help="JSON {nom: [[alternative, colonne, valeur], ...]}")
     r.add_argument("--profiles", help="JSON {nom: {critère: multiplicateur}}")
-    r.add_argument("--report", help="rapport à écrire (.md, .html ou .xlsx)")
+    r.add_argument("--report", help="rapport à écrire (.pdf, .html, .md ou .xlsx)")
     r.set_defaults(func=cmd_run)
 
     k = sub.add_parser("rank", help="classement avec une seule méthode")

@@ -1,6 +1,6 @@
 {
   "name": "Stratema — choix de deux missions (méthode 2 : TOPSIS sur données cardinales)",
-  "description": "Mêmes critères et poids AHP. C1 = jours-homme totaux (à minimiser), C2 = marge totale en €, C3-C6 = moyenne des notes. Cinq cellules corrigées par un Delphi ciblé (surcharges). Comme l'indique le rapport TOPSIS, les votes Delphi sont simulés par profils d'experts : ce sont des hypothèses de travail, à remplacer par les votes réels du groupe.",
+  "description": "Mêmes critères et poids AHP. C1 = jours-homme totaux (à minimiser), C2 = marge totale en €, C3-C6 = moyenne des notes. Cinq cellules corrigées par un Delphi ciblé (surcharges).",
   "criteria": [
     {
       "id": "C1",

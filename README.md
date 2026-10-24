@@ -64,7 +64,7 @@ L'interface propose six onglets qui suivent la démarche MCDA :
    (τ de Kendall), détail de tous les calculs intermédiaires.
 5. **Sensibilité** — seuils de basculement des poids, courbes de balayage, Monte-Carlo, profils de
    décideurs, scénarios sur les données, seuil d'une valeur, **diagnostic robuste / modérément robuste / fragile**.
-6. **Rapport** — export HTML (imprimable en PDF), Markdown, Excel (tous les tableaux) ; sauvegarde du projet.
+6. **Rapport** — export PDF, HTML, Markdown, Excel (tous les tableaux) ; sauvegarde du projet.
 
 Le menu « Charger un cas Stratema » propose les deux cas du projet (méthode 1 et méthode 2). On peut aussi partir d'un
 projet vierge ou importer un fichier `.json`, `.yaml` ou `.xlsx`
@@ -74,7 +74,7 @@ projet vierge ou importer un fichier `.json`, `.yaml` ou `.xlsx`
 
 ```bash
 # analyse complète + rapport (HTML, .md ou .xlsx selon l'extension)
-mcdakit run examples/stratema_methode2.json -m topsis -m wsm --report rapport.html
+mcdakit run examples/stratema_methode2.json -m topsis -m wsm --report rapport.pdf
 
 # une seule méthode avec paramètres
 mcdakit rank examples/stratema_methode1.json -m wsm:normalization=none
