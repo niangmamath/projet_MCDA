@@ -331,6 +331,11 @@ def _index():
     return FileResponse(_PUBLIC / "index.html")
 
 
+@app.get("/app", include_in_schema=False)
+def _app_page():
+    return FileResponse(_PUBLIC / "app.html")
+
+
 @app.get("/{path:path}", include_in_schema=False)
 def _static(path: str):
     f = (_PUBLIC / path).resolve()

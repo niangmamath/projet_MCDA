@@ -20,7 +20,7 @@ ou de l'interface web.
 |---|---|
 | `mcdakit/` | bibliothèque Python (numpy + pandas), importable dans une future plateforme |
 | `api/index.py` | API HTTP (FastAPI) qui expose la bibliothèque — fonction Python Vercel |
-| `public/` | interface web pour non-spécialistes (HTML/CSS/JS sans build, graphiques Plotly) |
+| `public/` | site web : page d'accueil (`index.html`) et application (`app.html`, servie sur `/app`) en HTML/CSS/JS sans build |
 | `mcdakit` (commande) | CLI pour automatiser / scripter des analyses |
 | `examples/` | cas Stratema (méthodes 1 et 2) + exemple générique « choix d'un fournisseur » |
 | `tests/` | tests (bibliothèque et API), dont la reproduction chiffrée des deux rapports Stratema |
@@ -46,10 +46,11 @@ sont implémentées et testées dans le dépôt.
 
 ### a) Interface web (pour tout le monde)
 
-En ligne : l'URL Vercel du projet. En local :
+En ligne : https://projet-mcda.vercel.app (accueil et guide) et https://projet-mcda.vercel.app/app (application).
+Liens directs : `/app?exemple=<id>` charge un exemple, `/app?nouveau=1` ouvre un projet vierge. En local :
 
 ```bash
-uvicorn api.index:app --reload        # puis ouvrir http://localhost:8000
+uvicorn api.index:app --reload        # puis ouvrir http://localhost:8000 (accueil) ou /app
 ```
 
 L'interface propose six onglets qui suivent la démarche MCDA :
@@ -157,7 +158,7 @@ mcdakit/
 ├── io_excel.py       import / export du modèle Excel
 └── cli.py            commande `mcdakit`
 api/index.py          API FastAPI (Vercel)
-public/               interface web : index.html, app.js, style.css
+public/               page d'accueil (index.html, landing.css, img/) et application (app.html, app.js, style.css)
 ```
 
 **Ajouter une méthode** : écrire une fonction `ma_methode(matrix, weights, directions, **params) -> MethodResult`

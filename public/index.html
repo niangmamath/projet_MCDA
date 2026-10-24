@@ -3,182 +3,315 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>mcdakit — Aide à la décision multicritère</title>
-  <meta name="description" content="Structurer une décision multicritère : AHP, Delphi, somme pondérée, TOPSIS, PROMETHEE, analyse de sensibilité et rapport.">
+  <title>mcdakit — Prendre de meilleures décisions multicritères</title>
+  <meta name="description" content="Comparez plusieurs options sur plusieurs critères, pondérez avec l'AHP, consultez des experts (Delphi), classez avec TOPSIS ou PROMETHEE et vérifiez la robustesse de votre choix. Gratuit, sans inscription.">
+  <meta property="og:title" content="mcdakit — Aide à la décision multicritère">
+  <meta property="og:description" content="Structurer une décision, la justifier et tester sa robustesse, en quelques minutes.">
+  <meta property="og:image" content="/img/resultats.webp">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E⚖️%3C/text%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.35.2/plotly.min.js" defer></script>
-  <script src="app.js" defer></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="landing.css">
 </head>
 <body>
-<header class="topbar">
-  <div class="brand"><span class="logo">⚖️</span><div><strong>mcdakit</strong><small>Aide à la décision multicritère</small></div></div>
-  <div class="project-actions">
-    <select id="example-select" aria-label="Exemples"><option value="">Charger un exemple…</option></select>
-    <label class="btn ghost" for="import-file">Importer</label>
-    <input type="file" id="import-file" accept=".json,.yaml,.yml,.xlsx" hidden>
-    <button class="btn ghost" id="new-project">Nouveau</button>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="logo" href="/"><span aria-hidden="true">⚖️</span> mcdakit</a>
+    <nav class="nav-links" aria-label="Sections">
+      <a href="#fonctionnement">Fonctionnement</a>
+      <a href="#methodes">Méthodes</a>
+      <a href="#demarrer">Démarrer</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <a class="btn btn-primary btn-sm" href="/app">Ouvrir l'application</a>
   </div>
 </header>
 
 <main>
-  <section class="project-head">
-    <input id="p-name" class="title-input" placeholder="Nom du projet" aria-label="Nom du projet">
-    <textarea id="p-desc" rows="2" placeholder="Contexte, décideur, décision à prendre…" aria-label="Description"></textarea>
-  </section>
-
-  <nav class="tabs" role="tablist">
-    <button role="tab" data-tab="data" class="active"><span>1</span>Données</button>
-    <button role="tab" data-tab="weights"><span>2</span>Poids</button>
-    <button role="tab" data-tab="delphi"><span>3</span>Delphi</button>
-    <button role="tab" data-tab="results"><span>4</span>Résultats</button>
-    <button role="tab" data-tab="sensitivity"><span>5</span>Sensibilité</button>
-    <button role="tab" data-tab="report"><span>6</span>Rapport</button>
-  </nav>
-
-  <div id="status" class="status" hidden></div>
-
-  <!-- 1. Données -->
-  <section class="panel active" id="tab-data">
-    <h2>Critères</h2>
-    <p class="hint">Sens <b>max</b> : une valeur plus élevée est meilleure ; <b>min</b> : plus basse est meilleure (coût, délai…).
-      Les colonnes préférence / q / p / s ne servent qu'à PROMETHEE (q : seuil d'indifférence, p : seuil de préférence stricte).</p>
-    <div id="criteria-table"></div>
-
-    <details class="box">
-      <summary>Attributs hors critères (budget, charge…) utilisables dans les contraintes</summary>
-      <div id="attributes-table"></div>
-    </details>
-
-    <h2>Alternatives et évaluations</h2>
-    <div id="alternatives-table"></div>
-
-    <div class="grid2">
-      <div class="card">
-        <h3>Mode portefeuille</h3>
-        <label class="switch"><input type="checkbox" id="pf-on"> Choisir une combinaison d'éléments (ex. 2 missions parmi 4)</label>
-        <div class="row">
-          <label>Taille min <input type="number" id="pf-min" min="1" max="20" value="2"></label>
-          <label>Taille max <input type="number" id="pf-max" min="1" max="20" value="2"></label>
+  <!-- ======================================================== HERO -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-text">
+        <p class="eyebrow">Aide à la décision multicritère</p>
+        <h1>Choisir entre plusieurs options, <em>avec des arguments solides.</em></h1>
+        <p class="lead">Fournisseur, projet, recrutement, implantation, portefeuille de missions… mcdakit transforme une
+          décision intuitive en une démarche structurée : critères explicites, poids justifiés, plusieurs méthodes
+          de classement et un test de robustesse. Vous savez ce que vous choisissez, et pourquoi.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="/app?nouveau=1">Démarrer un projet</a>
+          <a class="btn btn-ghost" href="/app?exemple=stratema_methode2">Explorer un exemple complet →</a>
         </div>
-        <p class="hint">Chaque combinaison devient une alternative ; ses valeurs sont agrégées selon la colonne « agrégation ».</p>
+        <ul class="trust">
+          <li>Gratuit, sans inscription</li>
+          <li>Vos données restent dans votre navigateur</li>
+          <li>Rapport détaillé exportable</li>
+        </ul>
       </div>
-      <div class="card">
-        <h3>Contraintes</h3>
-        <p class="hint">Filtres d'admissibilité (ex. charge ≤ 65) : une alternative qui les viole est exclue.</p>
-        <div id="constraints-table"></div>
+      <figure class="hero-shot">
+        <div class="browser">
+          <div class="browser-bar"><span></span><span></span><span></span><b>projet-mcda.vercel.app/app</b></div>
+          <img src="img/resultats.webp" alt="Écran des résultats : recommandation, classements des trois méthodes et graphiques en barres" width="1600" height="1438" data-zoom>
+        </div>
+        <figcaption class="float-badge">
+          <strong>Recommandation modérément robuste</strong>
+          1re dans 92 % des tirages de poids
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ======================================================== POURQUOI -->
+  <section class="section why">
+    <div class="wrap">
+      <p class="eyebrow center">Pourquoi un outil ?</p>
+      <h2 class="center">Les décisions « au feeling » cachent trois angles morts</h2>
+      <div class="cards3">
+        <article class="card">
+          <div class="card-ico" aria-hidden="true">①</div>
+          <h3>Des poids implicites</h3>
+          <p>Additionner des notes revient à dire que tous les critères se valent. Est-ce vraiment le cas ?
+            mcdakit vous fait expliciter et mesurer l'importance de chaque critère.</p>
+        </article>
+        <article class="card">
+          <div class="card-ico" aria-hidden="true">②</div>
+          <h3>Une seule façon de compter</h3>
+          <p>Selon la méthode, une forte faiblesse peut être compensée… ou non. Comparer plusieurs méthodes révèle
+            si votre classement tient à vos données ou à une façon de calculer.</p>
+        </article>
+        <article class="card">
+          <div class="card-ico" aria-hidden="true">③</div>
+          <h3>Aucune mesure de la confiance</h3>
+          <p>Le gagnant le reste-t-il si un poids bouge de quelques points ? L'analyse de sensibilité trouve
+            les seuils de basculement et qualifie votre recommandation.</p>
+        </article>
       </div>
     </div>
-    <details class="box">
-      <summary>Surcharges de cellules (ex. valeurs corrigées par Delphi pour une combinaison)</summary>
-      <div id="overrides-table"></div>
-    </details>
-    <div id="data-summary" class="callout"></div>
   </section>
 
-  <!-- 2. Poids -->
-  <section class="panel" id="tab-weights">
-    <h2>Pondération des critères</h2>
-    <div class="seg" id="wmode">
-      <button data-mode="equal">Égaux</button>
-      <button data-mode="direct">Directs</button>
-      <button data-mode="roc">Classement (ROC)</button>
-      <button data-mode="ahp">AHP</button>
-    </div>
-    <p class="hint" id="wmode-hint"></p>
-    <div id="weights-input"></div>
-    <div class="grid2 top">
-      <div id="weights-chart" class="chart"></div>
-      <div id="ahp-info"></div>
+  <!-- ======================================================== ÉTAPES -->
+  <section class="section" id="fonctionnement">
+    <div class="wrap">
+      <p class="eyebrow center">Fonctionnement</p>
+      <h2 class="center">Six étapes, un onglet chacune</h2>
+      <p class="sub center">L'application suit la démarche d'aide à la décision, de la formulation du problème jusqu'au rapport.
+        Chaque modification est recalculée instantanément.</p>
+
+      <ol class="steps">
+        <li class="step">
+          <div class="step-text">
+            <span class="step-num">1</span>
+            <h3>Décrivez le problème</h3>
+            <p>Listez vos <b>critères</b> (avec leur sens : un coût se minimise, une qualité se maximise) et vos
+              <b>alternatives</b> avec leurs valeurs, dans des tableaux éditables comme un tableur.</p>
+            <ul class="ticks">
+              <li><b>Contraintes</b> : excluez d'office les options impossibles (budget, capacité, délai).</li>
+              <li><b>Mode portefeuille</b> : vous devez en choisir plusieurs ? L'outil compare directement toutes les combinaisons (ex. 2 missions parmi 4).</li>
+              <li>Les unités peuvent être mélangées (€, jours, notes sur 5) : la normalisation s'en charge.</li>
+            </ul>
+          </div>
+          <div class="step-shot"><img src="img/donnees.webp" alt="Onglet Données : tableau des critères et des alternatives" loading="lazy" width="1600" height="1000" data-zoom></div>
+        </li>
+
+        <li class="step">
+          <div class="step-text">
+            <span class="step-num">2</span>
+            <h3>Pondérez les critères</h3>
+            <p>Quatre façons au choix : poids égaux, poids saisis directement, simple <b>classement</b> des critères
+              ou méthode <b>AHP</b>, où vous comparez les critères deux à deux avec un curseur.</p>
+            <ul class="ticks">
+              <li>Le <b>ratio de cohérence</b> s'affiche en direct : au-delà de 10 %, vos comparaisons se contredisent.</li>
+              <li>L'outil désigne alors les jugements à revoir en priorité.</li>
+            </ul>
+            <p class="tip"><b>Astuce :</b> vous hésitez sur les chiffres mais savez classer les critères ? Choisissez « Classement (ROC) ».</p>
+          </div>
+          <div class="step-shot"><img src="img/poids.webp" alt="Onglet Poids : curseurs de comparaison AHP, graphique des poids et ratio de cohérence" loading="lazy" width="1600" height="1544" data-zoom></div>
+        </li>
+
+        <li class="step">
+          <div class="step-text">
+            <span class="step-num">3</span>
+            <h3>Consultez des experts <small>(facultatif)</small></h3>
+            <p>Une évaluation est incertaine ? Recueillez les votes anonymes de plusieurs experts, tour par tour,
+              selon la méthode <b>Delphi</b>. L'outil calcule médiane, quartiles et consensus.</p>
+            <ul class="ticks">
+              <li>Un clic reporte les valeurs retenues dans le modèle.</li>
+              <li>Fonctionne aussi sur une combinaison précise (synergie ou redondance entre deux éléments).</li>
+            </ul>
+          </div>
+          <div class="step-shot"><img src="img/delphi.webp" alt="Onglet Delphi : votes par tour, médiane, quartiles et statut de consensus" loading="lazy" width="1600" height="612" data-zoom></div>
+        </li>
+
+        <li class="step">
+          <div class="step-text">
+            <span class="step-num">4</span>
+            <h3>Obtenez le classement</h3>
+            <p>Cochez une ou plusieurs méthodes : <b>somme pondérée</b>, <b>produit pondéré</b>, <b>TOPSIS</b>,
+              <b>PROMETHEE II</b>. La recommandation s'affiche avec l'écart au deuxième.</p>
+            <ul class="ticks">
+              <li>Les méthodes sont comparées entre elles (rangs, corrélation de Kendall).</li>
+              <li>Si elles divergent, l'outil vous le signale et donne les pistes d'explication.</li>
+              <li>Tous les calculs intermédiaires sont consultables.</li>
+            </ul>
+          </div>
+          <div class="step-shot"><img src="img/resultats.webp" alt="Onglet Résultats : recommandation et classements par méthode" loading="lazy" width="1600" height="1438" data-zoom></div>
+        </li>
+
+        <li class="step">
+          <div class="step-text">
+            <span class="step-num">5</span>
+            <h3>Testez la robustesse</h3>
+            <p>La question décisive : <i>« dans quelle mesure peut-on faire confiance à ce choix ? »</i></p>
+            <ul class="ticks">
+              <li><b>Seuils de basculement</b> : le poids exact à partir duquel le gagnant change.</li>
+              <li><b>Monte-Carlo</b> : des milliers de jeux de poids tirés au hasard ; fréquence de 1re place.</li>
+              <li><b>Profils et scénarios</b> : « et si la direction privilégiait la marge ? », « et si ce délai doublait ? ».</li>
+            </ul>
+            <p class="tip">Verdict final : <span class="pill ok">robuste</span> <span class="pill warn">modérément robuste</span> <span class="pill bad">fragile</span>, avec ses raisons.</p>
+          </div>
+          <div class="step-shot stack">
+            <img src="img/sensibilite.webp" alt="Onglet Sensibilité : tableau des seuils et courbes de balayage des poids" loading="lazy" width="1600" height="1250" data-zoom>
+            <img src="img/montecarlo.webp" alt="Simulation de Monte-Carlo : fréquence de 1re place et distribution des rangs" loading="lazy" width="1600" height="500" data-zoom>
+          </div>
+        </li>
+
+        <li class="step">
+          <div class="step-text">
+            <span class="step-num">6</span>
+            <h3>Exportez le rapport</h3>
+            <p>Un rapport complet, prêt à joindre à une note de décision : formulation, poids et cohérence, matrice,
+              calculs de chaque méthode, comparaison, sensibilité, diagnostic et recommandation.</p>
+            <ul class="ticks">
+              <li>HTML (imprimable en PDF), Markdown, ou Excel avec un onglet par tableau.</li>
+              <li>Sauvegardez le projet (JSON ou Excel) pour le reprendre ou le partager.</li>
+            </ul>
+          </div>
+          <div class="step-shot"><img src="img/rapport.webp" alt="Extrait du rapport généré : synthèse, diagnostic et formulation du problème" loading="lazy" width="1600" height="1000" data-zoom></div>
+        </li>
+      </ol>
     </div>
   </section>
 
-  <!-- 3. Delphi -->
-  <section class="panel" id="tab-delphi">
-    <h2>Consultation Delphi</h2>
-    <p class="hint">Pour une évaluation incertaine, saisissez les votes anonymes des experts tour par tour (ex. « 2, 1, 3, 3, 2 »).
-      Valeur retenue : médiane du dernier tour. Consensus : écart interquartile ≤ seuil.</p>
-    <label class="inline">Seuil de consensus (IQR) <input type="number" id="delphi-iqr" value="1" step="0.5" min="0"></label>
-    <div id="delphi-table"></div>
-    <div id="delphi-results"></div>
-    <button class="btn primary" id="delphi-apply" disabled>Appliquer les valeurs retenues au modèle</button>
-  </section>
-
-  <!-- 4. Résultats -->
-  <section class="panel" id="tab-results">
-    <h2>Méthodes</h2>
-    <div id="method-picker" class="method-grid"></div>
-    <label class="inline">Méthode de référence (recommandation, sensibilité, rapport)
-      <select id="primary-method"></select></label>
-    <div id="results-out"></div>
-  </section>
-
-  <!-- 5. Sensibilité -->
-  <section class="panel" id="tab-sensitivity">
-    <p id="sens-intro" class="callout info"></p>
-    <h2>A. Paramètres de préférence : les poids</h2>
-    <div id="thresholds"></div>
-    <label class="inline">Balayer le poids de <select id="sweep-crit"></select></label>
-    <div id="sweep-chart" class="chart tall"></div>
-
-    <h3>Monte-Carlo sur les poids</h3>
-    <div class="row wrap">
-      <label>Tirages <input type="number" id="mc-n" value="10000" min="500" max="50000" step="500"></label>
-      <label class="switch"><input type="checkbox" id="mc-uniform"> Aucune information sur les poids (tirage uniforme)</label>
-      <label>Dispersion autour des poids <input type="range" id="mc-spread" min="0.05" max="0.6" step="0.05" value="0.2"> <output id="mc-spread-out">20 %</output></label>
-    </div>
-    <div class="grid2">
-      <div id="mc-chart" class="chart"></div>
-      <div id="mc-heat" class="chart"></div>
-    </div>
-
-    <h3>Profils de décideurs</h3>
-    <p class="hint">Multiplicateurs appliqués aux poids de référence, puis renormalisés.</p>
-    <div id="profiles-table"></div>
-    <label class="switch"><input type="checkbox" id="equal-profile" checked> Ajouter le profil « poids égaux »</label>
-    <div id="profiles-out"></div>
-
-    <h2>B. Données et hypothèses</h2>
-    <p class="hint">Chaque ligne modifie une valeur ; les lignes portant le même nom de scénario sont appliquées ensemble.
-      Modifier un élément de base le ré-agrège dans toutes les combinaisons qui le contiennent.</p>
-    <div id="scenarios-table"></div>
-    <div id="scenarios-out"></div>
-
-    <details class="box">
-      <summary>Seuil de basculement d'une valeur</summary>
-      <div class="row wrap">
-        <label>Alternative / élément <select id="vt-alt"></select></label>
-        <label>Colonne <select id="vt-col"></select></label>
-        <label>de <input type="number" id="vt-lo" step="any"></label>
-        <label>à <input type="number" id="vt-hi" step="any"></label>
-        <button class="btn" id="vt-run">Chercher le seuil</button>
+  <!-- ======================================================== MÉTHODES -->
+  <section class="section alt" id="methodes">
+    <div class="wrap">
+      <p class="eyebrow center">Méthodes</p>
+      <h2 class="center">Des méthodes reconnues, expliquées simplement</h2>
+      <div class="methods">
+        <article><h3>AHP</h3><p class="m-tag">Pondération</p><p>Comparaisons par paires sur l'échelle de Saaty (1 à 9) ; poids issus du vecteur propre et contrôle de cohérence.</p></article>
+        <article><h3>Delphi</h3><p class="m-tag">Évaluation</p><p>Consultation anonyme d'experts en plusieurs tours jusqu'au consensus (écart interquartile faible).</p></article>
+        <article><h3>Somme pondérée</h3><p class="m-tag">Compensatoire</p><p>La plus intuitive : chaque critère contribue à proportion de son poids. Une faiblesse se rattrape par une force.</p></article>
+        <article><h3>Produit pondéré</h3><p class="m-tag">Compensation partielle</p><p>Multiplie au lieu d'additionner : pénalise les options très déséquilibrées.</p></article>
+        <article><h3>TOPSIS</h3><p class="m-tag">Distance à l'idéal</p><p>Classe selon la proximité à une option idéale fictive et l'éloignement de la pire.</p></article>
+        <article><h3>PROMETHEE II</h3><p class="m-tag">Surclassement</p><p>Compare les options deux à deux avec des seuils d'indifférence et de préférence : un petit écart ne compte pas.</p></article>
       </div>
-      <div id="vt-out"></div>
-    </details>
-
-    <h2>C. Diagnostic de robustesse</h2>
-    <div id="diagnosis"></div>
+      <p class="note center">Toutes les méthodes sont implémentées dans une bibliothèque Python open source et testées sur un cas réel
+        dont elles reproduisent les résultats publiés au dix-millième près.</p>
+    </div>
   </section>
 
-  <!-- 6. Rapport -->
-  <section class="panel" id="tab-report">
-    <h2>Exporter le rapport</h2>
-    <p class="hint">Le rapport reprend toutes les étapes : formulation, poids (et cohérence AHP), matrice, calculs intermédiaires
-      de chaque méthode, comparaison, sensibilité, diagnostic et recommandation, avec les réglages des onglets Résultats et Sensibilité.</p>
-    <div class="row wrap">
-      <button class="btn primary" data-report="html">Ouvrir le rapport HTML (imprimable en PDF)</button>
-      <button class="btn" data-report="md">Télécharger en Markdown</button>
-      <button class="btn" data-report="xlsx">Tous les tableaux (Excel)</button>
+  <!-- ======================================================== USAGES -->
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow center">Pour quoi faire ?</p>
+      <h2 class="center">Un outil générique, pour n'importe quel choix</h2>
+      <div class="uses">
+        <div><b>Achats</b><span>Choisir un fournisseur sur le prix, le délai, la qualité et la RSE.</span></div>
+        <div><b>Portefeuille</b><span>Sélectionner 2 projets parmi 6 sous une contrainte de budget ou de capacité.</span></div>
+        <div><b>Recrutement</b><span>Comparer des candidats sur des compétences pondérées par l'équipe.</span></div>
+        <div><b>Implantation</b><span>Choisir un site selon coûts, accès, main-d'œuvre et risques.</span></div>
+        <div><b>Investissement</b><span>Arbitrer entre rentabilité, risque, délai et impact stratégique.</span></div>
+        <div><b>Projet étudiant</b><span>Structurer une étude de cas MCDA et produire le rapport de calculs.</span></div>
+      </div>
     </div>
-    <h2>Sauvegarder le projet</h2>
-    <div class="row wrap">
-      <button class="btn" id="save-json">Projet JSON (rechargeable)</button>
-      <button class="btn" id="save-xlsx">Projet Excel (modifiable)</button>
-      <a class="btn ghost" href="/api/template">Modèle Excel vierge</a>
+  </section>
+
+  <!-- ======================================================== DÉMARRER -->
+  <section class="section alt" id="demarrer">
+    <div class="wrap narrow">
+      <p class="eyebrow center">Guide de démarrage</p>
+      <h2 class="center">Votre première décision en 10 minutes</h2>
+      <ol class="guide">
+        <li><b>Partez de l'exemple</b> pour vous repérer : <a href="/app?exemple=choix_fournisseur">choix d'un fournisseur</a> (simple)
+          ou <a href="/app?exemple=stratema_methode2">Stratema</a> (complet, avec portefeuille, AHP et Delphi).</li>
+        <li><b>Créez votre projet</b> avec « Nouveau » : remplacez les 2 critères et 3 options de départ par les vôtres.
+          Donnez à chaque critère un identifiant court (C1, PRIX…) et son sens.</li>
+        <li><b>Remplissez les valeurs.</b> Le cadre vert sous les tableaux confirme que le modèle est valide et indique les options exclues.</li>
+        <li><b>Pondérez</b> dans l'onglet Poids. Avec l'AHP, gardez un ratio de cohérence sous 10 %.</li>
+        <li><b>Lisez la recommandation</b> dans Résultats, puis vérifiez le <b>diagnostic</b> dans Sensibilité.</li>
+        <li><b>Exportez</b> le rapport et sauvegardez le projet (JSON) pour le retrouver plus tard.</li>
+      </ol>
+      <div class="callout">
+        <b>Vous préférez Excel ?</b> Téléchargez le <a href="/api/template">modèle vierge</a>, remplissez les onglets
+        Critères et Alternatives, puis utilisez « Importer » dans l'application.
+      </div>
     </div>
-    <p class="hint">Le projet est aussi conservé automatiquement dans ce navigateur. API documentée : <a href="/api/docs">/api/docs</a>.</p>
+  </section>
+
+  <!-- ======================================================== FAQ -->
+  <section class="section" id="faq">
+    <div class="wrap narrow">
+      <p class="eyebrow center">Questions fréquentes</p>
+      <h2 class="center">FAQ</h2>
+      <div class="faq">
+        <details><summary>Où sont stockées mes données ?</summary>
+          <p>Le projet est enregistré uniquement dans votre navigateur. Pour chaque calcul, il est envoyé au serveur, traité,
+            puis oublié : rien n'est conservé côté serveur. Pensez à exporter le projet (JSON) si vous changez d'ordinateur
+            ou videz le cache.</p></details>
+        <details><summary>Quelle méthode choisir ?</summary>
+          <p>Commencez par la somme pondérée (la plus lisible) et TOPSIS. Ajoutez PROMETHEE si un petit écart sur un critère
+            ne doit pas compter, ou si une très forte faiblesse ne doit pas être compensée. L'important est de comparer :
+            si toutes les méthodes s'accordent, votre choix est solide.</p></details>
+        <details><summary>Que signifie le ratio de cohérence AHP ?</summary>
+          <p>Il mesure si vos comparaisons se contredisent (A plus important que B, B que C, mais C que A). En dessous de 10 %,
+            elles sont jugées cohérentes ; au-delà, l'outil indique quelles comparaisons revoir.</p></details>
+        <details><summary>À quoi sert le mode portefeuille ?</summary>
+          <p>Quand vous devez retenir plusieurs éléments à la fois. Plutôt que de classer les éléments un par un puis de prendre
+            les premiers, l'outil évalue chaque combinaison comme une alternative, en respectant vos contraintes
+            (budget total, capacité…).</p></details>
+        <details><summary>Le résultat est-il « la » bonne réponse ?</summary>
+          <p>Non : le modèle éclaire la décision, il ne la prend pas. Il rend vos hypothèses explicites et montre dans quelles
+            conditions le choix change. Une recommandation « fragile » invite à débattre des poids ou des données incertaines.</p></details>
+        <details><summary>Puis-je utiliser les calculs dans mon propre code ?</summary>
+          <p>Oui. La bibliothèque Python est réutilisable telle quelle, et une API HTTP documentée est disponible sur
+            <a href="/api/docs">/api/docs</a>.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================== CTA -->
+  <section class="final">
+    <div class="wrap">
+      <h2>Prêt à structurer votre prochaine décision ?</h2>
+      <p>Aucune inscription. Commencez de zéro ou à partir d'un exemple.</p>
+      <div class="cta-row center">
+        <a class="btn btn-light" href="/app?nouveau=1">Démarrer un projet</a>
+        <a class="btn btn-outline-light" href="/app?exemple=stratema_methode2">Voir l'exemple Stratema</a>
+      </div>
+    </div>
   </section>
 </main>
-<footer>mcdakit — le modèle éclaire la décision ; il ne se substitue pas au décideur.</footer>
+
+<footer class="foot">
+  <div class="wrap foot-inner">
+    <span><b>⚖️ mcdakit</b> — aide à la décision multicritère</span>
+    <span>Le modèle éclaire la décision ; il ne se substitue pas au décideur.</span>
+    <span><a href="/app">Application</a> · <a href="/api/docs">API</a></span>
+  </div>
+</footer>
+
+<dialog id="zoom" aria-label="Capture agrandie"><button class="zoom-close" aria-label="Fermer">✕</button><img alt=""></dialog>
+<script>
+  // Agrandissement des captures au clic
+  const dlg = document.getElementById("zoom"), big = dlg.querySelector("img");
+  document.querySelectorAll("img[data-zoom]").forEach((im) => {
+    im.tabIndex = 0;
+    const open = () => { big.src = im.src; big.alt = im.alt; dlg.showModal(); };
+    im.addEventListener("click", open);
+    im.addEventListener("keydown", (e) => { if (e.key === "Enter") open(); });
+  });
+  dlg.addEventListener("click", () => dlg.close());
+</script>
 </body>
 </html>

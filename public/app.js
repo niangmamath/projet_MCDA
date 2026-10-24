@@ -725,11 +725,20 @@ async function init() {
     try { download(await (await api("export-xlsx", { problem: toProblem() }, { raw: true })).blob(), "projet_mcda.xlsx"); } catch (e) { showStatus(e.message); }
   });
 
+  // Liens depuis la page d'accueil : /app?exemple=<id> ou /app?nouveau=1
+  const q = new URLSearchParams(location.search);
   const saved = store.get("mcdakit.project");
-  if (saved && saved.criteria) load(saved);
+  const hasSaved = saved && saved.criteria;
+  const replace = () => !hasSaved || confirm("Un projet est déjà enregistré dans ce navigateur. Le remplacer ?\n(Annuler pour le reprendre.)");
+  if (q.get("exemple") && replace()) {
+    try { load(fromProblem(await api("examples/" + encodeURIComponent(q.get("exemple"))))); } catch { load(blankModel()); }
+  } else if (q.has("nouveau") && replace()) {
+    load(blankModel());
+  } else if (hasSaved) load(saved);
   else {
     try { load(fromProblem(await api("examples/stratema_methode2"))); } catch { load(blankModel()); }
   }
+  if (q.toString()) history.replaceState(null, "", location.pathname);
   prefillValueRange();
 }
 
