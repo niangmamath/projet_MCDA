@@ -258,7 +258,7 @@ function plot(target, data, layout = {}) {
   if (!window.Plotly) return;
   const base = {
     paper_bgcolor: "rgba(0,0,0,0)", plot_bgcolor: "rgba(0,0,0,0)", font: { color: cssVar("--text"), family: "system-ui, sans-serif", size: 12 },
-    margin: { t: 34, r: 16, b: 40, l: 60 }, colorway: ["#2f5bd3", "#e07b39", "#2a9d8f", "#c44e8a", "#8a6fdf", "#b8a200", "#5b8c3a", "#d1495b"],
+    margin: { t: 34, r: 16, b: 40, l: 60 }, colorway: ["#0f4c75", "#f5922f", "#2a9d8f", "#c44e8a", "#4fb3ec", "#8a6fdf", "#b8a200", "#d1495b"],
     xaxis: { gridcolor: cssVar("--border"), zerolinecolor: cssVar("--border") }, yaxis: { gridcolor: cssVar("--border"), zerolinecolor: cssVar("--border") },
   };
   const merged = { ...base, ...layout, xaxis: { ...base.xaxis, ...(layout.xaxis || {}) }, yaxis: { ...base.yaxis, ...(layout.yaxis || {}) } };
@@ -505,7 +505,7 @@ async function runResults() {
       grid.append(card);
       const order = [...m.order].reverse();
       requestAnimationFrame(() => plot(chart, [{ type: "bar", orientation: "h", y: order.map((i) => shortLabel(i, labels)), x: order.map((i) => m.scores[i]),
-        marker: { color: order.map((i) => (i === m.best ? cssVar("--accent") : "#9db0e0")) },
+        marker: { color: order.map((i) => (i === m.best ? cssVar("--orange") : "#9fc3dc")) },
         text: order.map((i) => fmt(m.scores[i])), textposition: "auto", hovertext: order.map((i) => labels[i]), hovertemplate: "%{hovertext}<br>%{x:.4f}<extra></extra>" }],
       { title: { text: m.label, font: { size: 14 } }, height: 90 + 34 * order.length, margin: { t: 34, r: 16, b: 30, l: S.portfolio.on ? 50 : 130 } }));
     }

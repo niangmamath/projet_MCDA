@@ -8,17 +8,17 @@
   <meta property="og:title" content="mcdakit — Aide à la décision multicritère">
   <meta property="og:description" content="Structurer une décision, la justifier et tester sa robustesse, en quelques minutes.">
   <meta property="og:image" content="/img/resultats.webp">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E⚖️%3C/text%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='11' fill='%23f5922f'/%3E%3Cpath d='M20 9v20M11 14h18M13 14l-4 9h8zM27 14l-4 9h8z' fill='none' stroke='white' stroke-width='2.4' stroke-linejoin='round'/%3E%3Cpath d='M14 31h12' stroke='white' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="landing.css">
 </head>
 <body>
 
 <header class="nav">
   <div class="wrap nav-inner">
-    <a class="logo" href="/"><span aria-hidden="true">⚖️</span> mcdakit</a>
+    <a class="logo" href="/"><svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="11" fill="#f5922f"/><path d="M20 9v20M11 14h18M13 14l-4 9h8zM27 14l-4 9h8z" fill="none" stroke="#fff" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/><path d="M14 31h12" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg><span>mcda<b>kit</b></span></a>
     <nav class="nav-links" aria-label="Sections">
       <a href="#fonctionnement">Fonctionnement</a>
       <a href="#methodes">Méthodes</a>
@@ -36,54 +36,75 @@
   <section class="hero">
     <div class="wrap hero-grid">
       <div class="hero-text">
-        <p class="eyebrow">Aide à la décision multicritère</p>
-        <h1>Choisir entre plusieurs options, <em>avec des arguments solides.</em></h1>
-        <p class="lead">Fournisseur, projet, recrutement, implantation, portefeuille de missions… mcdakit transforme une
-          décision intuitive en une démarche structurée : critères explicites, poids justifiés, plusieurs méthodes
-          de classement et un test de robustesse. Vous savez ce que vous choisissez, et pourquoi.</p>
+        <span class="badge">Logiciel d'aide à la décision multicritère</span>
+        <h1>Vos décisions, <em>enfin</em> justifiées.</h1>
+        <p class="lead">Critères explicites, poids AHP, avis d'experts (Delphi), classement par plusieurs méthodes et test
+          de robustesse — tout en un. Fournisseur, projet, recrutement, portefeuille de missions : vous savez ce que vous
+          choisissez, et pourquoi.</p>
         <div class="cta-row">
           <a class="btn btn-primary" href="/app?nouveau=1">Démarrer un projet</a>
-          <a class="btn btn-ghost" href="/app?exemple=stratema_methode2">Explorer un exemple complet →</a>
+          <a class="btn btn-ghost" href="/app?exemple=stratema_methode2">Voir le cas Stratema</a>
         </div>
-        <ul class="trust">
-          <li>Gratuit, sans inscription</li>
-          <li>Vos données restent dans votre navigateur</li>
-          <li>Rapport détaillé exportable</li>
-        </ul>
+        <div class="hero-figures">
+          <div><b>6</b><span>méthodes MCDA</span></div>
+          <div><b>10/10</b><span>cas publiés reproduits</span></div>
+          <div><b>0 €</b><span>sans inscription</span></div>
+        </div>
       </div>
-      <figure class="hero-shot">
-        <div class="browser">
-          <div class="browser-bar"><span></span><span></span><span></span><b>projet-mcda.vercel.app/app</b></div>
-          <img src="img/resultats.webp" alt="Écran des résultats : recommandation, classements des trois méthodes et graphiques en barres" width="1600" height="1438" data-zoom>
+      <figure class="mock" aria-label="Aperçu d'un résultat : classement des couples de missions du cas Stratema">
+        <div class="mock-card">
+          <div class="mock-head">
+            <div><small>Recommandation — cas Stratema, TOPSIS</small><strong>2 missions parmi 4</strong></div>
+            <div class="mock-dots" aria-hidden="true"><span></span><span></span></div>
+          </div>
+          <div class="mock-body">
+            <div class="mock-row sky"><span class="rank">1er</span><div><b>MedTech Nova + Agence nationale</b><small>50 JH · 59 400 € de marge</small></div><span class="score">0,723 <span class="check">✓</span></span></div>
+            <div class="mock-row peach"><span class="rank">2e</span><div><b>MedTech Nova + Orion Systems</b><small>57 JH · 81 000 € de marge</small></div><span class="score">0,656</span></div>
+            <div class="mock-row sky"><span class="rank">3e</span><div><b>AtlasMeca + MedTech Nova</b><small>62 JH · 69 900 € de marge</small></div><span class="score">0,599</span></div>
+            <div class="mock-row peach"><span class="rank">4e</span><div><b>Agence nationale + Orion Systems</b><small>43 JH · 62 000 € de marge</small></div><span class="score">0,490</span></div>
+          </div>
+          <div class="mock-foot"><span>Ci* — proximité à l'idéal</span><a href="/app?exemple=stratema_methode2">+ Ouvrir le cas</a></div>
         </div>
-        <figcaption class="float-badge">
-          <strong>Recommandation modérément robuste</strong>
-          1re dans 92 % des tirages de poids
-        </figcaption>
+        <figcaption class="mock-float"><i>92%</i><div><b>Modérément robuste</b><small>1er dans 92 % des tirages de poids</small></div></figcaption>
       </figure>
+    </div>
+  </section>
+
+  <!-- ======================================================== CHIFFRES -->
+  <section class="figures" aria-label="mcdakit en chiffres">
+    <div class="wrap">
+      <p class="eyebrow">mcdakit en chiffres</p>
+      <div class="figures-grid">
+        <div><b id="v-cases">10/10</b><span>Cas publiés reproduits</span><small>articles et manuels, à la précision publiée</small></div>
+        <div><b>6 500</b><span>Comparaisons croisées</span><small>avec pymcdm et pyDecision, écart &lt; 10<sup>−15</sup></small></div>
+        <div><b>98</b><span>Tests automatiques</span><small>dont 9 familles de propriétés mathématiques</small></div>
+        <div><b>6</b><span>Méthodes</span><small>AHP, Delphi, somme et produit pondérés, TOPSIS, PROMETHEE</small></div>
+      </div>
     </div>
   </section>
 
   <!-- ======================================================== POURQUOI -->
   <section class="section why">
     <div class="wrap">
-      <p class="eyebrow center">Pourquoi un outil ?</p>
-      <h2 class="center">Les décisions « au feeling » cachent trois angles morts</h2>
+      <div class="sec-head">
+        <div><p class="eyebrow">Pourquoi un outil ?</p><h2>Les décisions « au feeling » ont <em>trois</em> angles morts</h2></div>
+        <p class="sub">Additionner des notes, retenir les deux premiers, et espérer que ça tienne : c'est rapide, mais impossible à défendre devant un comité, un client ou un jury.</p>
+      </div>
       <div class="cards3">
         <article class="card">
-          <div class="card-ico" aria-hidden="true">①</div>
+          <div class="card-ico" aria-hidden="true">01</div>
           <h3>Des poids implicites</h3>
           <p>Additionner des notes revient à dire que tous les critères se valent. Est-ce vraiment le cas ?
             mcdakit vous fait expliciter et mesurer l'importance de chaque critère.</p>
         </article>
         <article class="card">
-          <div class="card-ico" aria-hidden="true">②</div>
+          <div class="card-ico" aria-hidden="true">02</div>
           <h3>Une seule façon de compter</h3>
           <p>Selon la méthode, une forte faiblesse peut être compensée… ou non. Comparer plusieurs méthodes révèle
             si votre classement tient à vos données ou à une façon de calculer.</p>
         </article>
         <article class="card">
-          <div class="card-ico" aria-hidden="true">③</div>
+          <div class="card-ico" aria-hidden="true">03</div>
           <h3>Aucune mesure de la confiance</h3>
           <p>Le gagnant le reste-t-il si un poids bouge de quelques points ? L'analyse de sensibilité trouve
             les seuils de basculement et qualifie votre recommandation.</p>
@@ -95,10 +116,10 @@
   <!-- ======================================================== ÉTAPES -->
   <section class="section" id="fonctionnement">
     <div class="wrap">
-      <p class="eyebrow center">Fonctionnement</p>
-      <h2 class="center">Six étapes, un onglet chacune</h2>
-      <p class="sub center">L'application suit la démarche d'aide à la décision, de la formulation du problème jusqu'au rapport.
-        Chaque modification est recalculée instantanément.</p>
+      <div class="sec-head">
+        <div><p class="eyebrow">Fonctionnement</p><h2>Six étapes, un onglet chacune</h2></div>
+        <p class="sub">L'application suit la démarche d'aide à la décision, de la formulation du problème jusqu'au rapport. Chaque modification est recalculée instantanément.</p>
+      </div>
 
       <ol class="steps">
         <li class="step">
@@ -198,8 +219,10 @@
   <!-- ======================================================== MÉTHODES -->
   <section class="section alt" id="methodes">
     <div class="wrap">
-      <p class="eyebrow center">Méthodes</p>
-      <h2 class="center">Des méthodes reconnues, expliquées simplement</h2>
+      <div class="sec-head">
+        <div><p class="eyebrow">Méthodes</p><h2>Des méthodes reconnues, expliquées simplement</h2></div>
+        <p class="sub">De la pondération au classement, chaque méthode a sa logique. Les comparer est le meilleur moyen de savoir si votre choix dépend de vos données… ou d'une façon de compter.</p>
+      </div>
       <div class="methods">
         <article><h3>AHP</h3><p class="m-tag">Pondération</p><p>Comparaisons par paires sur l'échelle de Saaty (1 à 9) ; poids issus du vecteur propre et contrôle de cohérence.</p></article>
         <article><h3>Delphi</h3><p class="m-tag">Évaluation</p><p>Consultation anonyme d'experts en plusieurs tours jusqu'au consensus (écart interquartile faible).</p></article>
@@ -217,14 +240,9 @@
   <!-- ======================================================== VALIDATION -->
   <section class="section" id="validation">
     <div class="wrap">
-      <p class="eyebrow center">Validation</p>
-      <h2 class="center">Des calculs vérifiés, pas seulement affichés</h2>
-      <p class="sub center">Une recommandation n'a de valeur que si ses calculs sont exacts. Le moteur est confronté en
-        permanence à des résultats publiés et à des implémentations indépendantes.</p>
-      <div class="stats">
-        <div><b id="v-cases">10 / 10</b><span>cas publiés (articles et manuels) reproduits à la précision de la publication</span></div>
-        <div><b>6 500</b><span>comparaisons avec deux bibliothèques indépendantes (pymcdm, pyDecision) : écart &lt; 10<sup>−15</sup></span></div>
-        <div><b>9</b><span>familles de propriétés mathématiques testées : dominance, unités, permutation, bornes, cohérence AHP…</span></div>
+      <div class="sec-head">
+        <div><p class="eyebrow">Validation</p><h2>Des calculs <em>vérifiés</em>, pas seulement affichés</h2></div>
+        <p class="sub">Une recommandation n'a de valeur que si ses calculs sont exacts. Le moteur est confronté en permanence à des résultats publiés et à des implémentations indépendantes. Ce tableau est recalculé par le serveur à l'ouverture de la page.</p>
       </div>
       <div class="vtable-wrap">
         <table class="vtable">
@@ -232,8 +250,7 @@
           <tbody id="v-body"><tr><td colspan="5" class="muted">Recalcul en direct des cas publiés…</td></tr></tbody>
         </table>
       </div>
-      <p class="note center" id="v-note">Ce tableau est recalculé par le serveur à l'ouverture de la page.
-        Essayez vous-même : chargez <a href="/app?exemple=cas_publie_promethee_eolien_ziemba2017">le parc éolien de Ziemba et al. (2017)</a>,
+      <p class="note center" id="v-note">Essayez vous-même : chargez <a href="/app?exemple=cas_publie_promethee_eolien_ziemba2017">le parc éolien de Ziemba et al. (2017)</a>,
         <a href="/app?exemple=cas_publie_topsis_ersoy2021">la sélection d'équipement d'Ersoy (2021)</a>,
         <a href="/app?exemple=cas_publie_promethee_papathanasiou2018">l'exemple PROMETHEE de Papathanasiou &amp; Ploskas</a> ou
         <a href="/app?exemple=cas_publie_saw_rizan2020">l'admission d'élèves de Rizan et al. (2020)</a>, et comparez aux valeurs de l'article.</p>
@@ -243,10 +260,10 @@
   <!-- ======================================================== BIBLIOTHÈQUE -->
   <section class="section alt" id="bibliotheque">
     <div class="wrap">
-      <p class="eyebrow center">Bibliothèque de cas</p>
-      <h2 class="center">Des cas prêts à ouvrir</h2>
-      <p class="sub center">Le menu de l'application est réservé au projet Stratema. Retrouvez ici les autres cas :
-        des études publiées, dont vous pouvez comparer les résultats à ceux de l'article, et un exemple simple pour débuter.</p>
+      <div class="sec-head">
+        <div><p class="eyebrow">Bibliothèque de cas</p><h2>Des cas prêts à ouvrir</h2></div>
+        <p class="sub">Le menu de l'application est réservé au projet Stratema. Retrouvez ici les autres cas : des études publiées, dont vous pouvez comparer les résultats à ceux de l'article, et un exemple simple pour débuter.</p>
+      </div>
       <div class="library" id="library">
         <p class="note center">Chargement de la bibliothèque…</p>
       </div>
@@ -256,8 +273,10 @@
   <!-- ======================================================== USAGES -->
   <section class="section">
     <div class="wrap">
-      <p class="eyebrow center">Pour quoi faire ?</p>
-      <h2 class="center">Un outil générique, pour n'importe quel choix</h2>
+      <div class="sec-head">
+        <div><p class="eyebrow">À qui s'adresse mcdakit</p><h2>Pensé pour chaque type de décision</h2></div>
+        <p class="sub">Du choix d'un fournisseur à la sélection d'un portefeuille de projets sous contrainte de budget, la même démarche s'applique : critères, poids, classement, robustesse.</p>
+      </div>
       <div class="uses">
         <div><b>Achats</b><span>Choisir un fournisseur sur le prix, le délai, la qualité et la RSE.</span></div>
         <div><b>Portefeuille</b><span>Sélectionner 2 projets parmi 6 sous une contrainte de budget ou de capacité.</span></div>
@@ -272,8 +291,7 @@
   <!-- ======================================================== DÉMARRER -->
   <section class="section alt" id="demarrer">
     <div class="wrap narrow">
-      <p class="eyebrow center">Guide de démarrage</p>
-      <h2 class="center">Votre première décision en 10 minutes</h2>
+      <div class="sec-head solo"><div><p class="eyebrow">Guide de démarrage</p><h2>Votre première décision en <em>10 minutes</em></h2></div></div>
       <ol class="guide">
         <li><b>Partez d'un cas existant</b> pour vous repérer : le cas <a href="/app?exemple=stratema_methode2">Stratema</a>
           (menu « Charger un cas Stratema » : portefeuille, AHP et Delphi) ou un cas de la <a href="#bibliotheque">bibliothèque</a>,
@@ -295,8 +313,7 @@
   <!-- ======================================================== FAQ -->
   <section class="section" id="faq">
     <div class="wrap narrow">
-      <p class="eyebrow center">Questions fréquentes</p>
-      <h2 class="center">FAQ</h2>
+      <div class="sec-head solo"><div><p class="eyebrow">Questions fréquentes</p><h2>FAQ</h2></div></div>
       <div class="faq">
         <details><summary>Où sont stockées mes données ?</summary>
           <p>Le projet est enregistré uniquement dans votre navigateur. Pour chaque calcul, il est envoyé au serveur, traité,
@@ -329,7 +346,7 @@
       <h2>Prêt à structurer votre prochaine décision ?</h2>
       <p>Aucune inscription. Commencez de zéro ou à partir d'un exemple.</p>
       <div class="cta-row center">
-        <a class="btn btn-light" href="/app?nouveau=1">Démarrer un projet</a>
+        <a class="btn btn-primary" href="/app?nouveau=1">Démarrer un projet</a>
         <a class="btn btn-outline-light" href="/app?exemple=stratema_methode2">Voir l'exemple Stratema</a>
       </div>
     </div>
@@ -338,7 +355,7 @@
 
 <footer class="foot">
   <div class="wrap foot-inner">
-    <span><b>⚖️ mcdakit</b> — aide à la décision multicritère</span>
+    <span><b>mcdakit</b> — aide à la décision multicritère</span>
     <span>Le modèle éclaire la décision ; il ne se substitue pas au décideur.</span>
     <span><a href="/app">Application</a> · <a href="/api/docs">API</a></span>
   </div>
@@ -391,7 +408,7 @@
           `<td><span class="pill ${c.conforme ? "ok" : "bad"}">${c.conforme ? "conforme" : "écart"}</span></td></tr>`;
       }).join("");
       const ok = r.cases.filter((c) => c.conforme).length;
-      document.getElementById("v-cases").textContent = `${ok} / ${r.cases.length}`;
+      document.getElementById("v-cases").textContent = `${ok}/${r.cases.length}`;
     } catch {
       body.innerHTML = '<tr><td colspan="5" class="muted">Recalcul indisponible pour le moment.</td></tr>';
     }
