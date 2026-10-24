@@ -139,5 +139,13 @@
     "A+B": {
       "C6": 3
     }
+  },
+  "analysis": {
+    "methods": {
+      "topsis": {
+        "normalization": "vector"
+      }
+    },
+    "primary": "topsis"
   }
 }

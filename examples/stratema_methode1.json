@@ -31,5 +31,6 @@
     ]
   },
   "portfolio": {"size": 2, "separator": "+"},
-  "constraints": [{"column": "JH", "op": "<=", "value": 65}]
+  "constraints": [{"column": "JH", "op": "<=", "value": 65}],
+  "analysis": {"methods": {"wsm": {"normalization": "none"}}, "primary": "wsm"}
 }
