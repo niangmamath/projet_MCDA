@@ -27,6 +27,7 @@ mcdakit = ["fonts/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+filterwarnings = ["ignore:Using `httpx` with `starlette.testclient`"]   # avertissement de version de starlette, sans effet
 
 [tool.ruff]
 line-length = 120

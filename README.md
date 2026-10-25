@@ -25,6 +25,19 @@ ou de l'interface web.
 | `examples/` | les deux cas Stratema (menu « Charger un cas Stratema »), la démonstration et le script de validation |
 | `tests/` | tests (bibliothèque et API), dont la reproduction chiffrée des deux rapports Stratema |
 
+### Correspondance avec le cahier des charges du bonus
+
+| Exigence | Où la trouver |
+|---|---|
+| Code générique, rien en dur | Tout vient du fichier de projet (`docs/FORMAT.md`) : n'importe quels critères, alternatives, sens, poids, contraintes ; aucune donnée Stratema dans `mcdakit/` |
+| Entrées : alternatives, critères, performances, sens, poids, paramètres | `DecisionProblem` (`mcdakit/problem.py`), poids dans `weights.py`, paramètres de méthode (`normalization=…`) |
+| Traitement : normalisation / fonctions de valeur / méthode MCDA | `normalization.py` (5 fonctions de valeur linéaires), `methods.py` (somme pondérée, TOPSIS), `weights.py` (AHP, ROC), `delphi.py` |
+| Sorties : scores, classement, recommandation | `MethodResult.table()`, `full_analysis()` → recommandation + diagnostic de robustesse, rapports PDF/HTML/MD/Excel |
+| Bibliothèques externes documentées | section *Installation* ci-dessous (rôle de chacune) |
+| Code fonctionnel et reproductible | `pip install -e ".[web,dev]"` puis `pytest` (71 tests) ; résultats Stratema et 5 cas publiés retrouvés |
+| README, démonstration | ce fichier ; `python examples/demo_stratema.py` ; application en ligne https://projet-mcda.vercel.app/app |
+| Brique intégrable dans une plateforme | 3 points d'entrée sur le même moteur : bibliothèque Python, API HTTP (`/api/docs`), ligne de commande |
+
 ---
 
 ## 1. Installation
@@ -37,10 +50,22 @@ python -m venv .venv && source .venv/bin/activate        # Windows : .venv\Scrip
 pip install -e ".[web,dev,validation]"                   # bibliothèque + API web + tests (+ bibliothèques de validation croisée, Python ≥ 3.11)
 ```
 
-Dépendances : `numpy`, `pandas` (calcul), `openpyxl` (Excel), `pyyaml` (YAML) ; `fastapi`,
-`python-multipart` (et `uvicorn` en local) pour l'API web ; `fpdf2` (rapport PDF, police DejaVu fournie dans `mcdakit/fonts/`) ; `pytest`/`httpx` pour les tests. L'interface charge
-Plotly depuis cdnjs. Aucune bibliothèque MCDA externe : toutes les méthodes
-sont implémentées et testées dans le dépôt.
+Bibliothèques externes (installées automatiquement par `pip install`) :
+
+| Bibliothèque | Rôle dans mcdakit | Installée par |
+|---|---|---|
+| `numpy` | calcul matriciel : vecteur propre AHP, distances TOPSIS, tirages Monte-Carlo (loi de Dirichlet) | `pip install -e .` |
+| `pandas` | tableaux alternatives × critères, résultats et rapports | `pip install -e .` |
+| `openpyxl` | lecture / écriture des projets et rapports Excel | `pip install -e .` |
+| `pyyaml` | projets au format YAML | `pip install -e .` |
+| `fpdf2` | génération du rapport PDF (police DejaVu fournie dans `mcdakit/fonts/` pour les accents) | `pip install -e .` |
+| `fastapi`, `python-multipart` | API HTTP utilisée par l'interface web et intégrable par une autre plateforme | `pip install -e .` |
+| `uvicorn` | serveur web local | extra `[web]` |
+| `pytest`, `httpx`, `ruff` | tests, appels de l'API dans les tests, contrôle qualité | extra `[dev]` |
+| `pymcdm`, `pyDecision` | **uniquement** pour la validation croisée (comparaison des résultats) ; jamais utilisées pour calculer | extra `[validation]`, Python ≥ 3.11 |
+
+Aucune bibliothèque MCDA externe n'est utilisée pour les calculs : AHP, Delphi, normalisations, somme pondérée,
+TOPSIS et sensibilité sont implémentés dans `mcdakit/` et testés. L'interface charge Plotly (graphiques) depuis cdnjs.
 
 ## 2. Utilisation
 

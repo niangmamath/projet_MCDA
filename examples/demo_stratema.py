@@ -67,6 +67,8 @@ print("Normalisation min-max :", evaluate(p2, "topsis", normalization="minmax").
 mc = monte_carlo(p2, "topsis", n=20000, spread=0.2)
 print(mc.table(p2.labels()).round(3), "\n")
 
+# Rapport complet : TOPSIS (méthode de référence du rapport 2) comparé à la somme pondérée min-max,
+# pour mesurer l'effet du choix de méthode sur la recommandation.
 fa = full_analysis(
     p2,
     {"topsis": {}, "wsm": {}},
