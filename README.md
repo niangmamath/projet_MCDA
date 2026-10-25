@@ -65,7 +65,7 @@ Bibliothèques externes (installées automatiquement par `pip install`) :
 | `pymcdm`, `pyDecision` | **uniquement** pour la validation croisée (comparaison des résultats) ; jamais utilisées pour calculer | extra `[validation]`, Python ≥ 3.11 |
 
 Aucune bibliothèque MCDA externe n'est utilisée pour les calculs : AHP, Delphi, normalisations, somme pondérée,
-TOPSIS et sensibilité sont implémentés dans `mcdakit/` et testés. L'interface charge Plotly (graphiques) depuis cdnjs.
+TOPSIS et sensibilité sont implémentés dans `mcdakit/` et testés. L'interface utilise Plotly 4.1.1 (graphiques, licence MIT), fourni dans `public/vendor/` : aucun CDN requis.
 
 ## 2. Utilisation
 

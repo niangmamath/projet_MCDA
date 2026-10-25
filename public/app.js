@@ -253,7 +253,11 @@ function dataTable(t, { labels = null, pctCols = [], digits = 4, highlight = nul
 // ============================================================================ graphiques
 function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
 function plot(target, data, layout = {}) {
-  if (!window.Plotly) return;
+  if (!window.Plotly) {
+    const box = typeof target === "string" ? document.getElementById(target) : target;
+    if (box) box.innerHTML = '<p class="hint">Graphique indisponible : la bibliothèque Plotly n\'a pas pu être chargée.</p>';
+    return;
+  }
   const base = {
     paper_bgcolor: "rgba(0,0,0,0)", plot_bgcolor: "rgba(0,0,0,0)", font: { color: cssVar("--text"), family: "system-ui, sans-serif", size: 12 },
     margin: { t: 34, r: 16, b: 40, l: 60 }, colorway: ["#0f4c75", "#f5922f", "#2a9d8f", "#c44e8a", "#4fb3ec", "#8a6fdf", "#b8a200", "#d1495b"],
