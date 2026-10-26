@@ -34,8 +34,8 @@ ou de l'interface web.
 | Traitement : normalisation / fonctions de valeur / méthode MCDA | `normalization.py` (5 fonctions de valeur linéaires), `methods.py` (somme pondérée, TOPSIS), `weights.py` (AHP, ROC), `delphi.py` |
 | Sorties : scores, classement, recommandation | `MethodResult.table()`, `full_analysis()` → recommandation + diagnostic de robustesse, rapports PDF/HTML/MD/Excel |
 | Bibliothèques externes documentées | section *Installation* ci-dessous (rôle de chacune) |
-| Code fonctionnel et reproductible | `pip install -e ".[web,dev]"` puis `pytest` (72 tests) ; résultats Stratema et 5 cas publiés retrouvés |
-| README, démonstration | ce fichier ; `python examples/demo.py` (une minute) ; application en ligne https://projet-mcda.vercel.app/app |
+| Code fonctionnel et reproductible | `pip install -e ".[web,dev]"` puis `pytest` (71 tests) ; résultats Stratema et 5 cas publiés retrouvés |
+| README, démonstration | ce fichier ; `python examples/demo_stratema.py` ; application en ligne https://projet-mcda.vercel.app/app |
 | Brique intégrable dans une plateforme | 3 points d'entrée sur le même moteur : bibliothèque Python, API HTTP (`/api/docs`), ligne de commande |
 
 ---
@@ -63,9 +63,6 @@ Bibliothèques externes (installées automatiquement par `pip install`) :
 | `uvicorn` | serveur web local | extra `[web]` |
 | `pytest`, `httpx`, `ruff` | tests, appels de l'API dans les tests, contrôle qualité | extra `[dev]` |
 | `pymcdm`, `pyDecision` | **uniquement** pour la validation croisée (comparaison des résultats) ; jamais utilisées pour calculer | extra `[validation]`, Python ≥ 3.11 |
-
-Aucune bibliothèque MCDA externe n'est utilisée pour les calculs : AHP, Delphi, normalisations, somme pondérée,
-TOPSIS et sensibilité sont implémentés dans `mcdakit/` et testés. L'interface utilise Plotly 4.1.1 (graphiques, licence MIT), fourni dans `public/vendor/` : aucun CDN requis.
 
 ## 2. Utilisation
 
@@ -148,21 +145,6 @@ Toutes les fonctions et classes publiques sont documentées : `help(mcdakit.full
 
 ## 3. Démonstration
 
-**Démonstration en une commande (moins d'une minute)** :
-
-```bash
-python examples/demo.py
-```
-
-1. **Entrées → traitement → sorties** sur Stratema (méthode 2) chargé depuis son fichier : couples admissibles,
-   scores TOPSIS, recommandation (B + C), seuils de basculement, diagnostic, puis rapport PDF et tableaux Excel
-   écrits dans `demo_output/`.
-2. **Généricité** : le même code sur un tout autre problème, construit directement en Python (sélection
-   d'équipement publiée par [Ersoy 2021](https://doi.org/10.17270/J.LOG.2021.603)) : les scores de l'article sont
-   retrouvés, puis on change les poids et la méthode par simple paramétrage.
-
-**Reproduction détaillée des deux rapports Stratema** :
-
 ```bash
 python examples/demo_stratema.py
 ```
@@ -241,7 +223,7 @@ pytest                      # tests
 ruff check . && ruff format --check .   # qualité et mise en forme du code (config dans pyproject.toml)
 ```
 
-72 tests : reproduction chiffrée des deux rapports Stratema, 5 cas publiés, validation croisée avec pymcdm et
+71 tests : reproduction chiffrée des deux rapports Stratema, 5 cas publiés, validation croisée avec pymcdm et
 pyDecision (si installées), propriétés mathématiques (dominance, changement d'unité, cohérence AHP, bornes
 TOPSIS…), aller-retour JSON/Excel, égalité moteur vectorisé ↔ méthodes, et appels de toutes les routes de l'API
 (dont la génération du PDF).
